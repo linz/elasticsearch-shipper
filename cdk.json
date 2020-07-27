@@ -1,0 +1,3 @@
+{
+    "app": "npx node build/infra/app.js"
+}

@@ -1,0 +1,21 @@
+{
+  "elastic": {
+    "url": "https://"
+  },
+  "prefix": "centralised-logging",
+  "index": "monthly",
+  "accounts": [
+    {
+      "id": "1234567890",
+      "name": "linz",
+      "tags": ["hello"],
+      "prefix": "account-prefix",
+      "logGroups": [
+        {
+          "filter": "**",
+          "prefix": "lg-prefix"
+        }
+      ]
+    }
+  ]
+}
