@@ -17,7 +17,7 @@
     "@aws-cdk/core": "> 1.53.0",
     "jsondiffpatch": "^0.4.1",
     "minimatch": "^3.0.4",
-    "pino": "^5.13.5",
+    "pino": "^6.4.1",
     "pretty-json-log": "^0.3.1",
     "source-map-support": "^0.5.16",
     "zod": "^1.10.0"
