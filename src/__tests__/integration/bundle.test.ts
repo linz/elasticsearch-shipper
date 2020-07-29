@@ -9,7 +9,7 @@ import * as http from 'http';
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const Port = process.env.PORT ?? 44551;
-const BundlePath = path.join(__dirname, '../../../dist/index.js');
+const BundlePath = path.join(__dirname, '../../../../dist/index.js');
 
 /** Validate that the built bundle actually works */
 describe('bundled lambda', () => {

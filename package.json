@@ -25,7 +25,7 @@
   "scripts": {
     "build": "tsc",
     "bundle": "./bundle.sh",
-    "lint": "eslint 'src/**/*.ts' --quiet --fix",
+    "lint": "eslint 'src/**/*.ts' --fix",
     "test": "mocha 'build/**/*.test.js'",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
   },
