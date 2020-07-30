@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@aws-cdk/aws-ec2": "> 1.53.0",
-    "@aws-cdk/aws-lambda-event-sources": "> 1.53.0",
     "@aws-cdk/aws-lambda": "> 1.53.0",
+    "@aws-cdk/aws-lambda-event-sources": "> 1.53.0",
     "@aws-cdk/aws-s3": "> 1.53.0",
     "@aws-cdk/core": "> 1.53.0",
     "jsondiffpatch": "^0.4.1",
@@ -25,12 +25,13 @@
   "scripts": {
     "build": "tsc",
     "bundle": "./bundle.sh",
-    "lint": "eslint 'src/**/*.ts' --quiet --fix",
+    "lint": "eslint 'src/**/*.ts' --fix",
     "test": "mocha 'build/**/*.test.js'",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
   },
   "devDependencies": {
     "@elastic/elasticsearch": "^7.4.0",
+    "@linzjs/style": "^0.0.3",
     "@types/aws-lambda": "^8.10.34",
     "@types/chai": "^4.2.4",
     "@types/minimatch": "^3.0.3",
@@ -38,21 +39,14 @@
     "@types/node": "^14.0.26",
     "@types/pino": "^6.0.0",
     "@types/sinon": "^9.0.0",
-    "@typescript-eslint/eslint-plugin": "^2.6.1",
-    "@typescript-eslint/parser": "^2.6.1",
     "@zeit/ncc": "^0.22.3",
     "aws-cdk": "^1.53.0",
     "aws-elasticsearch-connector": "^8.2.0",
     "aws-sdk": "^2.547.0",
     "chai": "^4.2.0",
     "conventional-changelog-cli": "^2.0.34",
-    "eslint-config-prettier": "^6.5.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint": "^7.5.0",
     "mocha": "^8.0.1",
-    "prettier": "^2.0.5",
-    "sinon": "^9.0.2",
-    "typescript": "^3.9.7"
+    "sinon": "^9.0.2"
   },
   "publishConfig": {
     "access": "public"
