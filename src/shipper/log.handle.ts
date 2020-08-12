@@ -1,5 +1,5 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsEvent } from 'aws-lambda';
-import { logger } from '../logger';
+import { Log } from '../logger';
 import { getLogObject } from './log';
 import { LogShipper } from './shipper.config';
 
@@ -27,6 +27,7 @@ export function isCloudWatchEvent(e: any): e is CloudWatchLogsEvent {
 export async function processCloudWatchData(
   logShipper: LogShipper,
   c: CloudWatchLogsDecodedData,
+  logger: typeof Log,
   source?: string,
 ): Promise<void> {
   if (c.logEvents.length == 0) return;
@@ -67,5 +68,5 @@ export async function processCloudWatchData(
     logShipper.es.queue(logObject, prefix, index);
   }
 
-  await logShipper.es.save();
+  await logShipper.es.save(logger);
 }

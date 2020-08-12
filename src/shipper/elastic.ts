@@ -4,7 +4,7 @@ import { LogShipperConfig, LogShipperConfigIndexDate } from '../config/config';
 import { ConnectionValidator } from '../config/config.elastic';
 import { getIndexDate } from './elastic.index';
 import { LogObject } from './log';
-import { logger } from '../logger';
+import { Log } from '../logger';
 
 export interface ElasticSearchIndex {
   _id: string;
@@ -75,7 +75,7 @@ export class ElasticSearch {
    *
    * @returns list of log objects that failed to load
    */
-  async save(): Promise<LogObject[]> {
+  async save(logger: typeof Log): Promise<LogObject[]> {
     const body = this.body;
     this.body = [];
 
