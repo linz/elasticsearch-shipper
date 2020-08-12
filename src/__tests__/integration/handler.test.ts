@@ -5,13 +5,13 @@ import { handler } from '../../shipper/app';
 import { LogShipperConfig } from '../../config/config';
 import { LogShipper } from '../../shipper/shipper.config';
 import { LogObject } from '../../shipper/log';
-import { logger } from '../../logger';
+import { Log } from '../../logger';
 import { EVENT_DATA, EVENT_DATA_ACCOUNT } from '../event.data';
 import { getCloudWatchEvent, LOG_DATA, toLogStream } from '../log.data';
 import { ElasticSearchIndex, ElasticSearch } from '../../shipper/elastic';
 import { S3 } from '../../shipper/app';
 
-logger.level = 'silent';
+Log.level = 'silent';
 
 describe('HandlerIntegration', () => {
   let s3Stub: sinon.SinonStub;

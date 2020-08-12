@@ -22,7 +22,7 @@ describe('bundled lambda', () => {
   const sandbox = sinon.createSandbox();
 
   const pkg = require(BundlePath);
-  pkg.logger.level = 'silent';
+  pkg.Log.level = 'silent';
 
   // Stupid little http server, to log incoming requests
   const requests: { req: http.IncomingMessage; body: string }[] = [];
