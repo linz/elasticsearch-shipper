@@ -4,8 +4,8 @@
   "description": "Ship log lines to elasticsearch",
   "repository": "github:linz/elasticsearch-shipper",
   "license": "MIT",
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
+  "main": "./build/src/index.js",
+  "types": "./build/src/index.d.ts",
   "bin": {
     "lls-config": "./lls-config"
   },
