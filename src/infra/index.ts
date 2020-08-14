@@ -8,7 +8,7 @@ import { Env, DefaultConfigRefreshTimeoutSeconds } from '../env';
 import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
 import * as path from 'path';
 
-const SourceCode = path.join(__dirname, '..', '..', 'dist');
+export const SourceCode = path.join(__dirname, '..', '..', '..', 'dist');
 
 export interface LambdaShipperProps {
   /** VPC to run the lambda function in */
