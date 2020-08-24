@@ -60,10 +60,10 @@ export async function processCloudWatchData(
     const logObject = getLogObject(c, logLine, source);
     if (logObject == null) continue;
 
-    if (streamTags.length > 0) logObject['@tags'] = streamTags.concat(logObject['@tags']);
+    if (streamTags.length > 0) logObject['@tags'] = streamTags.concat(logObject['@tags'] ?? []);
 
     // Trim out empty tags
-    if (logObject['@tags'].length === 0) delete logObject['@tags'];
+    if (logObject['@tags']?.length === 0) logObject['@tags'] = undefined;
 
     logShipper.es.queue(logObject, prefix, index);
   }

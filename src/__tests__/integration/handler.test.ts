@@ -126,7 +126,7 @@ describe('HandlerIntegration', () => {
   });
 
   it('should error if the config is invalid', async () => {
-    delete fakeConfig.accounts;
+    delete (fakeConfig as any).accounts;
     try {
       await handler({ Records: [EVENT_DATA] });
       expect(true).eq(false);

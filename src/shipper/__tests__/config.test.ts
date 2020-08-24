@@ -12,7 +12,7 @@ function clone<T>(a: T): T {
 
 describe('ElasticSearchConfigValidator', () => {
   it('should validate cloud connections', () => {
-    const cfg: LogShipperConnectionCloud = { id: 'foo', username: 'bar', password: 'baz' };
+    const cfg: Partial<LogShipperConnectionCloud> = { id: 'foo', username: 'bar', password: 'baz' };
     expect(ConnectionValidator.Cloud.check(cfg)).equals(true);
 
     const cfg2 = clone(cfg);
@@ -23,7 +23,7 @@ describe('ElasticSearchConfigValidator', () => {
   });
 
   it('should validate aws connections', () => {
-    const cfg: LogShipperConnectionAws = { url: 'foo' };
+    const cfg: Partial<LogShipperConnectionAws> = { url: 'foo' };
     expect(ConnectionValidator.Aws.check(cfg)).equals(true);
 
     const cfg2 = clone(cfg);
@@ -34,7 +34,7 @@ describe('ElasticSearchConfigValidator', () => {
   });
 
   it('should validate basic connections', () => {
-    const cfg: LogShipperConnectionBasic = { url: 'foo', username: 'bar', password: 'baz' };
+    const cfg: Partial<LogShipperConnectionBasic> = { url: 'foo', username: 'bar', password: 'baz' };
     expect(ConnectionValidator.Basic.check(cfg)).equals(true);
 
     const cfg2 = clone(cfg);
