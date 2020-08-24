@@ -28,7 +28,7 @@ export interface LogObject extends Record<string, string | number | string[] | u
   '@source'?: string;
 
   /** Log tags that have been applied from log config */
-  '@tags': string[];
+  '@tags'?: string[];
 }
 /**
  * Find JSON objects inside a string and extract them
@@ -56,6 +56,7 @@ export function getLogObject(
     return null;
   }
 
+  const tags: string[] = [];
   const logObj: LogObject = {
     '@id': log.id,
     '@timestamp': new Date(log.timestamp).toISOString(),
@@ -63,11 +64,11 @@ export function getLogObject(
     '@logGroup': obj.logGroup,
     '@logStream': obj.logStream,
     '@source': s3Key,
-    '@tags': [],
+    '@tags': tags,
     message: log.message,
   };
 
-  if (logObj['@timestamp'] === undefined) {
+  if (logObj['@timestamp'] == null) {
     logObj['@timestamp'] = eventTime();
   }
 
@@ -77,13 +78,13 @@ export function getLogObject(
         /^[0-9] ([0-9]+|unknown) eni-[0-9a-f]+ ([0-9a-f.:]|-)+ ([0-9a-f.:]|-)+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [0-9]+ [0-9]+ (ACCEPT|REJECT|-) (OK|NODATA|SKIPDATA).*$/,
       ) != null
     ) {
-      logObj['@tags'].push('Flow log');
+      tags.push('Flow log');
       // Drop flow logs.
       return null;
     } else if (log.message.match(/^.* .* .* \[.+\] ".+" [0-9]+ [0-9]+ ".*" ".*"$/) != null) {
-      logObj['@tags'].push('Access log');
+      tags.push('Access log');
     } else if (log.message.match(/(START|REPORT|END) RequestId: [\-0-9a-f]+.*/)) {
-      logObj['@tags'].push('Lambda log');
+      tags.push('Lambda log');
     } else {
       const extracted = extractJson(log.message);
       if (extracted) {
@@ -95,7 +96,7 @@ export function getLogObject(
       }
     }
   } catch (e) {
-    logObj['@tags'].push('failed to parse');
+    tags.push('failed to parse');
   }
 
   return logObj as LogObject;
