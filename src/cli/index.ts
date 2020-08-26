@@ -95,7 +95,7 @@ async function main(): Promise<void> {
     if (isCommit) {
       logger.info({ configName }, 'Updating config');
       await ssm
-        .putParameter({ Name: configName, Overwrite: true, Value: JSON.stringify(validated, null, 2), Type: 'String' })
+        .putParameter({ Name: configName, Overwrite: true, Value: JSON.stringify(validated), Type: 'String' })
         .promise();
     } else {
       logger.warn({ configName }, 'DryRun Done');
