@@ -4,7 +4,7 @@ import { RetentionDays } from '@aws-cdk/aws-logs';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { Env, DefaultConfigRefreshTimeoutSeconds } from '../env';
+import { Env, DefaultConfigRefreshTimeoutSeconds, DefaultExecutionTimeoutSeconds } from '../env';
 import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
 import * as path from 'path';
 
@@ -23,6 +23,12 @@ export interface LambdaShipperProps {
    * @default 300
    */
   refreshDurationSeconds?: number | string;
+
+  /**
+   * Time in seconds the execution can run for
+   * @default 30
+   */
+  executionTimeoutSeconds?: number | string;
 }
 
 export class LambdaLogShipperFunction extends Construct {
@@ -31,11 +37,13 @@ export class LambdaLogShipperFunction extends Construct {
   constructor(scope: Construct, id: string, props: LambdaShipperProps) {
     super(scope, id);
 
+    const timeout = Duration.seconds(Number(props.executionTimeoutSeconds ?? DefaultExecutionTimeoutSeconds));
+
     this.lambda = new lambda.Function(this, 'Shipper', {
       runtime: lambda.Runtime.NODEJS_12_X,
       memorySize: 256,
       vpc: props.vpc,
-      timeout: Duration.seconds(30),
+      timeout,
       handler: 'index.handler',
       code: lambda.Code.asset(SourceCode),
       environment: {

@@ -1,4 +1,5 @@
 export const DefaultConfigRefreshTimeoutSeconds = '300';
+export const DefaultExecutionTimeoutSeconds = 30;
 export const DefaultParameterStoreBasePath = '/es-shipper-config/accounts';
 
 export const Env = {
@@ -8,4 +9,6 @@ export const Env = {
   ConfigName: 'CONFIG_NAME',
   /** How long the config should be cached in seconds*/
   ConfigRefreshTimeoutSeconds: 'CONFIG_REFRESH_TIMEOUT_SECONDS',
+  /** Maximum execution time of the lambda */
+  ExecutionTimeoutSeconds: 'EXECUTION_TIMEOUT_SECONDS',
 };
