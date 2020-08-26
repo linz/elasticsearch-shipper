@@ -59,11 +59,15 @@ export async function processCloudWatchData(
   for (const logLine of c.logEvents) {
     const logObject = getLogObject(c, logLine, source);
     if (logObject == null) continue;
-
     if (streamTags.length > 0) logObject['@tags'] = streamTags.concat(logObject['@tags'] ?? []);
 
     // Trim out empty tags
-    if (logObject['@tags']?.length === 0) logObject['@tags'] = undefined;
+    if (logObject['@tags']?.length === 0) delete logObject['@tags'];
+
+    // Remove any keys that should be dropped
+    if (Array.isArray(streamConfig.dropKeys)) {
+      for (const key of streamConfig.dropKeys) delete logObject[key];
+    }
 
     logShipper.es.queue(logObject, prefix, index);
   }

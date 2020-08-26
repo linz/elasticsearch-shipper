@@ -64,6 +64,8 @@ export const LogShipperConfigGroupValidator = z.object({
   drop: z.boolean().optional(),
   /** Index pattern prefix */
   prefix: z.string().optional(),
+  /** Drop keys from the log line before inserting into elastic */
+  dropKeys: z.array(z.string()).optional(),
   /**
    * How should this log group be indexed daily or monthly
    * @default parent.index
