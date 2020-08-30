@@ -1,0 +1,34 @@
+export interface LogObject extends Record<string, string | number | string[] | boolean | undefined> {
+  /** Log Id, generally very long number string
+   * @example
+   *  '35055947907870703043012542183748618652884187642541965313'
+   */
+  '@id': string;
+  /** ISO 8601 time of the log event */
+  '@timestamp': string;
+  /** Owner AWS account number */
+  '@owner': string;
+  /** Source cloudwatch log group */
+  '@logGroup': string;
+  /** Source cloudwatch log stream */
+  '@logStream': string;
+  /** Source file */
+  '@source'?: string;
+  /** Log tags that have been applied from log config */
+  '@tags'?: string[];
+  /**
+   * The raw message that came from cloudwatch
+   *
+   * If the log is processed as JSON this message is deleted
+   */
+  message?: string;
+}
+
+/**
+ * Modify each log line
+ *
+ * @returns true to drop the log line
+ */
+export type LogProcessFunction = (logObject: LogObject) => boolean | void;
+
+export const LogFunctionName = `log-fns.js`;

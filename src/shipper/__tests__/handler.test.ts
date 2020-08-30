@@ -2,9 +2,9 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { Log } from '../../logger';
-import { eventTime, LogObject } from '../../shipper/log';
-import { processCloudWatchData, splitJsonString } from '../../shipper/log.handle';
+import { processCloudWatchData, splitJsonString } from '../log.handle';
 import { LogShipper } from '../shipper.config';
+import { LogObject } from '../type';
 
 describe('splitJSONString', () => {
   it('works without a callback', () => {
@@ -79,28 +79,5 @@ describe('processData', () => {
     await processCloudWatchData(shipper, logLine, Log);
     expect(saveStub.callCount).equal(0);
     expect(shipper.es.body.length).eq(0);
-  });
-});
-
-describe('eventTime', () => {
-  it('should give current time', () => {
-    const now = Date.now();
-    const currentTime = eventTime();
-    // should be approximately about now
-    expect(now - new Date(currentTime).getTime()).below(10);
-  });
-
-  it('should handle ms', () => {
-    const now = Date.now();
-    const currentTime = eventTime(now);
-
-    expect(now).to.equal(new Date(currentTime).getTime());
-  });
-
-  it('should handle seconds', () => {
-    const now = Date.now() / 1000;
-    const currentTime = eventTime(now);
-
-    expect(now * 1000).to.equal(new Date(currentTime).getTime());
   });
 });
