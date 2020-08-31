@@ -76,6 +76,7 @@ export class ElasticSearch {
    * @returns list of log objects that failed to load
    */
   async save(logger: typeof Log): Promise<LogObject[]> {
+    const startTime = Date.now();
     const body = this.body;
     this.body = [];
 
@@ -84,8 +85,9 @@ export class ElasticSearch {
 
     if (body.length <= 0) return [];
     const res = await this.client.bulk({ body });
+    const duration = Date.now() - startTime;
     if (res.statusCode == null || res.statusCode < 200 || res.statusCode > 300) {
-      logger.error({ res: res.body, status: res.statusCode }, 'Failed to insert');
+      logger.error({ res: res.body, status: res.statusCode, duration }, 'Failed to insert');
       throw Error('Unable to insert logs');
     }
 
@@ -104,12 +106,11 @@ export class ElasticSearch {
     }
 
     if (failed.length > 0) {
-      logger.warn({ failed, total: info.items.length }, 'FailedItems');
+      logger.warn({ failed, total: info.items.length, duration }, 'FailedItems');
       return failed;
     }
 
-    logger.info({ logCount: body.length / 2, indexList: Object.keys(this.indexes) }, 'LogsInserted');
-
+    logger.info({ logCount: body.length / 2, indexList: Object.keys(this.indexes), duration }, 'LogsInserted');
     return [];
   }
 
