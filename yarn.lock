@@ -861,11 +861,11 @@ aws-cdk@^1.53.0:
     yargs "^15.3.1"
 
 aws-elasticsearch-connector@^8.2.0:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/aws-elasticsearch-connector/-/aws-elasticsearch-connector-8.2.0.tgz#ad26408c7e529f19a5a03029c2b001ea8e58ec8f"
-  integrity sha512-Jp60FPmFDa/mB8WRr/jLwvCx2yjFkYZCVUfaDS87F1tRN+7fD6zMrFzOV6kTMuG3MF2nb5gfhJIne4/Y1yDcQw==
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/aws-elasticsearch-connector/-/aws-elasticsearch-connector-8.3.0.tgz#14637941ca1adcec878cc0f07ca02712f1e6736a"
+  integrity sha512-OPd1iNhebBBpGIvvjL79J5FcfdokD7LXbSeo6mENdWNqiIykYHnD5jT2wRFA4CSDpZBgEq9cUgc0D60GOxQp3A==
   dependencies:
-    aws4 "^1.8.0"
+    aws4 "^1.10.0"
     lodash.get "^4.4.2"
 
 aws-sdk@^2.547.0, aws-sdk@^2.736.0:
@@ -883,10 +883,10 @@ aws-sdk@^2.547.0, aws-sdk@^2.736.0:
     uuid "3.3.2"
     xml2js "0.4.19"
 
-aws4@^1.8.0:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.9.1.tgz#7e33d8f7d449b3f673cd72deb9abdc552dbe528e"
-  integrity sha512-wMHVg2EOHaMRxbzgFJ9gtjOOCrI80OHLG14rxi28XwOW8ux6IiEbRCGGGqCtdAIg4FQCbW20k9RsT4y3gJlFug==
+aws4@^1.10.0:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.10.1.tgz#e1e82e4f3e999e2cfd61b161280d16a111f86428"
+  integrity sha512-zg7Hz2k5lI8kb7U32998pRRFin7zJlkfezGJjUc2heaD4Pw2wObakCDVzkKztTm/Ln7eiVvYsjqak0Ed4LkMDA==
 
 balanced-match@^1.0.0:
   version "1.0.0"
