@@ -13,7 +13,7 @@ export interface ElasticSearchIndex {
 }
 export interface ElasticSearchBulkResponse {
   took: number;
-  items: { index: { status: number } }[];
+  items: { index: { status: number; error?: { reason: string } } }[];
 }
 
 export type ElasticSearchBulk = { index: ElasticSearchIndex } | LogObject;
@@ -100,7 +100,7 @@ export class ElasticSearch {
       const bodyIndex = i * 2 + 1;
       // Failed to insert a item, lookup which item it was from the items list
       if (item.index.status >= 300) {
-        logger.error({ logMessage: JSON.stringify(body[bodyIndex]) }, 'FailedIndex');
+        logger.error({ logMessage: JSON.stringify(body[bodyIndex]), reason: item.index.error?.reason }, 'FailedIndex');
         failed.push(body[bodyIndex] as LogObject);
       }
     }
