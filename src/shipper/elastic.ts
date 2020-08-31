@@ -3,7 +3,7 @@ import { AmazonConnection, AmazonTransport } from 'aws-elasticsearch-connector';
 import { LogShipperConfig, LogShipperConfigIndexDate } from '../config/config';
 import { ConnectionValidator } from '../config/config.elastic';
 import { getIndexDate } from './elastic.index';
-import { LogObject } from './log';
+import { LogObject } from './type';
 import { Log } from '../logger';
 
 export interface ElasticSearchIndex {

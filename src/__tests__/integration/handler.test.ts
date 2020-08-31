@@ -4,7 +4,7 @@ import * as sinon from 'sinon';
 import { handler } from '../../shipper/app';
 import { LogShipperConfig } from '../../config/config';
 import { LogShipper } from '../../shipper/shipper.config';
-import { LogObject } from '../../shipper/log';
+import { LogObject } from '../../shipper/type';
 import { Log } from '../../logger';
 import { EVENT_DATA, EVENT_DATA_ACCOUNT } from '../event.data';
 import { getCloudWatchEvent, LOG_DATA, toLogStream } from '../log.data';

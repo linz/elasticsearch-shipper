@@ -1,14 +1,17 @@
-import { Construct, Duration } from '@aws-cdk/core';
-import * as ssm from '@aws-cdk/aws-ssm';
-import { RetentionDays } from '@aws-cdk/aws-logs';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as s3 from '@aws-cdk/aws-s3';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { Env, DefaultConfigRefreshTimeoutSeconds, DefaultExecutionTimeoutSeconds } from '../env';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
+import { RetentionDays } from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as ssm from '@aws-cdk/aws-ssm';
+import { Construct, Duration } from '@aws-cdk/core';
+import { unlinkSync, writeFileSync } from 'fs';
 import * as path from 'path';
+import { DefaultConfigRefreshTimeoutSeconds, DefaultExecutionTimeoutSeconds, Env } from '../env';
+import { LogFunctionName, LogProcessFunction } from '../shipper/type';
 
-export const SourceCode = path.join(__dirname, '..', '..', '..', 'dist');
+export const SourceCode = path.resolve(__dirname, '..', '..', '..', 'dist');
+export const SourceCodeExtension = path.join(SourceCode, LogFunctionName);
 
 export interface LambdaShipperProps {
   /** VPC to run the lambda function in */
@@ -29,6 +32,16 @@ export interface LambdaShipperProps {
    * @default 30
    */
   executionTimeoutSeconds?: number | string;
+
+  /**
+   * Memory for the function to use
+   *
+   * @default 256
+   */
+  memorySize?: number;
+
+  /** Additional log processing function */
+  onLog?: LogProcessFunction;
 }
 
 export class LambdaLogShipperFunction extends Construct {
@@ -39,13 +52,16 @@ export class LambdaLogShipperFunction extends Construct {
 
     const timeout = Duration.seconds(Number(props.executionTimeoutSeconds ?? DefaultExecutionTimeoutSeconds));
 
+    /** If additional log processing functions are required injected them in */
+    LambdaLogShipperFunction.injectLogFunctions(props.onLog);
+
     this.lambda = new lambda.Function(this, 'Shipper', {
       runtime: lambda.Runtime.NODEJS_12_X,
-      memorySize: 256,
+      memorySize: props.memorySize ?? 256,
       vpc: props.vpc,
       timeout,
       handler: 'index.handler',
-      code: lambda.Code.asset(SourceCode),
+      code: lambda.Code.fromAsset(SourceCode),
       environment: {
         [Env.ConfigName]: props.configParameter.parameterName,
         [Env.ConfigRefreshTimeoutSeconds]: String(props.refreshDurationSeconds ?? DefaultConfigRefreshTimeoutSeconds),
@@ -54,6 +70,22 @@ export class LambdaLogShipperFunction extends Construct {
     });
 
     props.configParameter.grantRead(this.lambda);
+  }
+
+  /**
+   * Inject the log functions into a additional javascript file that will be dynamically loaded by the lambda function
+   * @param onLog log function to inject
+   */
+  static injectLogFunctions(onLog?: LogProcessFunction): void {
+    if (onLog) {
+      writeFileSync(SourceCodeExtension, `module.exports = [${onLog.toString()}]`);
+    } else {
+      try {
+        unlinkSync(SourceCodeExtension);
+      } catch (e) {
+        //ignore
+      }
+    }
   }
 
   /** Add a listener to files created in bucket */

@@ -4,10 +4,15 @@ import { LogShipperConfig, LogShipperConfigAccount, LogShipperConfigLogGroup } f
 import { LogShipperConfigValidator } from '../config/config.elastic';
 import { ElasticSearch } from './elastic';
 import minimatch from 'minimatch';
+import { LogObject, LogProcessFunction } from './type';
+import { CloudWatchLogsDecodedData, CloudWatchLogsLogEvent } from 'aws-lambda';
+import { onLogExtractJson } from './log.funcs/extract.json';
+import { onLogTag } from './log.funcs/tag';
 
 export const RefreshTimeoutSeconds = Number(
   process.env[Env.ConfigRefreshTimeoutSeconds] ?? DefaultConfigRefreshTimeoutSeconds,
 );
+
 export const ssm = new SSM();
 
 export class LogShipper {
@@ -15,6 +20,15 @@ export class LogShipper {
   initializedAt: number;
   config: LogShipperConfig;
   es: ElasticSearch;
+
+  static DefaultLogProcessFunctions = [onLogExtractJson, onLogTag];
+
+  /**
+   * Optional log process to dynamically filter logs
+   *
+   * @returns true to drop the log line, false to keep it
+   */
+  onLog: LogProcessFunction[] = [];
 
   /**
    * Retrieve configuration from parameter store.
@@ -41,6 +55,8 @@ export class LogShipper {
     this.config = config;
     this.initializedAt = Date.now();
     this.es = new ElasticSearch(config);
+
+    for (const fn of LogShipper.DefaultLogProcessFunctions) this.onLog.push(fn);
   }
 
   getAccount(accountId: string): LogShipperConfigAccount | undefined {
@@ -51,6 +67,34 @@ export class LogShipper {
     return account.logGroups.find((f) => minimatch(logGroup, f.filter));
   }
 
+  /**
+   * Process a log object determining whether or not to keep it
+   * @param obj source log stream used for additional information
+   * @param log
+   * @param s3Key
+   */
+  getLogObject(obj: CloudWatchLogsDecodedData, log: CloudWatchLogsLogEvent, s3Key?: string): null | LogObject {
+    if (log == undefined) return null;
+
+    const logObj: LogObject = {
+      '@id': log.id,
+      '@timestamp': new Date(log.timestamp).toISOString(),
+      '@owner': obj.owner,
+      '@logGroup': obj.logGroup,
+      '@logStream': obj.logStream,
+      '@source': s3Key,
+      '@tags': [],
+      message: log.message,
+    };
+
+    if (logObj['@timestamp'] == null) logObj['@timestamp'] = new Date().toISOString();
+
+    for (const logFn of this.onLog) {
+      if (logFn(logObj) == true) return null;
+    }
+
+    return logObj;
+  }
   /**
    * Check whether the config is due to be refreshed.
    */

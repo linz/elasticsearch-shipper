@@ -1,6 +1,5 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsEvent } from 'aws-lambda';
 import { Log } from '../logger';
-import { getLogObject } from './log';
 import { LogShipper } from './shipper.config';
 
 export interface S3Location {
@@ -57,7 +56,7 @@ export async function processCloudWatchData(
   const index = streamConfig.index ?? account.index ?? logShipper.config.index;
 
   for (const logLine of c.logEvents) {
-    const logObject = getLogObject(c, logLine, source);
+    const logObject = logShipper.getLogObject(c, logLine, source);
     if (logObject == null) continue;
     if (streamTags.length > 0) logObject['@tags'] = streamTags.concat(logObject['@tags'] ?? []);
 
