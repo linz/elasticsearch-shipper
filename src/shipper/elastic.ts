@@ -80,7 +80,8 @@ export class ElasticSearch {
     const body = this.body;
     this.body = [];
 
-    logger.info({ logCount: body.length / 2, indexList: Object.keys(this.indexes) }, 'LoadingLogs');
+    const indexList = Object.keys(this.indexes);
+    logger.info({ logCount: body.length / 2, indexList }, 'LoadingLogs');
     this.indexes = {};
 
     if (body.length <= 0) return [];
@@ -110,7 +111,7 @@ export class ElasticSearch {
       return failed;
     }
 
-    logger.info({ logCount: body.length / 2, indexList: Object.keys(this.indexes), duration }, 'LogsInserted');
+    logger.info({ logCount: body.length / 2, indexList, duration }, 'LogsInserted');
     return [];
   }
 
