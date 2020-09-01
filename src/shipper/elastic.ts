@@ -5,24 +5,13 @@ import { ConnectionValidator } from '../config/config.elastic';
 import { getIndexDate } from './elastic.index';
 import { LogObject } from './type';
 import { Log } from '../logger';
-
-export interface ElasticSearchIndex {
-  _id: string;
-  _index: string;
-  _type: '_doc';
-}
-export interface ElasticSearchBulkResponse {
-  took: number;
-  items: { index: { status: number; error?: { reason: string } } }[];
-}
-
-export type ElasticSearchBulk = { index: ElasticSearchIndex } | LogObject;
+import { OnDropDocument } from '@elastic/elasticsearch/lib/Helpers';
 
 export class ElasticSearch {
   _client: Client | null;
 
-  body: ElasticSearchBulk[] = [];
-  indexes: Record<string, boolean> = {};
+  logs: LogObject[] = [];
+  indexes: Map<string, string> = new Map();
   config: LogShipperConfig;
 
   constructor(config: LogShipperConfig) {
@@ -65,9 +54,8 @@ export class ElasticSearch {
    */
   queue(logObj: LogObject, prefix: string, indexType: LogShipperConfigIndexDate): void {
     const indexName = this.getIndexName(logObj, prefix, indexType);
-    this.indexes[indexName] = true;
-    this.body.push({ index: { _index: indexName, _type: '_doc', _id: logObj['@id'] } });
-    this.body.push(logObj);
+    this.indexes.set(logObj['@id'], indexName);
+    this.logs.push(logObj);
   }
 
   /**
@@ -75,44 +63,37 @@ export class ElasticSearch {
    *
    * @returns list of log objects that failed to load
    */
-  async save(logger: typeof Log): Promise<LogObject[]> {
+  async save(logger: typeof Log): Promise<void> {
     const startTime = Date.now();
-    const body = this.body;
-    this.body = [];
+    const logs = this.logs;
+    const indexes = this.indexes;
+    this.logs = [];
+    this.indexes = new Map();
 
-    const indexList = Object.keys(this.indexes);
-    logger.info({ logCount: body.length / 2, indexList }, 'LoadingLogs');
-    this.indexes = {};
+    const indexesUsed = new Set<string>();
+    const stats = await this.client.helpers.bulk({
+      datasource: logs,
+      onDocument: (lo: LogObject) => {
+        const indexName = indexes.get(lo['@id']) as string;
+        indexesUsed.add(indexName);
+        return {
+          index: { _index: indexName },
+        };
+      },
+      onDrop(err: OnDropDocument<LogObject>) {
+        logger.error({ logMessage: JSON.stringify(err.document), error: err.error }, 'FailedIndex');
+      },
+      // Wait up to 1 second before flushing
+      flushInterval: 1000,
+    });
 
-    if (body.length <= 0) return [];
-    const res = await this.client.bulk({ body });
     const duration = Date.now() - startTime;
-    if (res.statusCode == null || res.statusCode < 200 || res.statusCode > 300) {
-      logger.error({ res: res.body, status: res.statusCode, duration }, 'Failed to insert');
-      throw Error('Unable to insert logs');
+    const indexList = [...indexesUsed.keys()];
+    if (stats.failed > 0) {
+      logger.error({ stats, indexList, duration }, 'Inserts:Failed');
+    } else {
+      logger.info({ stats, indexList, duration }, 'Inserts:Ok');
     }
-
-    // Bulk loads have a lot of information about what happened to every input
-    const info: ElasticSearchBulkResponse = res.body;
-    const failed: LogObject[] = [];
-    for (let i = 0; i < info.items.length; i++) {
-      const item = info.items[i];
-      // For every insert there is a "index" and "body" line
-      const bodyIndex = i * 2 + 1;
-      // Failed to insert a item, lookup which item it was from the items list
-      if (item.index.status >= 300) {
-        logger.error({ logMessage: JSON.stringify(body[bodyIndex]), reason: item.index.error?.reason }, 'FailedIndex');
-        failed.push(body[bodyIndex] as LogObject);
-      }
-    }
-
-    if (failed.length > 0) {
-      logger.warn({ failed, total: info.items.length, duration }, 'FailedItems');
-      return failed;
-    }
-
-    logger.info({ logCount: body.length / 2, indexList, duration }, 'LogsInserted');
-    return [];
   }
 
   /**
