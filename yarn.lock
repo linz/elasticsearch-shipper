@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@acuris/aws-es-connection@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@acuris/aws-es-connection/-/aws-es-connection-1.1.1.tgz#5ff52f776e465b8f1f187d2743e38ff24f81ab8c"
+  integrity sha512-eAvr7NTi/pgD5g/T0sj71O/Ay2Wn8lOPIorYCD/WruhGuBT4PNBbQ7qzmcIWccnQ+u+DzTQNg/WEPIDd5JVRAw==
+  dependencies:
+    aws4 "^1.8.0"
+
 "@aws-cdk/assets@1.54.0":
   version "1.54.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/assets/-/assets-1.54.0.tgz#071f17924bf13a2ad09437f0688c2e444d58d860"
@@ -863,13 +870,6 @@ aws-cdk@^1.53.0:
     yaml "^1.10.0"
     yargs "^15.3.1"
 
-aws-elasticsearch-connector@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/aws-elasticsearch-connector/-/aws-elasticsearch-connector-9.0.0.tgz#03656f28f78735c191c3e2108d505543b623b1b8"
-  integrity sha512-O+A9HEa14gOiKTAp6U6Ha1RRJvQjc046wIn9CJ69wc+c1c5CfPE4xl4Av6Zyv6dgzs+RVGxdetjm8RpSlTUmhQ==
-  dependencies:
-    aws4 "^1.10.0"
-
 aws-sdk@^2.547.0, aws-sdk@^2.736.0:
   version "2.737.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.737.0.tgz#48309776367cb45724c15a843061c569d3eb25fa"
@@ -885,7 +885,7 @@ aws-sdk@^2.547.0, aws-sdk@^2.736.0:
     uuid "3.3.2"
     xml2js "0.4.19"
 
-aws4@^1.10.0:
+aws4@^1.8.0:
   version "1.10.1"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.10.1.tgz#e1e82e4f3e999e2cfd61b161280d16a111f86428"
   integrity sha512-zg7Hz2k5lI8kb7U32998pRRFin7zJlkfezGJjUc2heaD4Pw2wObakCDVzkKztTm/Ln7eiVvYsjqak0Ed4LkMDA==

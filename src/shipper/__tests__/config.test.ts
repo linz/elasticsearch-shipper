@@ -5,6 +5,7 @@ import {
   LogShipperConnectionBasic,
   LogShipperConnectionCloud,
 } from '../../config/config.elastic';
+import { ElasticSearch } from '../elastic';
 
 function clone<T>(a: T): T {
   return JSON.parse(JSON.stringify(a)) as T;
@@ -31,6 +32,12 @@ describe('ElasticSearchConfigValidator', () => {
     expect(ConnectionValidator.Aws.check(cfg2)).equals(false);
     expect(ConnectionValidator.Aws.check({})).equals(false);
     expect(ConnectionValidator.Aws.check(null)).equals(false);
+  });
+
+  it('should create a aws connection', () => {
+    const es = new ElasticSearch({ elastic: { url: 'https://foo ' } } as any);
+    const client = es.client; // Create a elastic client to the connection
+    expect(client).to.not.equal(null);
   });
 
   it('should validate basic connections', () => {
