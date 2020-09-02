@@ -15,6 +15,7 @@
     "@aws-cdk/aws-lambda-event-sources": "> 1.53.0",
     "@aws-cdk/aws-s3": "> 1.53.0",
     "@aws-cdk/core": "> 1.53.0",
+    "@basemaps/metrics": "^4.11.1",
     "jsondiffpatch": "^0.4.1",
     "minimatch": "^3.0.4",
     "pino": "^6.4.1",
@@ -31,7 +32,7 @@
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
   },
   "devDependencies": {
-    "@elastic/elasticsearch": "^7.4.0",
+    "@elastic/elasticsearch": "^7.9.0",
     "@linzjs/style": "^0.2.0",
     "@types/aws-lambda": "^8.10.34",
     "@types/chai": "^4.2.4",
@@ -42,7 +43,7 @@
     "@types/sinon": "^9.0.0",
     "@zeit/ncc": "^0.22.3",
     "aws-cdk": "^1.53.0",
-    "aws-elasticsearch-connector": "^8.2.0",
+    "aws-elasticsearch-connector": "^9.0.0",
     "aws-sdk": "^2.547.0",
     "chai": "^4.2.0",
     "conventional-changelog-cli": "^2.0.34",

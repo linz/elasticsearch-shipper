@@ -1,13 +1,13 @@
+import { CloudWatchLogsDecodedData, CloudWatchLogsLogEvent } from 'aws-lambda';
 import { SSM } from 'aws-sdk';
-import { Env, DefaultConfigRefreshTimeoutSeconds, DefaultParameterStoreBasePath } from '../env';
+import minimatch from 'minimatch';
 import { LogShipperConfig, LogShipperConfigAccount, LogShipperConfigLogGroup } from '../config/config';
 import { LogShipperConfigValidator } from '../config/config.elastic';
+import { DefaultConfigRefreshTimeoutSeconds, DefaultParameterStoreBasePath, Env } from '../env';
 import { ElasticSearch } from './elastic';
-import minimatch from 'minimatch';
-import { LogObject, LogProcessFunction } from './type';
-import { CloudWatchLogsDecodedData, CloudWatchLogsLogEvent } from 'aws-lambda';
 import { onLogExtractJson } from './log.funcs/extract.json';
 import { onLogTag } from './log.funcs/tag';
+import { LogObject, LogProcessFunction } from './type';
 
 export const RefreshTimeoutSeconds = Number(
   process.env[Env.ConfigRefreshTimeoutSeconds] ?? DefaultConfigRefreshTimeoutSeconds,

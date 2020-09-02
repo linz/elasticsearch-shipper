@@ -8,7 +8,7 @@ import { LogObject } from '../../shipper/type';
 import { Log } from '../../logger';
 import { EVENT_DATA, EVENT_DATA_ACCOUNT } from '../event.data';
 import { getCloudWatchEvent, LOG_DATA, toLogStream } from '../log.data';
-import { ElasticSearchIndex, ElasticSearch } from '../../shipper/elastic';
+import { ElasticSearch } from '../../shipper/elastic';
 import { S3 } from '../../shipper/app';
 
 Log.level = 'silent';
@@ -36,7 +36,7 @@ describe('HandlerIntegration', () => {
       index: 'monthly',
     } as LogShipperConfig;
     sandbox.stub(LogShipper, 'parameterStoreConfig').resolves(fakeConfig);
-    sandbox.stub(ElasticSearch.prototype, 'save').resolves([]);
+    sandbox.stub(ElasticSearch.prototype, 'save').resolves();
 
     const s3Return = { promise: () => Promise.resolve({ Body: toLogStream() }) } as any;
     s3Stub = sandbox.stub(S3, 'getObject') as any;
@@ -49,8 +49,7 @@ describe('HandlerIntegration', () => {
   });
 
   function getLog(index: number): LogObject {
-    const bodyIndex = index * 2 + 1;
-    return LogShipper.INSTANCE?.es.body[bodyIndex] as LogObject;
+    return LogShipper.INSTANCE?.es.logs[index] as LogObject;
   }
 
   function validateItems(): void {
@@ -138,32 +137,34 @@ describe('HandlerIntegration', () => {
   it('should use the index prefixes in order', async () => {
     await handler({ Records: [EVENT_DATA] });
     const shipper = LogShipper.INSTANCE!;
-    let indexInsert = (shipper.es.body[0].index as ElasticSearchIndex)._index;
     let firstLog = getLog(0);
+    let indexInsert = shipper.es.indexes.get(firstLog['@id']);
+
     expect(indexInsert).eq('@logGroup-111111111111-2019-10-25'); // Daily index with @logGroup prefix
     expect(firstLog['@tags']).deep.eq(['@config', '@account', '@logGroup', 'Lambda log']);
 
     // Remove the log group specifics
-    shipper.es.body = [];
+    shipper.es.logs = [];
     delete fakeConfig.accounts[0].logGroups[0].index;
     delete fakeConfig.accounts[0].logGroups[0].tags;
     delete fakeConfig.accounts[0].logGroups[0].prefix;
 
     await handler({ Records: [EVENT_DATA] });
-    indexInsert = (shipper.es.body[0].index as ElasticSearchIndex)._index;
     firstLog = getLog(0);
+    indexInsert = shipper.es.indexes.get(firstLog['@id']);
+
     expect(indexInsert).eq('@account-111111111111-2019-10-24'); // Weekly index with @account prefix
     expect(firstLog['@tags']).deep.eq(['@config', '@account', 'Lambda log']);
 
     // Remove the account specifics
-    shipper.es.body = [];
+    shipper.es.logs = [];
     delete fakeConfig.accounts[0].index;
     delete fakeConfig.accounts[0].tags;
     delete fakeConfig.accounts[0].prefix;
 
     await handler({ Records: [EVENT_DATA] });
-    indexInsert = (shipper.es.body[0].index as ElasticSearchIndex)._index;
     firstLog = getLog(0);
+    indexInsert = shipper.es.indexes.get(firstLog['@id']);
     expect(indexInsert).eq('@config-111111111111-2019-10'); // Monthly index with @config prefix
     expect(firstLog['@tags']).deep.eq(['@config', 'Lambda log']);
   });

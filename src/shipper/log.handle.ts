@@ -70,6 +70,4 @@ export async function processCloudWatchData(
 
     logShipper.es.queue(logObject, prefix, index);
   }
-
-  await logShipper.es.save(logger);
 }
