@@ -1,3 +1,18 @@
+# [0.6.0](https://github.com/linz/elasticsearch-shipper/compare/v0.5.0...v0.6.0) (2020-09-02)
+
+
+### Bug Fixes
+
+* correctly log the list of elastic indexes used ([#86](https://github.com/linz/elasticsearch-shipper/issues/86)) ([c0cfec5](https://github.com/linz/elasticsearch-shipper/commit/c0cfec59633570e1ab29f09f0d9be6fd5cd8d503))
+
+
+### Features
+
+* Add index failure reason to logging. ([#84](https://github.com/linz/elasticsearch-shipper/issues/84)) ([d6b2a03](https://github.com/linz/elasticsearch-shipper/commit/d6b2a03d2c3721d747877ba94ba1879178c673b8))
+* bulk load all logs in one go ([#87](https://github.com/linz/elasticsearch-shipper/issues/87)) ([99630db](https://github.com/linz/elasticsearch-shipper/commit/99630db2830d367ceb52a68974fb610b73745804))
+
+
+
 # [0.5.0](https://github.com/linz/elasticsearch-shipper/compare/v0.4.2...v0.5.0) (2020-08-31)
 
 
