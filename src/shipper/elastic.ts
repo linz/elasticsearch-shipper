@@ -1,14 +1,14 @@
+import { awsCredsifyAll, awsGetCredentials, createAWSConnection } from '@acuris/aws-es-connection';
 import { Client } from '@elastic/elasticsearch';
-import { AmazonConnection, AmazonTransport } from 'aws-elasticsearch-connector';
+import { OnDropDocument } from '@elastic/elasticsearch/lib/Helpers';
 import { LogShipperConfig, LogShipperConfigIndexDate } from '../config/config';
 import { ConnectionValidator } from '../config/config.elastic';
+import { Log } from '../logger';
 import { getIndexDate } from './elastic.index';
 import { LogObject } from './type';
-import { Log } from '../logger';
-import { OnDropDocument } from '@elastic/elasticsearch/lib/Helpers';
 
 export class ElasticSearch {
-  _client: Client | null;
+  _client: Promise<Client> | null;
 
   logs: LogObject[] = [];
   indexes: Map<string, string> = new Map();
@@ -18,34 +18,40 @@ export class ElasticSearch {
     this.config = config;
   }
 
-  get client(): Client {
-    if (this._client != null) return this._client;
+  get client(): Promise<Client> {
+    if (this._client == null) this._client = this.createClient();
+    return this._client;
+  }
+
+  private async createClient(): Promise<Client> {
     const connection = this.config.elastic;
 
     if (ConnectionValidator.Cloud.check(connection)) {
-      this._client = new Client({
+      return new Client({
         cloud: { id: connection.id },
         auth: { username: connection.username, password: connection.password },
       });
     }
 
-    if (ConnectionValidator.Aws.check(connection)) {
-      this._client = new Client({
-        node: connection.url,
-        Connection: AmazonConnection,
-        Transport: AmazonTransport,
-      });
-    }
-
     if (ConnectionValidator.Basic.check(connection)) {
-      this._client = new Client({
+      return new Client({
         node: connection.url,
         auth: { username: connection.username, password: connection.password },
       });
     }
 
-    if (this._client == null) throw new Error('Failed to create connection to elastic search');
-    return this._client;
+    if (ConnectionValidator.Aws.check(connection)) {
+      const awsCredentials = await awsGetCredentials();
+      const AWSConnection = createAWSConnection(awsCredentials);
+      return awsCredsifyAll(
+        new Client({
+          node: connection.url,
+          Connection: AWSConnection,
+        }),
+      );
+    }
+
+    throw new Error('Failed to create connection to elastic search');
   }
 
   /**
@@ -71,7 +77,8 @@ export class ElasticSearch {
     this.indexes = new Map();
 
     const indexesUsed = new Set<string>();
-    const stats = await this.client.helpers.bulk({
+    const client = await this.client;
+    const stats = await client.helpers.bulk({
       datasource: logs,
       onDocument: (lo: LogObject) => {
         const indexName = indexes.get(lo['@id']) as string;

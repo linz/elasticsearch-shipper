@@ -10,12 +10,14 @@
     "lls-config": "./lls-config"
   },
   "dependencies": {
+    "@acuris/aws-es-connection": "^1.1.1",
     "@aws-cdk/aws-ec2": "> 1.53.0",
     "@aws-cdk/aws-lambda": "> 1.53.0",
     "@aws-cdk/aws-lambda-event-sources": "> 1.53.0",
     "@aws-cdk/aws-s3": "> 1.53.0",
     "@aws-cdk/core": "> 1.53.0",
     "@basemaps/metrics": "^4.11.1",
+    "aws-sdk": "^2.547.0",
     "jsondiffpatch": "^0.4.1",
     "minimatch": "^3.0.4",
     "pino": "^6.4.1",
@@ -43,8 +45,6 @@
     "@types/sinon": "^9.0.0",
     "@zeit/ncc": "^0.22.3",
     "aws-cdk": "^1.53.0",
-    "aws-elasticsearch-connector": "^9.0.0",
-    "aws-sdk": "^2.547.0",
     "chai": "^4.2.0",
     "conventional-changelog-cli": "^2.0.34",
     "mocha": "^8.0.1",

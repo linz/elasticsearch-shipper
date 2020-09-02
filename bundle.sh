@@ -1,5 +1,5 @@
 #!/bin/bash
-npx ncc build build/src/shipper/index.js -e aws-sdk -e './log-fn.js'
+npx ncc build build/src/shipper/index.js -e aws-sdk -e './log-fn.js' -s
 
 GIT_SHA=$(git rev-parse HEAD)
 GIT_VERSION=$(git describe --tags --always --match 'v*')
