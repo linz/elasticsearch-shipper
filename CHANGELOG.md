@@ -1,3 +1,12 @@
+## [0.6.1](https://github.com/linz/elasticsearch-shipper/compare/v0.6.0...v0.6.1) (2020-09-02)
+
+
+### Bug Fixes
+
+* change aws elastic search connector to support bulk helper ([#88](https://github.com/linz/elasticsearch-shipper/issues/88)) ([18f96a1](https://github.com/linz/elasticsearch-shipper/commit/18f96a189ad665c833cb274287c81ba27c008145))
+
+
+
 # [0.6.0](https://github.com/linz/elasticsearch-shipper/compare/v0.5.0...v0.6.0) (2020-09-02)
 
 
