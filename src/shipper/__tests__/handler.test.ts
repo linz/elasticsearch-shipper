@@ -4,7 +4,6 @@ import sinon from 'sinon';
 import { Log } from '../../logger';
 import { processCloudWatchData, splitJsonString } from '../log.handle';
 import { LogShipper } from '../shipper.config';
-import { LogObject } from '../type';
 
 describe('splitJSONString', () => {
   it('works without a callback', () => {
@@ -52,13 +51,15 @@ describe('processData', () => {
   it('should save a log line', async () => {
     const saveStub = sandbox.stub(shipper.es, 'save');
     await processCloudWatchData(shipper, logLine, Log);
-    expect(saveStub.callCount).equal(1);
-    expect(shipper.es.body.length).eq(2);
-    const firstIndexLine = shipper.es.body[0] as any;
-    expect(firstIndexLine.index._index).equal('foo-index-123-' + new Date().toISOString().substring(0, 10));
-    const firstLogLine = shipper.es.body[1] as LogObject;
+    expect(saveStub.callCount).equal(0);
+    expect(shipper.es.logs.length).eq(1);
+
+    const [firstLogLine] = shipper.es.logs;
     expect(firstLogLine['key']).eq('value');
     expect(firstLogLine['toDrop']).eq('something');
+
+    const firstIndex = shipper.es.indexes.get(firstLogLine['@id']);
+    expect(firstIndex).equal('foo-index-123-' + new Date().toISOString().substring(0, 10));
   });
 
   it('should drop keys', async () => {
@@ -66,9 +67,10 @@ describe('processData', () => {
     shipper.config.accounts[0].logGroups[0].dropKeys = ['toDrop'];
 
     await processCloudWatchData(shipper, logLine, Log);
-    expect(saveStub.callCount).equal(1);
-    expect(shipper.es.body.length).eq(2);
-    const firstLogLine = shipper.es.body[1] as LogObject;
+    expect(saveStub.callCount).equal(0);
+    expect(shipper.es.logs.length).eq(1);
+
+    const [firstLogLine] = shipper.es.logs;
     expect(firstLogLine['key']).eq('value');
     expect(firstLogLine['toDrop']).eq(undefined);
   });
@@ -78,6 +80,6 @@ describe('processData', () => {
     shipper.config.accounts[0].logGroups[0].drop = true;
     await processCloudWatchData(shipper, logLine, Log);
     expect(saveStub.callCount).equal(0);
-    expect(shipper.es.body.length).eq(0);
+    expect(shipper.es.logs.length).eq(0);
   });
 });
