@@ -49,6 +49,7 @@ export const LogShipperConfigIndexDateValidator = z.union([
   z.literal('daily'),
   z.literal('weekly'),
   z.literal('monthly'),
+  z.literal('yearly'),
   z.number(),
 ]);
 

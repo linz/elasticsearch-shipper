@@ -23,6 +23,15 @@ describe('ElasticSearch', () => {
     expect(indexNameB).to.equal('prefix-1234-2019-10');
   });
 
+  it('should create yearly index names', () => {
+    const es = new ElasticSearch({ elastic: { url: '' } } as any);
+    const indexName = es.getIndexName(makeLog('2019-10-12T15'), 'prefix', 'yearly');
+    expect(indexName).to.equal('prefix-1234-2019');
+
+    const indexNameB = es.getIndexName(makeLog('2019-10-13T15'), 'prefix', 'yearly');
+    expect(indexNameB).to.equal('prefix-1234-2019');
+  });
+
   it('should create daily index names when DAILY_INDEX is true', () => {
     const es = new ElasticSearch({ elastic: { url: '' } } as any);
     const indexName = es.getIndexName(makeLog('2019-10-12T15'), 'prefix', 'daily');
