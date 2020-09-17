@@ -508,9 +508,9 @@
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
 "@types/aws-lambda@^8.10.34":
-  version "8.10.61"
-  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.61.tgz#7471e08843dbdcf09b2494ac5b34c4d1a391e6d0"
-  integrity sha512-+FeZ/52VG4rBSJ0cRE/aB6hMKQzjIgpiSQrGq0eR8ZrXWee7Z2zoGeJzTHVcOeZNawLb+5zvwZNIRGC7X+kQ7Q==
+  version "8.10.62"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.62.tgz#857de3f73ab503136f2eefe965b1b67e5f397b62"
+  integrity sha512-43XhJY5jvyH03U0cRsSqeHWhvmGZNoLzTPSAZ3JAqgG9p20uw+Sx9Auk5OAefJajd9ZcfjDJ/9lJ2BiBxfKJRw==
 
 "@types/chai@^4.2.4":
   version "4.2.12"
@@ -548,9 +548,9 @@
   integrity sha512-vyxR57nv8NfcU0GZu8EUXZLTbCMupIUwy95LJ6lllN+JRPG25CwMHoB1q5xKh8YKhQnHYRAn4yW2yuHbf/5xgg==
 
 "@types/node@*", "@types/node@^14.0.26":
-  version "14.6.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.6.2.tgz#264b44c5a28dfa80198fc2f7b6d3c8a054b9491f"
-  integrity sha512-onlIwbaeqvZyniGPfdw/TEhKIh79pz66L1q06WUQqJLnAb6wbjvOtepLYTGHTqzdXgBYIE3ZdmqHDGsRsbBz7A==
+  version "14.6.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.6.4.tgz#a145cc0bb14ef9c4777361b7bbafa5cf8e3acb5a"
+  integrity sha512-Wk7nG1JSaMfMpoMJDKUsWYugliB2Vy55pdjLpmLixeyMi7HizW2I/9QoxsPCkXl3dO+ZOVqPumKaDUv5zJu2uQ==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -3127,9 +3127,9 @@ pino-std-serializers@^2.4.2:
   integrity sha512-WaL504dO8eGs+vrK+j4BuQQq6GLKeCCcHaMB2ItygzVURcL1CycwNEUHTD/lHFHs/NL5qAz2UKrjYWXKSf4aMQ==
 
 pino@^6.4.1:
-  version "6.5.1"
-  resolved "https://registry.yarnpkg.com/pino/-/pino-6.5.1.tgz#a245adf960a1f3e88e61a339045d509bccbfb7cc"
-  integrity sha512-76+RUhQkqjUD4AtQcSfEzh6vlsjXmoWZK5gg+2d70aCLXZTbo4/5js4I9rN1Xk6z1h2/7pnOFX10G4c2T4qNiA==
+  version "6.6.1"
+  resolved "https://registry.yarnpkg.com/pino/-/pino-6.6.1.tgz#3fe8ec300dadb2c30017df39106b056b87dffca8"
+  integrity sha512-DOgm7rn6ctBkBYemHXSLj7+j3o3U1q1FWBXbHcprur8mA93QcJSycEkEqhqKiFB9Mx/3Qld2FGr6+9yfQza0kA==
   dependencies:
     fast-redact "^2.0.0"
     fast-safe-stringify "^2.0.7"
@@ -4243,6 +4243,6 @@ zip-stream@^3.0.1:
     readable-stream "^3.6.0"
 
 zod@^1.10.0:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-1.11.1.tgz#b093202a3c4e4dae2463006f81933b22ccc2a144"
-  integrity sha512-qJE3F34NzKahp4kFCEeBK4qiLaynwylSg5jOtX6dlQlcBiDEMt78BAtrjSx/qk3Q65SzNe/40LgZE/h1ACcyIg==
+  version "1.11.8"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-1.11.8.tgz#5e6b2eb3114c73d5043889fa9dfbab0b60a93ff6"
+  integrity sha512-iusmIB00ll0Fxzyhrp8EJPaJDTSyQMKMCwk2hH2XrtgY/QcygPJTX13fSof/r7b4hL5cBeN5aeVl6WN1xpr90g==
