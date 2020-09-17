@@ -4,9 +4,11 @@ import { LogShipperConfigIndexDate } from '../config/config';
  * Number of characters needed to extract from a ISO string
  * daily: `2019-02-02` - 10 characters
  * monthly: `2019-02` - 7 characters
+ * yearly: `2019` - 4 characters
  */
 const ISO_DAY_INDEX = 10;
 const ISO_MONTH_INDEX = 7;
+const ISO_YEAR_INDEX = 4;
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 /**
@@ -33,9 +35,8 @@ export function getIndexDate(dateIso: string, indexType: LogShipperConfigIndexDa
     return outputDate.toISOString().substr(0, ISO_DAY_INDEX);
   }
 
-  if (indexType == 'monthly') {
-    return dateIso.substr(0, ISO_MONTH_INDEX);
-  }
+  if (indexType == 'monthly') return dateIso.substr(0, ISO_MONTH_INDEX);
+  if (indexType == 'yearly') return dateIso.substr(0, ISO_YEAR_INDEX);
 
   throw new Error(`Invalid elastic index type: ${indexType}`);
 }
