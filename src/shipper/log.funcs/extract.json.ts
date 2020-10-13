@@ -26,8 +26,8 @@ export function onLogExtractJson(lo: LogObject): boolean | void {
   const extracted = extractJson(lo.message);
   if (extracted == null) return;
 
+  delete lo.message; // JSON logs don't need the raw JSON in the output
   Object.assign(lo, extracted);
 
-  delete lo.message; // JSON logs don't need the raw JSON in the output
   return;
 }
