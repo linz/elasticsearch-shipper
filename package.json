@@ -1,6 +1,6 @@
 {
   "name": "@linzjs/cdk-elastic-shipper",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Ship log lines to elasticsearch",
   "repository": "github:linz/elasticsearch-shipper",
   "license": "MIT",

@@ -1,3 +1,17 @@
+## [0.6.2](https://github.com/linz/elasticsearch-shipper/compare/v0.6.1...v0.6.2) (2020-10-13)
+
+
+### Bug Fixes
+
+* Handle the case where the logObject has a key called 'message'. ([#130](https://github.com/linz/elasticsearch-shipper/issues/130)) ([cb8ddfa](https://github.com/linz/elasticsearch-shipper/commit/cb8ddfa441d5fb2503888383c811f30210b71568))
+
+
+### Features
+
+* support indexes that rotate "yearly" ([#103](https://github.com/linz/elasticsearch-shipper/issues/103)) ([fe49555](https://github.com/linz/elasticsearch-shipper/commit/fe49555128a639c0b8be57ab73366143e9a82a34))
+
+
+
 ## [0.6.1](https://github.com/linz/elasticsearch-shipper/compare/v0.6.0...v0.6.1) (2020-09-02)
 
 
