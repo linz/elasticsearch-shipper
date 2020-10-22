@@ -1,4 +1,4 @@
-import { awsCredsifyAll, awsGetCredentials, createAWSConnection } from '@acuris/aws-es-connection';
+import { awsGetCredentials, createAWSConnection } from '@acuris/aws-es-connection';
 import { Client } from '@elastic/elasticsearch';
 import { OnDropDocument } from '@elastic/elasticsearch/lib/Helpers';
 import { LogShipperConfig, LogShipperConfigIndexDate } from '../config/config';
@@ -43,12 +43,10 @@ export class ElasticSearch {
     if (ConnectionValidator.Aws.check(connection)) {
       const awsCredentials = await awsGetCredentials();
       const AWSConnection = createAWSConnection(awsCredentials);
-      return awsCredsifyAll(
-        new Client({
-          node: connection.url,
-          Connection: AWSConnection,
-        }),
-      );
+      return new Client({
+        ...AWSConnection,
+        node: connection.url,
+      });
     }
 
     throw new Error('Failed to create connection to elastic search');

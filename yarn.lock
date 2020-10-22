@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@acuris/aws-es-connection@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@acuris/aws-es-connection/-/aws-es-connection-1.1.1.tgz#5ff52f776e465b8f1f187d2743e38ff24f81ab8c"
-  integrity sha512-eAvr7NTi/pgD5g/T0sj71O/Ay2Wn8lOPIorYCD/WruhGuBT4PNBbQ7qzmcIWccnQ+u+DzTQNg/WEPIDd5JVRAw==
+"@acuris/aws-es-connection@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@acuris/aws-es-connection/-/aws-es-connection-2.0.1.tgz#e7578e25838e764f3fd06606eeed6fd36b3cfc50"
+  integrity sha512-wY+jp2kUNVClICpTeAiNU18Nu2zrU6MYzook/V4IdCGtuQCwEPP63ef6LEIE6DAYY9zKY+j0KPQthlJbhHtG1w==
   dependencies:
     aws4 "^1.8.0"
 
