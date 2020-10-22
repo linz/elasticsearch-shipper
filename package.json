@@ -10,7 +10,7 @@
     "lls-config": "./lls-config"
   },
   "dependencies": {
-    "@acuris/aws-es-connection": "^1.1.1",
+    "@acuris/aws-es-connection": "^2.0.1",
     "@aws-cdk/aws-ec2": "> 1.53.0",
     "@aws-cdk/aws-lambda": "> 1.53.0",
     "@aws-cdk/aws-lambda-event-sources": "> 1.53.0",
