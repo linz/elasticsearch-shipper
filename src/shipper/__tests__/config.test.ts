@@ -5,13 +5,17 @@ import {
   LogShipperConnectionBasic,
   LogShipperConnectionCloud,
 } from '../../config/config.elastic';
+import * as aec from '@acuris/aws-es-connection';
 import { ElasticSearch } from '../elastic';
+import sinon from 'sinon';
 
 function clone<T>(a: T): T {
   return JSON.parse(JSON.stringify(a)) as T;
 }
 
 describe('ElasticSearchConfigValidator', () => {
+  const sandbox = sinon.createSandbox();
+  afterEach(() => sandbox.restore());
   it('should validate cloud connections', () => {
     const cfg: Partial<LogShipperConnectionCloud> = { id: 'foo', username: 'bar', password: 'baz' };
     expect(ConnectionValidator.Cloud.check(cfg)).equals(true);
@@ -34,10 +38,12 @@ describe('ElasticSearchConfigValidator', () => {
     expect(ConnectionValidator.Aws.check(null)).equals(false);
   });
 
-  it('should create a aws connection', () => {
+  it('should create a aws connection', async () => {
     const es = new ElasticSearch({ elastic: { url: 'https://foo ' } } as any);
-    const client = es.client; // Create a elastic client to the connection
-    expect(client).to.not.equal(null);
+    sandbox.stub(aec, 'awsGetCredentials');
+    return es.client.then((result) => {
+      expect(result).to.not.equal(null);
+    }); // Create a elastic client to the connection
   });
 
   it('should validate basic connections', () => {
