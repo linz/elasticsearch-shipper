@@ -43,7 +43,7 @@ export class ElasticSearch {
     if (ConnectionValidator.Aws.check(connection)) {
       const awsCredentials = await awsGetCredentials();
       const AWSConnection = createAWSConnection(awsCredentials);
-      new Client({
+      return new Client({
         ...AWSConnection,
         node: connection.url,
       });
