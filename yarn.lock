@@ -557,9 +557,9 @@
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
 "@types/aws-lambda@^8.10.34":
-  version "8.10.66"
-  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.66.tgz#195ae8ff7226a4f580a0cab570d683f5b9a215d0"
-  integrity sha512-gwWIKwN3IVxRQTIZUNtjKo7w2LoB5RMzbP1PAFHsBq64dOKIhTv8y5RYRIjniLTewrBSBrV2EXxgQ1zZeGU4LA==
+  version "8.10.67"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.67.tgz#e74d1dc31ddfa5ca6cd3ca68b5bef719d0628d1c"
+  integrity sha512-rQPIkP7Xs6oKR6VYdoPbKghzndzlvTJHbAGvd5PE6LXUo4PNPVP2y1dLTGgEXHapXZraTM9oBLrJFgozJom9BA==
 
 "@types/chai@^4.2.4":
   version "4.2.14"
