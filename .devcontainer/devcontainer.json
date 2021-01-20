@@ -26,5 +26,6 @@
 
 	"mounts": [
 		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws,target=/root/.aws,type=bind,consistency=cached",
+		"source=elastic-shipper-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
 	]
 }
