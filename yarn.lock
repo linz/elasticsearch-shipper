@@ -3,9 +3,9 @@
 
 
 "@acuris/aws-es-connection@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@acuris/aws-es-connection/-/aws-es-connection-2.0.1.tgz#e7578e25838e764f3fd06606eeed6fd36b3cfc50"
-  integrity sha512-wY+jp2kUNVClICpTeAiNU18Nu2zrU6MYzook/V4IdCGtuQCwEPP63ef6LEIE6DAYY9zKY+j0KPQthlJbhHtG1w==
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@acuris/aws-es-connection/-/aws-es-connection-2.1.0.tgz#bf851a06b7a555a309fea26cbd31fdd1a75dd3ef"
+  integrity sha512-1GcIo9GAQ7r3Dq+LE5W+mPOIW5J2dKbuflC+7BYx33RZoCNxeQFWiaSoYqROhOmb8/X00ZYgjNIY9vUkf6pvNw==
   dependencies:
     aws4 "^1.8.0"
 
