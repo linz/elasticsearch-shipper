@@ -39,7 +39,7 @@ describe('bundled lambda', () => {
   });
 
   before(async () => {
-    await new Promise((resolve) => server.listen(Port, resolve));
+    await new Promise<void>((resolve) => server.listen(Port, resolve));
     console.log('StartedDebug on http://localhost:' + Port);
   });
 
