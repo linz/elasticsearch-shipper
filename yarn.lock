@@ -575,9 +575,9 @@
   integrity sha512-l0Lag6qq06AlKllprAJ3pbgVUbXCjRGRb7VpHow8IMn2BMHTPR0t5OD97/w8CR1+wA5XZuWQoXLjYvdlk2kQrQ==
 
 "@types/chai@^4.2.4":
-  version "4.2.14"
-  resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.2.14.tgz#44d2dd0b5de6185089375d976b4ec5caf6861193"
-  integrity sha512-G+ITQPXkwTrslfG5L/BksmbLUA0M1iybEsmCWPqzSxsRRhJZimBKJkoMi8fr/CPygPTj4zO5pJH7I2/cm9M7SQ==
+  version "4.2.15"
+  resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.2.15.tgz#b7a6d263c2cecf44b6de9a051cf496249b154553"
+  integrity sha512-rYff6FI+ZTKAPkJUoyz7Udq3GaoDZnxYDEvdEdFZASiA7PoErltHezDishqQiSDWrGxvxmplH304jyzQmjp0AQ==
 
 "@types/color-name@^1.1.1":
   version "1.1.1"
@@ -3141,9 +3141,9 @@ pino-std-serializers@^3.1.0:
   integrity sha512-Ud4+WzgEr/swOlfQdkxqKP2hlwuQlIqQ5YwYpo9MczNg2mpsKKyKgwQXW5KnP5tgH3/Cy9QRhAhLM8k1K+gfnA==
 
 pino@^6.4.1:
-  version "6.11.0"
-  resolved "https://registry.yarnpkg.com/pino/-/pino-6.11.0.tgz#c474712d462f1de524cf885257d21271d1ab7c16"
-  integrity sha512-VPqEE2sU1z6wqkTtr7DdTktayTNE/JgeuWjfXh9g/TI6X7venzv4gaoU24/jSywf6bBeDfZRHWEeO/6f8bNppA==
+  version "6.11.1"
+  resolved "https://registry.yarnpkg.com/pino/-/pino-6.11.1.tgz#5af2d5395cfe625ead9fe64a3b51a4802cd2598e"
+  integrity sha512-PoDR/4jCyaP1k2zhuQ4N0NuhaMtei+C9mUHBRRJQujexl/bq3JkeL2OC23ada6Np3zeUMHbO4TGzY2D/rwZX3w==
   dependencies:
     fast-redact "^3.0.0"
     fast-safe-stringify "^2.0.7"
