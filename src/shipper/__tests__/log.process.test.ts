@@ -12,7 +12,7 @@ describe('LogProcess', () => {
     shipper = new LogShipper({} as any);
     shipper.onLog.push((lo: LogObject): boolean => {
       runCount++;
-      if (lo.drop == true) return true;
+      if (lo.drop === true || lo.drop === 'true') return true;
       return false;
     });
   });

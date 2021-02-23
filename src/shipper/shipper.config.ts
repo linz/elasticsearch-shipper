@@ -60,7 +60,7 @@ export class LogShipper {
   }
 
   getAccount(accountId: string): LogShipperConfigAccount | undefined {
-    return this.config.accounts.find((f) => f.id == accountId);
+    return this.config.accounts.find((f) => f.id === accountId);
   }
 
   getLogConfig(account: LogShipperConfigAccount, logGroup: string): LogShipperConfigLogGroup | undefined {
@@ -74,7 +74,7 @@ export class LogShipper {
    * @param s3Key
    */
   getLogObject(obj: CloudWatchLogsDecodedData, log: CloudWatchLogsLogEvent, s3Key?: string): null | LogObject {
-    if (log == undefined) return null;
+    if (log === undefined) return null;
 
     const logObj: LogObject = {
       '@id': log.id,
@@ -90,7 +90,7 @@ export class LogShipper {
     if (logObj['@timestamp'] == null) logObj['@timestamp'] = new Date().toISOString();
 
     for (const logFn of this.onLog) {
-      if (logFn(logObj) == true) return null;
+      if (logFn(logObj) === true) return null;
     }
 
     return logObj;

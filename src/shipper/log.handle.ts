@@ -29,7 +29,7 @@ export async function processCloudWatchData(
   logger: typeof Log,
   source?: string,
 ): Promise<void> {
-  if (c.logEvents.length == 0) return;
+  if (c.logEvents.length === 0) return;
   const accountId = c.owner;
   const logInfo: Record<string, unknown> = {
     account: accountId,

@@ -18,25 +18,25 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
  * @param indexType date indexing strategy
  */
 export function getIndexDate(dateIso: string, indexType: LogShipperConfigIndexDate): string {
-  if (indexType == 'daily') {
+  if (indexType === 'daily') {
     return dateIso.substr(0, ISO_DAY_INDEX);
   }
 
   // Weekly is just a shortcut to rounding to the closes 7 days
-  if (indexType == 'weekly') {
+  if (indexType === 'weekly') {
     indexType = 7;
   }
 
   // Round down to the nearest day increment
-  if (typeof indexType == 'number') {
+  if (typeof indexType === 'number') {
     const date = new Date(dateIso);
     const offset = indexType * ONE_DAY_MS;
     const outputDate = new Date(Math.floor(date.getTime() / offset) * offset);
     return outputDate.toISOString().substr(0, ISO_DAY_INDEX);
   }
 
-  if (indexType == 'monthly') return dateIso.substr(0, ISO_MONTH_INDEX);
-  if (indexType == 'yearly') return dateIso.substr(0, ISO_YEAR_INDEX);
+  if (indexType === 'monthly') return dateIso.substr(0, ISO_MONTH_INDEX);
+  if (indexType === 'yearly') return dateIso.substr(0, ISO_YEAR_INDEX);
 
   throw new Error(`Invalid elastic index type: ${indexType}`);
 }
