@@ -36,7 +36,7 @@ async function fetchCurrentConfig(configName: string): Promise<LogShipperConfig 
     .getParameter({ Name: configName })
     .promise()
     .catch((e) => {
-      if (e.code == 'ParameterNotFound') return null;
+      if (e.code === 'ParameterNotFound') return null;
       throw e;
     });
   const value = await fetchPromise;
@@ -84,7 +84,7 @@ async function main(): Promise<void> {
     const jsonData = JSON.parse(fileData.toString());
 
     const validated = LogShipperConfigValidator.parse(jsonData);
-    if (validated.accounts.length == 0) throw new Error('No config data found');
+    if (validated.accounts.length === 0) throw new Error('No config data found');
     logger.info({ configName, accounts: validated.accounts.map((c) => c.name + '-' + c.id), fileName }, 'Validated');
 
     const diff = JDP.diff(currentData, validated);

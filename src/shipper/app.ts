@@ -46,7 +46,7 @@ async function processS3Event(event: S3Event, logShipper: LogShipper, logger: ty
     logger.info({ source, lines: jsonLines.length }, 'ProcessingLines');
 
     for (const line of jsonLines) {
-      if (line == null || line == '') continue;
+      if (line == null || line === '') continue;
 
       const obj: CloudWatchLogsDecodedData = JSON.parse(line);
       await processCloudWatchData(logShipper, obj, logger, params.Key);

@@ -6,7 +6,7 @@ import { LambdaLogShipperFunction, SourceCode, SourceCodeExtension } from '../in
 
 describe('Infrastructure', () => {
   const exists = existsSync(SourceCode);
-  if (process.env.CI == null && exists == false) {
+  if (process.env.CI == null && exists === false) {
     console.warn('No bundled code found ' + SourceCode);
     return;
   }
