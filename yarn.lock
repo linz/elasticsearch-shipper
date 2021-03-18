@@ -4140,6 +4140,6 @@ zip-stream@^4.0.4:
     readable-stream "^3.6.0"
 
 zod@^1.10.0:
-  version "1.11.11"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-1.11.11.tgz#1cc937e0b4ce08693de01b5bcd7c4d1a37d83993"
-  integrity sha512-q1YeBpu+c7eUX5fDFMyfP97sD74TUQ+UN8va/nvbxnArr5euYsNO6fjiY0SdDkHKNZ+xBR2ZQToaeLgJ6fsB2A==
+  version "1.11.12"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-1.11.12.tgz#ab55ebd0b62e45ce3e95f3ff00ce30d1c896900c"
+  integrity sha512-N8TYqvoonSdE4FopsBU3wqLDyb8GsdDmnm0SAj1iv1S3oWoaLaVN6WuMDfrIyr5wBdZDIclKm8y8c63qDMI2ZA==
