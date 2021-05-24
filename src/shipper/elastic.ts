@@ -26,26 +26,29 @@ export class ElasticSearch {
   private async createClient(): Promise<Client> {
     const connection = this.config.elastic;
 
-    if (ConnectionValidator.Cloud.check(connection)) {
+    const cloud = ConnectionValidator.Cloud.safeParse(connection);
+    if (cloud.success) {
       return new Client({
-        cloud: { id: connection.id },
-        auth: { username: connection.username, password: connection.password },
+        cloud: { id: cloud.data.id },
+        auth: { username: cloud.data.username, password: cloud.data.password },
       });
     }
 
-    if (ConnectionValidator.Basic.check(connection)) {
+    const basic = ConnectionValidator.Basic.safeParse(connection);
+    if (basic.success) {
       return new Client({
-        node: connection.url,
-        auth: { username: connection.username, password: connection.password },
+        node: basic.data.url,
+        auth: { username: basic.data.username, password: basic.data.password },
       });
     }
 
-    if (ConnectionValidator.Aws.check(connection)) {
+    const aws = ConnectionValidator.Aws.safeParse(connection);
+    if (aws.success) {
       const awsCredentials = await awsGetCredentials();
       const AWSConnection = createAWSConnection(awsCredentials);
       return new Client({
         ...AWSConnection,
-        node: connection.url,
+        node: aws.data.url,
       });
     }
 
