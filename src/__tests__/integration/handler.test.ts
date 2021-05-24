@@ -130,41 +130,51 @@ describe('HandlerIntegration', () => {
       await handler({ Records: [EVENT_DATA] });
       expect(true).eq(false);
     } catch (e) {
-      expect(e.message).contains('Issue #0: invalid_type at accounts');
+      expect(e.message).contains('invalid_type');
     }
   });
 
   it('should use the index prefixes in order', async () => {
     await handler({ Records: [EVENT_DATA] });
     const shipper = LogShipper.INSTANCE!;
-    let firstLog = getLog(0);
-    let indexInsert = shipper.es.indexes.get(firstLog['@id']);
+    const firstLog = getLog(0);
+    const indexInsert = shipper.es.indexes.get(firstLog['@id']);
 
     expect(indexInsert).eq('@logGroup-111111111111-2019-10-25'); // Daily index with @logGroup prefix
     expect(firstLog['@tags']).deep.eq(['@config', '@account', '@logGroup', 'Lambda log']);
+  });
 
+  it('should use the account config if no log stream is found', async () => {
     // Remove the log group specifics
-    shipper.es.logs = [];
     delete fakeConfig.accounts[0].logGroups[0].index;
     delete fakeConfig.accounts[0].logGroups[0].tags;
     delete fakeConfig.accounts[0].logGroups[0].prefix;
 
     await handler({ Records: [EVENT_DATA] });
-    firstLog = getLog(0);
-    indexInsert = shipper.es.indexes.get(firstLog['@id']);
+    const shipper = LogShipper.INSTANCE!;
+
+    const firstLog = getLog(0);
+    const indexInsert = shipper.es.indexes.get(firstLog['@id']);
 
     expect(indexInsert).eq('@account-111111111111-2019-10-24'); // Weekly index with @account prefix
     expect(firstLog['@tags']).deep.eq(['@config', '@account', 'Lambda log']);
+  });
 
+  it('should use the account config if no log stream is found', async () => {
+    // Remove the log group specifics
+    delete fakeConfig.accounts[0].logGroups[0].index;
+    delete fakeConfig.accounts[0].logGroups[0].tags;
+    delete fakeConfig.accounts[0].logGroups[0].prefix;
     // Remove the account specifics
-    shipper.es.logs = [];
     delete fakeConfig.accounts[0].index;
     delete fakeConfig.accounts[0].tags;
     delete fakeConfig.accounts[0].prefix;
 
     await handler({ Records: [EVENT_DATA] });
-    firstLog = getLog(0);
-    indexInsert = shipper.es.indexes.get(firstLog['@id']);
+    const shipper = LogShipper.INSTANCE!;
+
+    const firstLog = getLog(0);
+    const indexInsert = shipper.es.indexes.get(firstLog['@id']);
     expect(indexInsert).eq('@config-111111111111-2019-10'); // Monthly index with @config prefix
     expect(firstLog['@tags']).deep.eq(['@config', 'Lambda log']);
   });
