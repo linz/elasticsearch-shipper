@@ -22,9 +22,9 @@ export const LogShipperConnectionBasic = z.object({
 });
 
 export const LogShipperElasticValidator = z.union([
+  LogShipperConnectionBasic,
   LogShipperConnectionCloudValidator,
   LogShipperConnectionAwsValidator,
-  LogShipperConnectionBasic,
 ]);
 
 export type LogShipperConnectionCloud = z.infer<typeof LogShipperConnectionCloudValidator>;
