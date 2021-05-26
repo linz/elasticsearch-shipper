@@ -6,7 +6,7 @@ method = "squash"
 automerge_label = "automerge 🚀"
 
 [merge.automerge_dependencies]
-versions = ["patch"]
+versions = ["minor", "patch"]
 usernames = ["dependabot"]
 
 [approve]
