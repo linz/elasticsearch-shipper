@@ -1,9 +1,16 @@
+import { Connection } from '@elastic/elasticsearch';
 import { CloudWatchLogsDecodedData, CloudWatchLogsLogEvent } from 'aws-lambda';
 import { SSM } from 'aws-sdk';
 import minimatch from 'minimatch';
-import { LogShipperConfig, LogShipperConfigAccount, LogShipperConfigLogGroup } from '../config/config';
-import { LogShipperConfigValidator } from '../config/config.elastic';
+import {
+  LogShipperConfig,
+  LogShipperConfigAccount,
+  LogShipperConfigLogGroup,
+  LogShipperConnection,
+} from '../config/config';
+import { ConnectionValidator, LogShipperConfigValidator, LogShipperElasticValidator } from '../config/config.elastic';
 import { DefaultConfigRefreshTimeoutSeconds, DefaultParameterStoreBasePath, Env } from '../env';
+import { Log } from '../logger';
 import { ElasticSearch } from './elastic';
 import { onLogExtractJson } from './log.funcs/extract.json';
 import { onLogTag } from './log.funcs/tag';
@@ -54,7 +61,7 @@ export class LogShipper {
   constructor(config: LogShipperConfig) {
     this.config = config;
     this.initializedAt = Date.now();
-    this.es = new ElasticSearch(config);
+    this.es = new ElasticSearch();
 
     for (const fn of LogShipper.DefaultLogProcessFunctions) this.onLog.push(fn);
   }
@@ -65,6 +72,33 @@ export class LogShipper {
 
   getLogConfig(account: LogShipperConfigAccount, logGroup: string): LogShipperConfigLogGroup | undefined {
     return account.logGroups.find((f) => minimatch(logGroup, f.filter));
+  }
+
+  _connection: Promise<LogShipperConnection>;
+  getConnection(logger: typeof Log): Promise<LogShipperConnection> {
+    if (this._connection == null) {
+      // Load a connection string from the parameter store
+      const ssmCfg = ConnectionValidator.Ssm.safeParse(this.config.elastic);
+      if (ssmCfg.success) {
+        const configName = ssmCfg.data.name;
+        this._connection = LogShipper.parameterStoreConfig(configName).then(async (res) => {
+          try {
+            return LogShipperElasticValidator.parse(res);
+          } catch (e) {
+            logger.error({ configName }, 'Failed to parse SSM parameter');
+            throw e;
+          }
+        });
+      } else {
+        this._connection = Promise.resolve(this.config.elastic);
+      }
+    }
+    return this._connection;
+  }
+
+  async save(logger: typeof Log): Promise<void> {
+    const connection = await this.getConnection(logger);
+    this.es.save(connection, logger);
   }
 
   /**

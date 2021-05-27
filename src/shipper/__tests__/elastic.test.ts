@@ -15,7 +15,7 @@ describe('ElasticSearch', () => {
     };
   }
   it('should create monthly index names', () => {
-    const es = new ElasticSearch({ elastic: { url: '' } } as any);
+    const es = new ElasticSearch();
     const indexName = es.getIndexName(makeLog('2019-10-12T15'), 'prefix', 'monthly');
     expect(indexName).to.equal('prefix-1234-2019-10');
 
@@ -24,7 +24,7 @@ describe('ElasticSearch', () => {
   });
 
   it('should create yearly index names', () => {
-    const es = new ElasticSearch({ elastic: { url: '' } } as any);
+    const es = new ElasticSearch();
     const indexName = es.getIndexName(makeLog('2019-10-12T15'), 'prefix', 'yearly');
     expect(indexName).to.equal('prefix-1234-2019');
 
@@ -33,7 +33,7 @@ describe('ElasticSearch', () => {
   });
 
   it('should create daily index names when DAILY_INDEX is true', () => {
-    const es = new ElasticSearch({ elastic: { url: '' } } as any);
+    const es = new ElasticSearch();
     const indexName = es.getIndexName(makeLog('2019-10-12T15'), 'prefix', 'daily');
     expect(indexName).to.equal('prefix-1234-2019-10-12');
 
@@ -42,7 +42,7 @@ describe('ElasticSearch', () => {
   });
 
   it('should create weekly index names', () => {
-    const es = new ElasticSearch({ elastic: { url: '' } } as any);
+    const es = new ElasticSearch();
 
     expect(es.getIndexName(makeLog('2019-10-05T15:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-1234-2019-10-03');
     expect(es.getIndexName(makeLog('2019-10-06T15:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-1234-2019-10-03');
@@ -53,7 +53,7 @@ describe('ElasticSearch', () => {
   });
 
   it('should create numeric index names', () => {
-    const es = new ElasticSearch({ elastic: { url: '' } } as any);
+    const es = new ElasticSearch();
 
     expect(es.getIndexName(makeLog('2019-10-05T15:00:00.000Z'), 'prefix', 2)).to.equal('prefix-1234-2019-10-05');
     expect(es.getIndexName(makeLog('2019-10-06T15:00:00.000Z'), 'prefix', 2)).to.equal('prefix-1234-2019-10-05');

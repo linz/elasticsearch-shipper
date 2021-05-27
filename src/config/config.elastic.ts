@@ -21,19 +21,24 @@ export const LogShipperConnectionBasic = z.object({
   password: z.string(),
 });
 
+export const LogShipperSsmReference = z.object({
+  name: z.string().refine((f) => f.startsWith('/')), // SSM config parameter name
+});
 export const LogShipperElasticValidator = z.union([
+  LogShipperSsmReference,
   LogShipperConnectionBasic,
   LogShipperConnectionCloudValidator,
   LogShipperConnectionAwsValidator,
 ]);
 
+export type LogShipperConnectionSsm = z.infer<typeof LogShipperSsmReference>;
 export type LogShipperConnectionCloud = z.infer<typeof LogShipperConnectionCloudValidator>;
 export type LogShipperConnectionAws = z.infer<typeof LogShipperConnectionAwsValidator>;
 export type LogShipperConnectionBasic = z.infer<typeof LogShipperConnectionBasic>;
-
 export type LogShipperElasticConfig = z.infer<typeof LogShipperElasticValidator>;
 
 export const ConnectionValidator = {
+  Ssm: LogShipperSsmReference,
   Cloud: LogShipperConnectionCloudValidator,
   Aws: LogShipperConnectionAwsValidator,
   Basic: LogShipperConnectionBasic,

@@ -4,6 +4,7 @@ import {
   LogShipperConnectionAws,
   LogShipperConnectionBasic,
   LogShipperConnectionCloud,
+  LogShipperConnectionSsm,
 } from '../../config/config.elastic';
 import * as aec from '@acuris/aws-es-connection';
 import { ElasticSearch } from '../elastic';
@@ -16,6 +17,7 @@ function clone<T>(a: T): T {
 describe('ElasticSearchConfigValidator', () => {
   const sandbox = sinon.createSandbox();
   afterEach(() => sandbox.restore());
+
   it('should validate cloud connections', () => {
     const cfg: Partial<LogShipperConnectionCloud> = { id: 'foo', username: 'bar', password: 'baz' };
     expect(ConnectionValidator.Cloud.safeParse(cfg).success).equals(true);
@@ -38,10 +40,23 @@ describe('ElasticSearchConfigValidator', () => {
     expect(ConnectionValidator.Aws.safeParse(null).success).equals(false);
   });
 
+  it('should validate ssm connections', () => {
+    const cfg: Partial<LogShipperConnectionSsm> = { name: '/foo' };
+    expect(ConnectionValidator.Aws.safeParse(cfg).success).equals(false);
+    expect(ConnectionValidator.Ssm.safeParse(cfg).success).equals(true);
+    expect(ConnectionValidator.Basic.safeParse(cfg).success).equals(false);
+    expect(ConnectionValidator.Cloud.safeParse(cfg).success).equals(false);
+  });
+
+  it('should require ssm to start with /', () => {
+    const cfg: Partial<LogShipperConnectionSsm> = { name: 'foo' };
+    expect(ConnectionValidator.Ssm.safeParse(cfg).success).equals(false);
+  });
+
   it('should create a aws connection', async () => {
-    const es = new ElasticSearch({ elastic: { url: 'https://foo ' } } as any);
+    const es = new ElasticSearch();
     sandbox.stub(aec, 'awsGetCredentials');
-    return es.client.then((result) => {
+    return es.save({ url: 'https://foo ' }).then((result) => {
       expect(result).to.not.equal(null);
     }); // Create a elastic client to the connection
   });

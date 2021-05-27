@@ -1,7 +1,7 @@
 import { awsGetCredentials, createAWSConnection } from '@acuris/aws-es-connection';
 import { Client } from '@elastic/elasticsearch';
 import { OnDropDocument } from '@elastic/elasticsearch/lib/Helpers';
-import { LogShipperConfig, LogShipperConfigIndexDate } from '../config/config';
+import { LogShipperConfigIndexDate, LogShipperConnection } from '../config/config';
 import { ConnectionValidator } from '../config/config.elastic';
 import { Log } from '../logger';
 import { getIndexDate } from './elastic.index';
@@ -12,19 +12,10 @@ export class ElasticSearch {
 
   logs: LogObject[] = [];
   indexes: Map<string, string> = new Map();
-  config: LogShipperConfig;
 
-  constructor(config: LogShipperConfig) {
-    this.config = config;
-  }
-
-  get client(): Promise<Client> {
-    if (this._client == null) this._client = this.createClient();
-    return this._client;
-  }
-
-  private async createClient(): Promise<Client> {
-    const connection = this.config.elastic;
+  private async createClient(connection: LogShipperConnection): Promise<Client> {
+    const ssmCfg = ConnectionValidator.Ssm.safeParse(connection);
+    if (ssmCfg.success) throw new Error('Unable to use SSM references for connections');
 
     const cloud = ConnectionValidator.Cloud.safeParse(connection);
     if (cloud.success) {
@@ -70,7 +61,8 @@ export class ElasticSearch {
    *
    * @returns list of log objects that failed to load
    */
-  async save(logger: typeof Log): Promise<void> {
+  async save(connection: LogShipperConnection, logger?: typeof Log): Promise<void> {
+    const client = await this.createClient(connection);
     const startTime = Date.now();
     const logs = this.logs;
     const indexes = this.indexes;
@@ -78,7 +70,6 @@ export class ElasticSearch {
     this.indexes = new Map();
 
     const indexesUsed = new Set<string>();
-    const client = await this.client;
     const stats = await client.helpers.bulk({
       datasource: logs,
       onDocument: (lo: LogObject) => {
@@ -89,7 +80,7 @@ export class ElasticSearch {
         };
       },
       onDrop(err: OnDropDocument<LogObject>) {
-        logger.error({ logMessage: JSON.stringify(err.document), error: err.error }, 'FailedIndex');
+        logger?.error({ logMessage: JSON.stringify(err.document), error: err.error }, 'FailedIndex');
       },
       // Wait up to 1 second before flushing
       flushInterval: 1000,
@@ -98,9 +89,9 @@ export class ElasticSearch {
     const duration = Date.now() - startTime;
     const indexList = [...indexesUsed.keys()];
     if (stats.failed > 0) {
-      logger.error({ stats, indexList, duration }, 'Inserts:Failed');
+      logger?.error({ stats, indexList, duration }, 'Inserts:Failed');
     } else {
-      logger.info({ stats, indexList, duration }, 'Inserts:Ok');
+      logger?.info({ stats, indexList, duration }, 'Inserts:Ok');
     }
   }
 

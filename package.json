@@ -41,7 +41,7 @@
     "@types/minimatch": "^3.0.3",
     "@types/mocha": "^8.0.0",
     "@types/node": "^15.0.1",
-    "@types/pino": "^6.0.0",
+    "@types/pino": "^6.3.8",
     "@types/sinon": "^10.0.0",
     "@zeit/ncc": "^0.22.3",
     "aws-cdk": "^1.53.0",
