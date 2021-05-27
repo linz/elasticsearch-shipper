@@ -1,4 +1,3 @@
-import { Connection } from '@elastic/elasticsearch';
 import { CloudWatchLogsDecodedData, CloudWatchLogsLogEvent } from 'aws-lambda';
 import { SSM } from 'aws-sdk';
 import minimatch from 'minimatch';

@@ -1,4 +1,3 @@
-// import { LogShipperElasticConfig } from './config.elastic';
 import * as z from 'zod';
 import {
   LogShipperConfigAccountValidator,
