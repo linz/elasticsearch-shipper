@@ -83,9 +83,6 @@ export class LambdaLogShipperFunction extends Construct {
 
     // Validate all the connection references are valid
     for (const elasticId of elasticIds) {
-      const elasticConfig = ssm.StringParameter.valueForStringParameter(this, elasticId);
-      const elasticValidation = LogShipperConnectionValidator.safeParse(elasticConfig);
-      if (elasticValidation.success === false) throw new Error(`Failed to validate elastic: ${elasticId}`);
       allParameters.push(ssm.StringParameter.fromStringParameterName(this, 'ElasticConfig' + elasticId, elasticId));
     }
 
