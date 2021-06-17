@@ -7,7 +7,7 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import { Construct, Duration } from '@aws-cdk/core';
 import * as path from 'path';
 import { LogShipperConfigAccount } from '../config/config';
-import { LogShipperConfigAccountValidator, LogShipperConnectionValidator } from '../config/config.elastic';
+import { LogShipperConfigAccountValidator } from '../config/config.elastic';
 import { DefaultConfigRefreshTimeoutSeconds, DefaultExecutionTimeoutSeconds, Env } from '../env';
 import { LogFunctionName, LogProcessFunction } from '../shipper/type';
 
@@ -66,7 +66,7 @@ export class LambdaLogShipperFunction extends Construct {
     const configs = Array.isArray(props.config) ? props.config : [props.config];
     // Load all configs into SSM and validate that they are valid configs
     for (const config of configs) {
-      const parameterName = `/es-shipper-config/account-${config.name}`;
+      const parameterName = `/es-shipper-config/account-${config.name.toLowerCase()}`;
       for (const cfg of config.accounts) {
         const validation = LogShipperConfigAccountValidator.safeParse(cfg);
         if (validation.success === false) throw new Error(`Failed to validate ${parameterName}`);
@@ -83,9 +83,6 @@ export class LambdaLogShipperFunction extends Construct {
 
     // Validate all the connection references are valid
     for (const elasticId of elasticIds) {
-      const elasticConfig = ssm.StringParameter.valueForStringParameter(this, elasticId);
-      const elasticValidation = LogShipperConnectionValidator.safeParse(elasticConfig);
-      if (elasticValidation.success === false) throw new Error(`Failed to validate elastic: ${elasticId}`);
       allParameters.push(ssm.StringParameter.fromStringParameterName(this, 'ElasticConfig' + elasticId, elasticId));
     }
 

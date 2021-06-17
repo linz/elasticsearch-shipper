@@ -34,7 +34,7 @@ export class LogShipperStack extends cdk.Stack {
   public constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = ec2.Vpc.fromLookup(this, 'EsVpc', { tags: { 'linz:elasticsearch': 'true' } });
+    const vpc = ec2.Vpc.fromLookup(this, 'EsVpc', { tags: { BaseVPC: 'true' } });
 
     this.logShipper = new LambdaLogShipperFunction(this, 'Shipper', {
       vpc,
