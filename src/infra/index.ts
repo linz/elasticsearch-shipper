@@ -6,10 +6,12 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Construct, Duration } from '@aws-cdk/core';
 import * as path from 'path';
+import * as nodeLambda from '@aws-cdk/aws-lambda-nodejs';
 import { LogShipperConfigAccount } from '../config/config';
 import { LogShipperConfigAccountValidator } from '../config/config.elastic';
 import { DefaultConfigRefreshTimeoutSeconds, DefaultExecutionTimeoutSeconds, Env } from '../env';
 import { LogFunctionName, LogProcessFunction } from '../shipper/type';
+import { execFileSync } from 'child_process';
 
 export const SourceCode = path.resolve(__dirname, '..', '..', '..', 'dist');
 export const SourceCodeExtension = path.join(SourceCode, LogFunctionName);
@@ -75,7 +77,7 @@ export class LambdaLogShipperFunction extends Construct {
       }
       const accountParam = new ssm.StringParameter(this, 'Config' + config.name, {
         parameterName,
-        stringValue: JSON.stringify(config),
+        stringValue: JSON.stringify(config.accounts),
       });
       ssmList.push(parameterName);
       allParameters.push(accountParam);
@@ -92,16 +94,19 @@ export class LambdaLogShipperFunction extends Construct {
     });
     allParameters.push(configParameter);
 
-    this.lambda = new lambda.Function(this, 'Shipper', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+    this.lambda = new nodeLambda.NodejsFunction(this, 'Shipper', {
       memorySize: props.memorySize ?? 256,
       vpc: props.vpc,
       timeout,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(SourceCode),
+      entry: path.join(__dirname, '../../../src/shipper/index.ts'),
+      bundling: {
+        sourceMap: true,
+      },
       environment: {
         [Env.ConfigName]: configParameter.parameterName,
         [Env.ConfigRefreshTimeoutSeconds]: String(props.refreshDurationSeconds ?? DefaultConfigRefreshTimeoutSeconds),
+        [Env.GitHash]: execFileSync('git', ['rev-parse', 'HEAD']).toString().trim(),
+        [Env.GitVersion]: execFileSync('git', ['describe', '--tags', '--always', '--match', 'v*']).toString().trim(),
       },
       logRetention: RetentionDays.ONE_MONTH,
     });

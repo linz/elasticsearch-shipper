@@ -28,14 +28,26 @@ export class LogShipper {
    */
   onLog: LogProcessFunction[] = [];
 
-  static async load(): Promise<LogShipper> {
+  static async load(logger?: typeof Log): Promise<LogShipper> {
     if (LogShipper.INSTANCE == null || LogShipper.INSTANCE.isRefreshNeeded) {
       const configName = process.env[Env.ConfigName] ?? DefaultParameterStoreBasePath;
       const data = await SsmCache.get(configName);
       const cfg = LogShipperConfigValidator.parse(data);
 
-      const accounts = await Promise.all(
-        cfg.map((c) => SsmCache.get(c).then((account) => LogShipperConfigAccountValidator.parse(account))),
+      const accounts: LogShipperConfigAccount[] = [];
+      await Promise.all(
+        cfg.map(async (configId) => {
+          const raw = await SsmCache.get(configId);
+          const rawList = Array.isArray(raw) ? raw : [raw];
+          for (const account of rawList) {
+            const res = LogShipperConfigAccountValidator.safeParse(account);
+            if (!res.success) {
+              logger?.fatal({ errors: res.error }, 'Failed to parse ' + configId);
+              throw new Error('Failed to parse ' + configId);
+            }
+            accounts.push(account);
+          }
+        }),
       );
 
       LogShipper.INSTANCE = new LogShipper(accounts);

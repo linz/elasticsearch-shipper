@@ -52,10 +52,6 @@ describe('bundled lambda', () => {
 
   it('should expose a handler', () => {
     expect(pkg.handler).to.be.a('function');
-    expect(pkg.version).to.be.a('string');
-    expect(pkg.version).to.not.equal('');
-    expect(pkg.hash).to.be.a('string');
-    expect(pkg.hash).to.not.equal('');
   });
 
   const configMap: Record<string, unknown> = {

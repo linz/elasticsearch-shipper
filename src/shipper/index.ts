@@ -1,3 +1,5 @@
+import 'source-map-support/register';
+
 export { hash, Log, version } from '../logger';
 export { handler, S3 } from './app';
 export { ElasticSearch } from './elastic';

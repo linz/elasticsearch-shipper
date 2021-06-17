@@ -11,4 +11,10 @@ export const Env = {
   ConfigRefreshTimeoutSeconds: 'CONFIG_REFRESH_TIMEOUT_SECONDS',
   /** Maximum execution time of the lambda */
   ExecutionTimeoutSeconds: 'EXECUTION_TIMEOUT_SECONDS',
+
+  /** Commit hash that this was deployed from */
+  GitHash: 'GIT_HASH',
+
+  /** Last git version */
+  GitVersion: 'GIT_VERSION',
 };
