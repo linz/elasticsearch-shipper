@@ -51,9 +51,9 @@ export async function processCloudWatchData(
 
   // Find the appropriate config
   // Uses logGroup, then account, then global config for all options
-  const streamTags = (logShipper.config.tags ?? []).concat(account.tags ?? []).concat(streamConfig.tags ?? []);
-  const prefix = streamConfig.prefix ?? account.prefix ?? logShipper.config.prefix;
-  const index = streamConfig.index ?? account.index ?? logShipper.config.index;
+  const streamTags = (account.tags ?? []).concat(streamConfig.tags ?? []);
+  const prefix = streamConfig.prefix ?? account.prefix;
+  const index = streamConfig.index ?? account.index;
 
   for (const logLine of c.logEvents) {
     const logObject = logShipper.getLogObject(c, logLine, source);
@@ -68,6 +68,6 @@ export async function processCloudWatchData(
       for (const key of streamConfig.dropKeys) delete logObject[key];
     }
 
-    logShipper.es.queue(logObject, prefix, index);
+    logShipper.getElastic(account).queue(logObject, prefix, index);
   }
 }

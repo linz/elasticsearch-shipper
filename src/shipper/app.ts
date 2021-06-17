@@ -11,7 +11,7 @@ import { ulid } from 'ulid';
 import { processCloudWatchData, splitJsonString, isCloudWatchEvent, s3ToString } from './log.handle';
 import { Metrics } from '@basemaps/metrics';
 
-export const S3 = new AWS.S3({ region: process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2' });
+export const S3 = new AWS.S3({ region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2' });
 
 const gunzip: (buf: Buffer) => Promise<Buffer> = util.promisify(zlib.gunzip);
 
@@ -68,13 +68,12 @@ export async function handler(event: S3Event | CloudWatchLogsEvent): Promise<voi
   }
   metrics.end('Process');
 
-  const logCount = logShipper.es.logs.length;
-  if (logCount > 0) {
+  if (logShipper.logCount > 0) {
     metrics.start('Elastic:Save');
-    await logShipper.es.save(logger);
+    await logShipper.save(logger);
     metrics.end('Elastic:Save');
   }
 
   const duration = Date.now() - startTime;
-  logger.info({ '@type': 'report', metrics: metrics.metrics, logCount, duration }, 'ShippingDone');
+  logger.info({ '@type': 'report', metrics: metrics.metrics, logCount: logShipper.logCount, duration }, 'ShippingDone');
 }

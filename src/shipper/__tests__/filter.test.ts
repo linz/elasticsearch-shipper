@@ -1,11 +1,19 @@
 import { expect } from 'chai';
+import { LogShipperConfigAccount } from '../../config/config';
 import { LogShipper } from '../../shipper/shipper.config';
 
 describe('LogConfigFilter', () => {
-  const shipper: LogShipper = new LogShipper({} as any);
+  const shipper: LogShipper = new LogShipper([]);
 
   it('should match everything', () => {
-    const config = { id: '1', name: 'b', logGroups: [{ filter: '**', prefix: 'prefix' }], elastic: { url: '' } };
+    const config: LogShipperConfigAccount = {
+      id: '1',
+      index: 1,
+      prefix: 'fake-index',
+      elastic: 'fake-elastic',
+      name: 'b',
+      logGroups: [{ filter: '**', prefix: 'prefix' }],
+    };
 
     const logA = shipper.getLogConfig(config, 'abc123');
     expect(logA).to.deep.eq(config.logGroups[0]);
@@ -15,11 +23,13 @@ describe('LogConfigFilter', () => {
   });
 
   it('should match prefixes', () => {
-    const config = {
+    const config: LogShipperConfigAccount = {
       id: '1',
+      index: 1,
+      prefix: 'fake-index',
+      elastic: 'fake-elastic',
       name: 'b',
       logGroups: [{ filter: '/aws/lambda/**', prefix: 'prefix' }],
-      elastic: { url: '' },
     };
     const logA = shipper.getLogConfig(config, 'abc123');
     expect(logA).to.eq(undefined);

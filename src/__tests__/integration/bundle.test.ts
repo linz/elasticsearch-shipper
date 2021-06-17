@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import * as fs from 'fs';
+import * as http from 'http';
 import * as path from 'path';
 import sinon from 'sinon';
-import { LogShipperConfig } from '../../config/config';
+import { LogShipperConfigAccount } from '../../config/config';
 import { EVENT_DATA_ACCOUNT } from '../event.data';
 import { getCloudWatchEvent, toLogStream } from '../log.data';
-import * as http from 'http';
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const Port = process.env.PORT ?? 44551;
@@ -58,24 +58,23 @@ describe('bundled lambda', () => {
     expect(pkg.hash).to.not.equal('');
   });
 
+  const configMap: Record<string, unknown> = {
+    '/es-shipper-config/accounts': ['/es-shipper-config/fake'],
+    '/es-shipper-config/elastic-fake': { url: 'http://localhost:' + Port, username: 'foo', password: 'bar' },
+  };
+
   it('should be invokeable', async () => {
     const fakeConfig = {
-      accounts: [
-        {
-          id: EVENT_DATA_ACCOUNT,
-          name: 'Fake',
-          tags: ['@account'],
-          prefix: '@account',
-          index: 'weekly',
-          logGroups: [{ filter: '**', tags: ['@logGroup'], prefix: '@logGroup', index: 'daily' }],
-        },
-      ],
-      elastic: { url: 'http://localhost:' + Port, username: 'foo', password: 'bar' },
-      tags: ['@config'],
-      prefix: '@config',
-      index: 'monthly',
-    } as LogShipperConfig;
-    sandbox.stub(pkg.LogShipper, 'parameterStoreConfig').resolves(fakeConfig);
+      elastic: '/es-shipper-config/elastic-fake',
+      id: EVENT_DATA_ACCOUNT,
+      name: 'Fake',
+      tags: ['@account'],
+      prefix: '@account',
+      index: 'weekly',
+      logGroups: [{ filter: '**', tags: ['@logGroup'], prefix: '@logGroup', index: 'daily' }],
+    } as LogShipperConfigAccount;
+    configMap['/es-shipper-config/fake'] = fakeConfig;
+    sandbox.stub(pkg.SsmCache, 'get').callsFake(async (k) => configMap[k]);
 
     const s3Return = { promise: () => Promise.resolve({ Body: toLogStream() }) } as any;
     const s3Stub = sandbox.stub(pkg.S3, 'getObject') as any;

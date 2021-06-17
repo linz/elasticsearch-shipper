@@ -1,21 +1,15 @@
 {
-  "elastic": {
-    "url": "https://"
-  },
-  "prefix": "centralised-logging",
-  "index": "monthly",
-  "accounts": [
+  "elastic": "/es-shipper-config/account-example",
+  "id": "1234567890",
+  "name": "linz",
+  "tags": ["hello"],
+  "index": 1,
+  "prefix": "account-prefix",
+  "logGroups": [
     {
-      "id": "1234567890",
-      "name": "linz",
-      "tags": ["hello"],
-      "prefix": "account-prefix",
-      "logGroups": [
-        {
-          "filter": "**",
-          "prefix": "lg-prefix"
-        }
-      ]
+      "filter": "**",
+      "prefix": "lg-prefix"
     }
   ]
 }
+  

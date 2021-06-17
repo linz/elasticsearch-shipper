@@ -1,6 +1,7 @@
 'use strict';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { LogShipperConfigAccount } from '../../config/config';
 import { Log } from '../../logger';
 import { processCloudWatchData, splitJsonString } from '../log.handle';
 import { LogShipper } from '../shipper.config';
@@ -26,22 +27,24 @@ describe('processData', () => {
     messageType: 'something',
     logEvents: [{ id: '1', timestamp: Date.now(), message: JSON.stringify({ key: 'value', toDrop: 'something' }) }],
   };
+  let fakeConfig: LogShipperConfigAccount;
 
   beforeEach(() => {
-    shipper = new LogShipper({} as any);
-    shipper.config.accounts = [
-      {
-        id: '123',
-        name: 'fake-config',
-        logGroups: [
-          {
-            filter: '/aws/lambda/foo**',
-            prefix: 'foo-index',
-            index: 1,
-          },
-        ],
-      },
-    ];
+    fakeConfig = {
+      id: '123',
+      elastic: 'fake-elastic',
+      name: 'fake-config',
+      index: 1,
+      prefix: 'fake-index',
+      logGroups: [
+        {
+          filter: '/aws/lambda/foo**',
+          prefix: 'foo-index',
+          index: 1,
+        },
+      ],
+    };
+    shipper = new LogShipper([fakeConfig]);
   });
 
   afterEach(() => {
@@ -49,37 +52,42 @@ describe('processData', () => {
   });
 
   it('should save a log line', async () => {
-    const saveStub = sandbox.stub(shipper.es, 'save');
+    const es = shipper.getElastic(fakeConfig);
+    const saveStub = sandbox.stub(es, 'save');
     await processCloudWatchData(shipper, logLine, Log);
     expect(saveStub.callCount).equal(0);
-    expect(shipper.es.logs.length).eq(1);
+    expect(es.logCount).eq(1);
 
-    const [firstLogLine] = shipper.es.logs;
+    const [firstLogLine] = es.logs;
     expect(firstLogLine['key']).eq('value');
     expect(firstLogLine['toDrop']).eq('something');
 
-    const firstIndex = shipper.es.indexes.get(firstLogLine['@id']);
+    const firstIndex = es.indexes.get(firstLogLine['@id']);
     expect(firstIndex).equal('foo-index-123-' + new Date().toISOString().substring(0, 10));
   });
 
   it('should drop keys', async () => {
-    const saveStub = sandbox.stub(shipper.es, 'save');
-    shipper.config.accounts[0].logGroups[0].dropKeys = ['toDrop'];
+    const es = shipper.getElastic(fakeConfig);
+
+    const saveStub = sandbox.stub(es, 'save');
+    fakeConfig.logGroups[0].dropKeys = ['toDrop'];
 
     await processCloudWatchData(shipper, logLine, Log);
     expect(saveStub.callCount).equal(0);
-    expect(shipper.es.logs.length).eq(1);
+    expect(es.logs.length).eq(1);
 
-    const [firstLogLine] = shipper.es.logs;
+    const [firstLogLine] = es.logs;
     expect(firstLogLine['key']).eq('value');
     expect(firstLogLine['toDrop']).eq(undefined);
   });
 
   it('should drop indexes', async () => {
-    const saveStub = sandbox.stub(shipper.es, 'save');
-    shipper.config.accounts[0].logGroups[0].drop = true;
+    const es = shipper.getElastic(fakeConfig);
+
+    const saveStub = sandbox.stub(es, 'save');
+    fakeConfig.logGroups[0].drop = true;
     await processCloudWatchData(shipper, logLine, Log);
     expect(saveStub.callCount).equal(0);
-    expect(shipper.es.logs.length).eq(0);
+    expect(es.logs.length).eq(0);
   });
 });

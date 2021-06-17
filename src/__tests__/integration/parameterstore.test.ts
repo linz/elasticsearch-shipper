@@ -1,19 +1,15 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { LogShipper, ssm } from '../../shipper/shipper.config';
-import { ExampleConfigMinimal } from '../config.test';
+import { LogShipper } from '../../shipper/shipper.config';
+import { SsmCache } from '../../shipper/ssm';
+import { configLookup } from '../config.test';
 
 describe('AccountConfigFilter', () => {
   const sandbox = sinon.createSandbox();
   let loadStub: sinon.SinonStub;
   let shipper: LogShipper;
   beforeEach(async () => {
-    const dummyResult = {
-      Parameter: {
-        Value: JSON.stringify(ExampleConfigMinimal),
-      },
-    };
-    loadStub = sandbox.stub(ssm, 'getParameter').returns({ promise: async () => dummyResult } as any);
+    loadStub = sandbox.stub(SsmCache, 'get').callsFake(configLookup);
     shipper = await LogShipper.load();
   });
 
@@ -22,15 +18,15 @@ describe('AccountConfigFilter', () => {
   });
 
   it('should retrieve from parameter store when told to', async () => {
-    expect(loadStub.callCount).eq(1);
+    expect(loadStub.callCount).eq(2);
     // Should return same object
     await LogShipper.load();
-    expect(loadStub.callCount).eq(1);
+    expect(loadStub.callCount).eq(2);
 
     // old dates should trigger a new load
     shipper.initializedAt = Date.now() - 301 * 1000;
     await LogShipper.load();
-    expect(loadStub.callCount).eq(2);
+    expect(loadStub.callCount).eq(4);
   });
 
   it('should correctly parse parameter store configs', async () => {
