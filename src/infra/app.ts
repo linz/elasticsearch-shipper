@@ -1,15 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import { BlockPublicAccess } from '@aws-cdk/aws-s3';
-import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
-import {
-  Env,
-  DefaultParameterStoreBasePath,
-  DefaultConfigRefreshTimeoutSeconds,
-  DefaultExecutionTimeoutSeconds,
-} from '../env';
+import { DefaultConfigRefreshTimeoutSeconds, DefaultExecutionTimeoutSeconds, Env } from '../env';
 import { LambdaLogShipperFunction, LambdaShipperConfig } from './index';
 
 /** Using VPC lookups requires a hard coded AWS "account" */
@@ -44,7 +38,7 @@ export class LogShipperStack extends cdk.Stack {
 
     this.logShipper = new LambdaLogShipperFunction(this, 'Shipper', {
       vpc,
-      config: [Config],
+      config: Config,
       refreshDurationSeconds: CONFIG_REFRESH_TIMEOUT_SECONDS,
       executionTimeoutSeconds: EXECUTION_TIMEOUT_SECONDS,
     });

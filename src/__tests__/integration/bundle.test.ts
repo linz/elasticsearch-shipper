@@ -95,21 +95,3 @@ describe('bundled lambda', () => {
     expect(lines.length).equal(6);
   });
 });
-
-const config = {
-  name: 'default',
-  accounts: [
-    {
-      id: '1234567890',
-      name: 'linz',
-      tags: ['hello'],
-      prefix: 'account-prefix',
-      logGroups: [
-        {
-          filter: '**',
-          prefix: 'lg-prefix',
-        },
-      ],
-    },
-  ],
-};
