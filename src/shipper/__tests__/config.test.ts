@@ -1,12 +1,8 @@
 import * as aec from '@acuris/aws-es-connection';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import {
-  ConnectionValidator,
-  LogShipperConnectionAws,
-  LogShipperConnectionBasic,
-  LogShipperConnectionCloud,
-} from '../../config/config.elastic';
+import { LogShipperConnectionAws, LogShipperConnectionBasic, LogShipperConnectionCloud } from '../../config/config';
+import { ConnectionValidator } from '../../config/config.elastic';
 import { ElasticSearch } from '../elastic';
 import { SsmCache } from '../ssm';
 
