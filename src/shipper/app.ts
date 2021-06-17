@@ -68,13 +68,12 @@ export async function handler(event: S3Event | CloudWatchLogsEvent): Promise<voi
   }
   metrics.end('Process');
 
-  const logCount = logShipper.es.logs.length;
-  if (logCount > 0) {
+  if (logShipper.logCount > 0) {
     metrics.start('Elastic:Save');
     await logShipper.save(logger);
     metrics.end('Elastic:Save');
   }
 
   const duration = Date.now() - startTime;
-  logger.info({ '@type': 'report', metrics: metrics.metrics, logCount, duration }, 'ShippingDone');
+  logger.info({ '@type': 'report', metrics: metrics.metrics, logCount: logShipper.logCount, duration }, 'ShippingDone');
 }

@@ -1,10 +1,11 @@
 import { awsGetCredentials, createAWSConnection } from '@acuris/aws-es-connection';
 import { Client } from '@elastic/elasticsearch';
 import { OnDropDocument } from '@elastic/elasticsearch/lib/Helpers';
-import { LogShipperConfigIndexDate, LogShipperConnection } from '../config/config';
+import { LogShipperConfigIndexDate } from '../config/config';
 import { ConnectionValidator } from '../config/config.elastic';
 import { Log } from '../logger';
 import { getIndexDate } from './elastic.index';
+import { SsmCache } from './ssm';
 import { LogObject } from './type';
 
 export class ElasticSearch {
@@ -12,12 +13,15 @@ export class ElasticSearch {
 
   logs: LogObject[] = [];
   indexes: Map<string, string> = new Map();
+  connectionId: string;
 
-  private async createClient(connection: LogShipperConnection): Promise<Client> {
-    const ssmCfg = ConnectionValidator.Ssm.safeParse(connection);
-    if (ssmCfg.success) throw new Error('Unable to use SSM references for connections');
+  constructor(connectionId: string) {
+    this.connectionId = connectionId;
+  }
 
-    const cloud = ConnectionValidator.Cloud.safeParse(connection);
+  private async createClient(): Promise<Client> {
+    const cfg = await SsmCache.get(this.connectionId);
+    const cloud = ConnectionValidator.Cloud.safeParse(cfg);
     if (cloud.success) {
       return new Client({
         cloud: { id: cloud.data.id },
@@ -25,7 +29,7 @@ export class ElasticSearch {
       });
     }
 
-    const basic = ConnectionValidator.Basic.safeParse(connection);
+    const basic = ConnectionValidator.Basic.safeParse(cfg);
     if (basic.success) {
       return new Client({
         node: basic.data.url,
@@ -33,7 +37,7 @@ export class ElasticSearch {
       });
     }
 
-    const aws = ConnectionValidator.Aws.safeParse(connection);
+    const aws = ConnectionValidator.Aws.safeParse(cfg);
     if (aws.success) {
       const awsCredentials = await awsGetCredentials();
       const AWSConnection = createAWSConnection(awsCredentials);
@@ -43,7 +47,7 @@ export class ElasticSearch {
       });
     }
 
-    throw new Error('Failed to create connection to elastic search');
+    throw new Error('Failed to create connection to elastic search: ' + this.connectionId);
   }
 
   /**
@@ -56,13 +60,17 @@ export class ElasticSearch {
     this.logs.push(logObj);
   }
 
+  get logCount(): number {
+    return this.logs.length;
+  }
+
   /**
    * Load all the items in the queue into elastic search
    *
    * @returns list of log objects that failed to load
    */
-  async save(connection: LogShipperConnection, logger?: typeof Log): Promise<void> {
-    const client = await this.createClient(connection);
+  async save(logger?: typeof Log): Promise<void> {
+    const client = await this.createClient();
     const startTime = Date.now();
     const logs = this.logs;
     const indexes = this.indexes;

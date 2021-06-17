@@ -1,41 +1,38 @@
 import { S3EventRecord } from 'aws-lambda';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { handler } from '../../shipper/app';
-import { LogShipperConfig } from '../../config/config';
-import { LogShipper } from '../../shipper/shipper.config';
-import { LogObject } from '../../shipper/type';
+import { LogShipperConfigAccount } from '../../config/config';
 import { Log } from '../../logger';
+import { handler, S3 } from '../../shipper/app';
+import { ElasticSearch } from '../../shipper/elastic';
+import { LogShipper } from '../../shipper/shipper.config';
+import { SsmCache } from '../../shipper/ssm';
+import { LogObject } from '../../shipper/type';
 import { EVENT_DATA, EVENT_DATA_ACCOUNT } from '../event.data';
 import { getCloudWatchEvent, LOG_DATA, toLogStream } from '../log.data';
-import { ElasticSearch } from '../../shipper/elastic';
-import { S3 } from '../../shipper/app';
 
 Log.level = 'silent';
 
 describe('HandlerIntegration', () => {
   let s3Stub: sinon.SinonStub;
   const sandbox = sinon.createSandbox();
-  let fakeConfig: LogShipperConfig;
+  let fakeAccount: LogShipperConfigAccount;
 
   beforeEach(async () => {
-    fakeConfig = {
-      accounts: [
-        {
-          id: EVENT_DATA_ACCOUNT,
-          name: 'Fake',
-          tags: ['@account'],
-          prefix: '@account',
-          index: 'weekly',
-          logGroups: [{ filter: '**', tags: ['@logGroup'], prefix: '@logGroup', index: 'daily' }],
-        },
-      ],
-      elastic: { url: '' },
-      tags: ['@config'],
-      prefix: '@config',
-      index: 'monthly',
-    } as LogShipperConfig;
-    sandbox.stub(LogShipper, 'parameterStoreConfig').resolves(fakeConfig);
+    fakeAccount = {
+      elastic: '/fake',
+      id: EVENT_DATA_ACCOUNT,
+      name: 'Fake',
+      tags: ['@account'],
+      prefix: '@account',
+      index: 'weekly',
+      logGroups: [{ filter: '**', tags: ['@logGroup'], prefix: '@logGroup', index: 'daily' }],
+    };
+    sandbox.stub(SsmCache, 'get').callsFake(async (key) => {
+      if (key === '/es-shipper-config/accounts') return ['/es-shipper-config/account-fake'];
+      if (key === '/es-shipper-config/account-fake') return fakeAccount;
+      throw new Error('Invalid key fetch: ' + key);
+    });
     sandbox.stub(ElasticSearch.prototype, 'save').resolves();
 
     const s3Return = { promise: () => Promise.resolve({ Body: toLogStream() }) } as any;
@@ -49,7 +46,7 @@ describe('HandlerIntegration', () => {
   });
 
   function getLog(index: number): LogObject {
-    return LogShipper.INSTANCE?.es.logs[index] as LogObject;
+    return LogShipper.INSTANCE?.getElastic(fakeAccount).logs[index] as LogObject;
   }
 
   function validateItems(): void {
@@ -59,7 +56,7 @@ describe('HandlerIntegration', () => {
     expect(firstLog['@owner']).to.equal(EVENT_DATA_ACCOUNT);
     expect(firstLog['@logGroup']).to.equal('/aws/lambda/s3-log-shipper-ShipFunction-Z4RRMMK7H598');
     expect(firstLog['@logStream']).to.equal('2019/10/25/[$LATEST]a9e13cd4bf854f0d918e5a7a93c89a33');
-    expect(firstLog['@tags']).to.include('@config');
+    expect(firstLog['@tags']).to.include('@account');
     expect(firstLog['@tags']).to.include('@logGroup');
     expect(firstLog['@tags']).to.include('Lambda log');
 
@@ -114,7 +111,7 @@ describe('HandlerIntegration', () => {
   });
 
   it('should drop by account when told to', async () => {
-    fakeConfig.accounts[0].drop = true;
+    fakeAccount.drop = true;
     await handler(getCloudWatchEvent());
     await handler({ Records: [EVENT_DATA] });
 
@@ -125,7 +122,7 @@ describe('HandlerIntegration', () => {
   });
 
   it('should error if the config is invalid', async () => {
-    delete (fakeConfig as any).accounts;
+    delete (fakeAccount as any).logGroups;
     try {
       await handler({ Records: [EVENT_DATA] });
       expect(true).eq(false);
@@ -138,44 +135,25 @@ describe('HandlerIntegration', () => {
     await handler({ Records: [EVENT_DATA] });
     const shipper = LogShipper.INSTANCE!;
     const firstLog = getLog(0);
-    const indexInsert = shipper.es.indexes.get(firstLog['@id']);
+    const indexInsert = shipper.getElastic(fakeAccount).indexes.get(firstLog['@id']);
 
     expect(indexInsert).eq('@logGroup-111111111111-2019-10-25'); // Daily index with @logGroup prefix
-    expect(firstLog['@tags']).deep.eq(['@config', '@account', '@logGroup', 'Lambda log']);
+    expect(firstLog['@tags']).deep.eq(['@account', '@logGroup', 'Lambda log']);
   });
 
   it('should use the account config if no log stream is found', async () => {
     // Remove the log group specifics
-    delete fakeConfig.accounts[0].logGroups[0].index;
-    delete fakeConfig.accounts[0].logGroups[0].tags;
-    delete fakeConfig.accounts[0].logGroups[0].prefix;
+    delete fakeAccount.logGroups[0].index;
+    delete fakeAccount.logGroups[0].tags;
+    delete fakeAccount.logGroups[0].prefix;
 
     await handler({ Records: [EVENT_DATA] });
     const shipper = LogShipper.INSTANCE!;
 
     const firstLog = getLog(0);
-    const indexInsert = shipper.es.indexes.get(firstLog['@id']);
+    const indexInsert = shipper.getElastic(fakeAccount).indexes.get(firstLog['@id']);
 
     expect(indexInsert).eq('@account-111111111111-2019-10-24'); // Weekly index with @account prefix
-    expect(firstLog['@tags']).deep.eq(['@config', '@account', 'Lambda log']);
-  });
-
-  it('should use the account config if no log stream is found', async () => {
-    // Remove the log group specifics
-    delete fakeConfig.accounts[0].logGroups[0].index;
-    delete fakeConfig.accounts[0].logGroups[0].tags;
-    delete fakeConfig.accounts[0].logGroups[0].prefix;
-    // Remove the account specifics
-    delete fakeConfig.accounts[0].index;
-    delete fakeConfig.accounts[0].tags;
-    delete fakeConfig.accounts[0].prefix;
-
-    await handler({ Records: [EVENT_DATA] });
-    const shipper = LogShipper.INSTANCE!;
-
-    const firstLog = getLog(0);
-    const indexInsert = shipper.es.indexes.get(firstLog['@id']);
-    expect(indexInsert).eq('@config-111111111111-2019-10'); // Monthly index with @config prefix
-    expect(firstLog['@tags']).deep.eq(['@config', 'Lambda log']);
+    expect(firstLog['@tags']).deep.eq(['@account', 'Lambda log']);
   });
 });

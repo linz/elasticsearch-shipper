@@ -21,24 +21,18 @@ export const LogShipperConnectionBasic = z.object({
   password: z.string(),
 });
 
-export const LogShipperSsmReference = z.object({
-  name: z.string().refine((f) => f.startsWith('/')), // SSM config parameter name
-});
 export const LogShipperElasticValidator = z.union([
-  LogShipperSsmReference,
   LogShipperConnectionBasic,
   LogShipperConnectionCloudValidator,
   LogShipperConnectionAwsValidator,
 ]);
 
-export type LogShipperConnectionSsm = z.infer<typeof LogShipperSsmReference>;
 export type LogShipperConnectionCloud = z.infer<typeof LogShipperConnectionCloudValidator>;
 export type LogShipperConnectionAws = z.infer<typeof LogShipperConnectionAwsValidator>;
 export type LogShipperConnectionBasic = z.infer<typeof LogShipperConnectionBasic>;
 export type LogShipperElasticConfig = z.infer<typeof LogShipperElasticValidator>;
 
 export const ConnectionValidator = {
-  Ssm: LogShipperSsmReference,
   Cloud: LogShipperConnectionCloudValidator,
   Aws: LogShipperConnectionAwsValidator,
   Basic: LogShipperConnectionBasic,
@@ -80,6 +74,8 @@ export const LogShipperConfigGroupValidator = z.object({
 });
 
 export const LogShipperConfigAccountValidator = z.object({
+  /** SSM parameter name for the elastic account configuration */
+  elastic: z.string(),
   /** AWS AccountId */
   id: z.string(),
   /**
@@ -94,25 +90,14 @@ export const LogShipperConfigAccountValidator = z.object({
   /** Should the logs for this group be dropped */
   drop: z.boolean().optional(),
   /** Index pattern prefix */
-  prefix: z.string().optional(),
+  prefix: z.string(),
   /**
    * Default index pattern to use
    * @default parent.index
    */
-  index: LogShipperConfigIndexDateValidator.optional(),
+  index: LogShipperConfigIndexDateValidator,
   /** Configuration for log groups inside this account */
   logGroups: z.array(LogShipperConfigGroupValidator),
 });
 
-export const LogShipperConfigValidator = z.object({
-  /** Configuration for connecting to elastic search */
-  elastic: LogShipperElasticValidator,
-  /** Default index prefix to use */
-  prefix: z.string(),
-  /* Additional tags that should be applied to all log groups */
-  tags: z.array(z.string()).optional(),
-  /** Default index pattern to use */
-  index: LogShipperConfigIndexDateValidator,
-  /** List of accounts to process */
-  accounts: z.array(LogShipperConfigAccountValidator),
-});
+export const LogShipperConfigValidator = z.array(z.string());

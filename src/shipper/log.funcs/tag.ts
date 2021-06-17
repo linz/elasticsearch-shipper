@@ -1,6 +1,7 @@
 import { LogObject } from '../type';
 
-export const FlowLogRegexp = /^[0-9] ([0-9]+|unknown) eni-[0-9a-f]+ ([0-9a-f.:]|-)+ ([0-9a-f.:]|-)+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [0-9]+ [0-9]+ (ACCEPT|REJECT|-) (OK|NODATA|SKIPDATA).*$/;
+export const FlowLogRegexp =
+  /^[0-9] ([0-9]+|unknown) eni-[0-9a-f]+ ([0-9a-f.:]|-)+ ([0-9a-f.:]|-)+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [0-9]+ [0-9]+ (ACCEPT|REJECT|-) (OK|NODATA|SKIPDATA).*$/;
 export const AccessLogRegexp = /^.* .* .* \[.+\] ".+" [0-9]+ [0-9]+ ".*" ".*"$/;
 export const LambdaLogRegexp = /(START|REPORT|END) RequestId: [\-0-9a-f]+.*/;
 /**
