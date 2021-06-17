@@ -19,63 +19,54 @@ export class YourStack extends cdk.Stack {
   public constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     const vpc = new ec2.Vpc(this, 'Vpc');
-    /** 
-     * The configuration for the shipper is stored inside ssm, 
-     * you need to configure this parameter before deploying
-     */ 
-    const configParameter = ssm.StringParameter.fromStringParameterName(this, 'ConfigParam', configName);
-    this.logShipper = new LambdaLogShipperFunction(this, 'LogShipper', { configParameter, vpc });
+
+    const config = {
+      name: 'default',
+      accounts: [{
+        id: '1234567890',
+        elastic: '/es-shipper-config/elastic-default',
+        name: 'linz',
+        tags: ['hello'],
+        prefix: 'account-prefix',
+        logGroups: [{
+          filter: '**',
+          prefix: 'lg-prefix',
+        }],
+      }],
+    };
+    this.logShipper = new LambdaLogShipperFunction(this, 'LogShipper', { config, vpc });
 
     /** Register a listener on a bucket, so when files are added they are to submitted to the log shipper*/
     const logBucket = new s3.Bucket(this, 'LogBucket');
     this.logShipper.addS3Source(logBucket);
   }
 }
-
 ```
 
-## Configure
+The elastic connection strings need to be stored inside of SSM before running the deployment, there are three options for elasticsearch connections
 
-The log shipper's configuration is stored inside of AWS's parameter store, to configure how the log shipper connects to elastic search and what index patterns to use a simple json config file is used.
+1. AWS
+```
+{ url: 'https://node-name.eu-west-1.es.amazonaws.com' }
+```
 
-[./config.example.json](./config.example.json)
-
-```javascript
+2. ElasticCloud
+```
 {
-  "elastic": { "url": "https://" },
-  "prefix": "centralised-logging",
-  "index": "monthly",
-  "accounts": [
-    {
-      "id": "1234567890",
-      "name": "linz",
-      "tags": ["hello"],
-      "prefix": "account-prefix",
-      "logGroups": [
-        {
-          "filter": "**",
-          "prefix": "lg-prefix"
-        }
-      ]
-    }
-  ]
+  id: 'cloud:abc123',
+  username: 'foo',
+  password: 'bar'
 }
 ```
 
-to configure the parameter store the config cli can be used, this will update teh configuration inside of `$AWS_PROFILE`
-
-```bash
-./lls-config --import config.json --commit
+3. Http
 ```
-
-to update an existing configuration
-
-```bash
-./lls-config --export config.json 
-# Make Changes
-./lls-config --import config.json --commit
+{
+  url: 'https://fake.com'
+  username: 'foo'
+  password: 'bar'
+}
 ```
-
 ## Building
 
 This repository requires [NodeJs](https://nodejs.org/en/) > 12 & [Yarn](https://yarnpkg.com/en/)
