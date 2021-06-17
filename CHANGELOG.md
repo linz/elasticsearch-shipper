@@ -1,3 +1,12 @@
+# [1.0.0](https://github.com/linz/elasticsearch-shipper/compare/v0.6.2...v1.0.0) (2021-06-17)
+
+
+### Features
+
+* allow configuration to reference SSM for connection strings ([#301](https://github.com/linz/elasticsearch-shipper/issues/301)) ([43ff444](https://github.com/linz/elasticsearch-shipper/commit/43ff444c8f571065b65724d1fdee9f45fe5d047d))
+
+
+
 ## [0.6.2](https://github.com/linz/elasticsearch-shipper/compare/v0.6.1...v0.6.2) (2020-10-13)
 
 
