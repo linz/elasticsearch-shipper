@@ -15,27 +15,22 @@ export const LogShipperConnectionAwsValidator = z.object({
 });
 
 /** Basic auth for ElasticSearch connection */
-export const LogShipperConnectionBasic = z.object({
+export const LogShipperConnectionBasicValidator = z.object({
   url: z.string(),
   username: z.string(),
   password: z.string(),
 });
 
-export const LogShipperElasticValidator = z.union([
-  LogShipperConnectionBasic,
+export const LogShipperConnectionValidator = z.union([
+  LogShipperConnectionBasicValidator,
   LogShipperConnectionCloudValidator,
   LogShipperConnectionAwsValidator,
 ]);
 
-export type LogShipperConnectionCloud = z.infer<typeof LogShipperConnectionCloudValidator>;
-export type LogShipperConnectionAws = z.infer<typeof LogShipperConnectionAwsValidator>;
-export type LogShipperConnectionBasic = z.infer<typeof LogShipperConnectionBasic>;
-export type LogShipperElasticConfig = z.infer<typeof LogShipperElasticValidator>;
-
 export const ConnectionValidator = {
   Cloud: LogShipperConnectionCloudValidator,
   Aws: LogShipperConnectionAwsValidator,
-  Basic: LogShipperConnectionBasic,
+  Basic: LogShipperConnectionBasicValidator,
 };
 
 /**
