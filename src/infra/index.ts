@@ -6,18 +6,25 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Construct, Duration } from '@aws-cdk/core';
 import * as path from 'path';
+import { LogShipperConfigAccount } from '../config/config';
+import { LogShipperConfigAccountValidator, LogShipperConnectionValidator } from '../config/config.elastic';
 import { DefaultConfigRefreshTimeoutSeconds, DefaultExecutionTimeoutSeconds, Env } from '../env';
 import { LogFunctionName, LogProcessFunction } from '../shipper/type';
 
 export const SourceCode = path.resolve(__dirname, '..', '..', '..', 'dist');
 export const SourceCodeExtension = path.join(SourceCode, LogFunctionName);
 
+export interface LambdaShipperConfig {
+  name: string;
+  accounts: LogShipperConfigAccount[];
+}
+
 export interface LambdaShipperProps {
   /** VPC to run the lambda function in */
   vpc: IVpc;
 
-  /** Parameter to read configuration from */
-  configParameter: ssm.IStringParameter;
+  /** Configuration objects */
+  config: LambdaShipperConfig[] | LambdaShipperConfig;
 
   /**
    * Duration before configuration is refreshed
@@ -51,6 +58,43 @@ export class LambdaLogShipperFunction extends Construct {
 
     const timeout = Duration.seconds(Number(props.executionTimeoutSeconds ?? DefaultExecutionTimeoutSeconds));
 
+    const elasticIds = new Set<string>();
+
+    const allParameters: ssm.IStringParameter[] = [];
+    const ssmList: string[] = [];
+
+    const configs = Array.isArray(props.config) ? props.config : [props.config];
+    // Load all configs into SSM and validate that they are valid configs
+    for (const config of configs) {
+      const parameterName = `/es-shipper-config/account-${config.name}`;
+      for (const cfg of config.accounts) {
+        const validation = LogShipperConfigAccountValidator.safeParse(cfg);
+        if (validation.success === false) throw new Error(`Failed to validate ${parameterName}`);
+
+        elasticIds.add(validation.data.elastic);
+      }
+      const accountParam = new ssm.StringParameter(this, 'Config' + config.name, {
+        parameterName,
+        stringValue: JSON.stringify(config),
+      });
+      ssmList.push(parameterName);
+      allParameters.push(accountParam);
+    }
+
+    // Validate all the connection references are valid
+    for (const elasticId of elasticIds) {
+      const elasticConfig = ssm.StringParameter.valueForStringParameter(this, elasticId);
+      const elasticValidation = LogShipperConnectionValidator.safeParse(elasticConfig);
+      if (elasticValidation.success === false) throw new Error(`Failed to validate elastic: ${elasticId}`);
+      allParameters.push(ssm.StringParameter.fromStringParameterName(this, 'ElasticConfig' + elasticId, elasticId));
+    }
+
+    const configParameter = new ssm.StringParameter(this, 'ShipperConfig', {
+      parameterName: `/es-shipper-config/config`,
+      stringValue: JSON.stringify(ssmList),
+    });
+    allParameters.push(configParameter);
+
     this.lambda = new lambda.Function(this, 'Shipper', {
       runtime: lambda.Runtime.NODEJS_12_X,
       memorySize: props.memorySize ?? 256,
@@ -59,13 +103,13 @@ export class LambdaLogShipperFunction extends Construct {
       handler: 'index.handler',
       code: lambda.Code.fromAsset(SourceCode),
       environment: {
-        [Env.ConfigName]: props.configParameter.parameterName,
+        [Env.ConfigName]: configParameter.parameterName,
         [Env.ConfigRefreshTimeoutSeconds]: String(props.refreshDurationSeconds ?? DefaultConfigRefreshTimeoutSeconds),
       },
       logRetention: RetentionDays.ONE_MONTH,
     });
 
-    props.configParameter.grantRead(this.lambda);
+    for (const param of allParameters) param.grantRead(this.lambda);
   }
 
   /** Add a listener to files created in bucket */
