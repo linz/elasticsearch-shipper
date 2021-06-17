@@ -15,14 +15,14 @@ export const LogShipperConnectionAwsValidator = z.object({
 });
 
 /** Basic auth for ElasticSearch connection */
-export const LogShipperConnectionBasic = z.object({
+export const LogShipperConnectionBasicValidator = z.object({
   url: z.string(),
   username: z.string(),
   password: z.string(),
 });
 
 export const LogShipperConnectionValidator = z.union([
-  LogShipperConnectionBasic,
+  LogShipperConnectionBasicValidator,
   LogShipperConnectionCloudValidator,
   LogShipperConnectionAwsValidator,
 ]);
@@ -30,7 +30,7 @@ export const LogShipperConnectionValidator = z.union([
 export const ConnectionValidator = {
   Cloud: LogShipperConnectionCloudValidator,
   Aws: LogShipperConnectionAwsValidator,
-  Basic: LogShipperConnectionBasic,
+  Basic: LogShipperConnectionBasicValidator,
 };
 
 /**
