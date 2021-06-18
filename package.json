@@ -6,19 +6,16 @@
   "license": "MIT",
   "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",
-  "bin": {
-    "lls-config": "./lls-config"
-  },
   "dependencies": {
     "@acuris/aws-es-connection": "^2.0.1",
-    "@aws-cdk/aws-ec2": "^1.109.0",
     "@aws-cdk/aws-lambda": "^1.109.0",
     "@aws-cdk/aws-lambda-event-sources": "^1.109.0",
-    "@aws-cdk/aws-s3": "^1.109.0",
-    "@aws-cdk/aws-ssm": "^1.109.0",
+    "@aws-cdk/aws-lambda-nodejs": "^1.109.0",
     "@aws-cdk/core": "^1.109.0",
     "@basemaps/metrics": "^4.11.1",
+    "aws-cdk": "^1.109.0",
     "aws-sdk": "^2.547.0",
+    "esbuild": "^0.12.9",
     "jsondiffpatch": "^0.4.1",
     "minimatch": "^3.0.4",
     "pino": "^6.4.1",
@@ -29,7 +26,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "bundle": "./bundle.sh",
+    "bundle": "esbuild src/shipper/index.ts --bundle --platform=node --target=node14 --outfile=dist/index.js --external:aws-sdk",
     "lint": "eslint 'src/**/*.ts' --fix",
     "test": "mocha 'build/**/*.test.js'",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
@@ -44,8 +41,6 @@
     "@types/node": "^15.0.1",
     "@types/pino": "^6.3.8",
     "@types/sinon": "^10.0.0",
-    "@zeit/ncc": "^0.22.3",
-    "aws-cdk": "^1.53.0",
     "chai": "^4.2.0",
     "conventional-changelog-cli": "^2.0.34",
     "mocha": "^9.0.0",

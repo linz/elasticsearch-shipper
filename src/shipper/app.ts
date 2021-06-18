@@ -57,7 +57,7 @@ async function processS3Event(event: S3Event, logShipper: LogShipper, logger: ty
 export async function handler(event: S3Event | CloudWatchLogsEvent): Promise<void> {
   const startTime = Date.now();
   const logger = Log.child({ id: ulid() });
-  const logShipper = await LogShipper.load();
+  const logShipper = await LogShipper.load(logger);
   const metrics = new Metrics();
 
   metrics.start('Process');
