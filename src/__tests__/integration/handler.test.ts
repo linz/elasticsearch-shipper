@@ -127,7 +127,7 @@ describe('HandlerIntegration', () => {
       await handler({ Records: [EVENT_DATA] });
       expect(true).eq(false);
     } catch (e) {
-      expect(e.message).contains('invalid_type');
+      expect(e.message).contains('/es-shipper-config/account-fake');
     }
   });
 
