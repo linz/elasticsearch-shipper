@@ -57,6 +57,7 @@
     "lls-config",
     "config.example.json",
     "build/",
-    "dist/"
+    "dist/",
+    "src/"
   ]
 }
