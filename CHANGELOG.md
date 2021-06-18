@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/linz/elasticsearch-shipper/compare/v1.1.0...v1.1.1) (2021-06-18)
+
+
+### Bug Fixes
+
+* make vpc optional ([#322](https://github.com/linz/elasticsearch-shipper/issues/322)) ([c135e2d](https://github.com/linz/elasticsearch-shipper/commit/c135e2d37cd8493dd4ad68e5b44d0980db2fecf4))
+
+
+
 # [1.1.0](https://github.com/linz/elasticsearch-shipper/compare/v1.0.0...v1.1.0) (2021-06-18)
 
 
