@@ -1,3 +1,19 @@
+# [1.1.0](https://github.com/linz/elasticsearch-shipper/compare/v1.0.0...v1.1.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* ssm values are references and cannot be validated ([#320](https://github.com/linz/elasticsearch-shipper/issues/320)) ([d0f74f9](https://github.com/linz/elasticsearch-shipper/commit/d0f74f97492ce7e7db5f0de96d6bfc43c62ead87))
+
+
+### Features
+
+* configure shipper with cdk on deployment ([#319](https://github.com/linz/elasticsearch-shipper/issues/319)) ([6d03920](https://github.com/linz/elasticsearch-shipper/commit/6d039204447ada50ff3918b8cff30fc9e47eb948))
+* convert to cdk nodejs lambda construct using esbuild ([#321](https://github.com/linz/elasticsearch-shipper/issues/321)) ([be86fe2](https://github.com/linz/elasticsearch-shipper/commit/be86fe2e91ec5bb929e501c37a3b66279cc6d26c))
+* export all the validators and config types ([#318](https://github.com/linz/elasticsearch-shipper/issues/318)) ([15bb975](https://github.com/linz/elasticsearch-shipper/commit/15bb9759fce15db60ffe7eab84ae51d617db611a))
+
+
+
 # [1.0.0](https://github.com/linz/elasticsearch-shipper/compare/v0.6.2...v1.0.0) (2021-06-17)
 
 
