@@ -23,7 +23,7 @@ export interface LambdaShipperConfig {
 
 export interface LambdaShipperProps {
   /** VPC to run the lambda function in */
-  vpc: IVpc;
+  vpc?: IVpc;
 
   /** Configuration objects */
   config: LambdaShipperConfig[] | LambdaShipperConfig;
