@@ -1,6 +1,6 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
+import { LambdaDestination } from '@aws-cdk/aws-s3-notifications';
 import { RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as ssm from '@aws-cdk/aws-ssm';
@@ -113,8 +113,8 @@ export class LambdaLogShipperFunction extends Construct {
   }
 
   /** Add a listener to files created in bucket */
-  addS3Source(bucket: s3.Bucket): void {
-    this.lambda.addEventSource(new S3EventSource(bucket, { events: [s3.EventType.OBJECT_CREATED] }));
+  addS3Source(bucket: s3.IBucket): void {
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new LambdaDestination(this.lambda));
     bucket.grantRead(this.lambda);
   }
 }
