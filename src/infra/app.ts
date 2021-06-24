@@ -1,6 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
-import { BlockPublicAccess } from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import { DefaultConfigRefreshTimeoutSeconds, DefaultExecutionTimeoutSeconds, Env } from '../env';
@@ -44,11 +43,7 @@ export class LogShipperStack extends cdk.Stack {
     });
 
     if (BUCKET_NAME) {
-      const bucket = new s3.Bucket(this, 'LogBucket', {
-        bucketName: BUCKET_NAME,
-        versioned: true,
-        blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      });
+      const bucket = s3.Bucket.fromBucketName(this, 'LogBucket', BUCKET_NAME);
       this.logShipper.addS3Source(bucket);
     }
 
