@@ -1,6 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
-import { BlockPublicAccess } from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import { DefaultConfigRefreshTimeoutSeconds, DefaultExecutionTimeoutSeconds, Env } from '../env';
