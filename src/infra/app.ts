@@ -44,11 +44,7 @@ export class LogShipperStack extends cdk.Stack {
     });
 
     if (BUCKET_NAME) {
-      const bucket = new s3.Bucket(this, 'LogBucket', {
-        bucketName: BUCKET_NAME,
-        versioned: true,
-        blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      });
+      const bucket = s3.Bucket.fromBucketName(this, 'LogBucket', BUCKET_NAME);
       this.logShipper.addS3Source(bucket);
     }
 
