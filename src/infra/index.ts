@@ -5,13 +5,12 @@ import { RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Construct, Duration } from '@aws-cdk/core';
+import { execFileSync } from 'child_process';
 import * as path from 'path';
-import * as nodeLambda from '@aws-cdk/aws-lambda-nodejs';
 import { LogShipperConfigAccount } from '../config/config';
 import { LogShipperConfigAccountValidator } from '../config/config.elastic';
 import { DefaultConfigRefreshTimeoutSeconds, DefaultExecutionTimeoutSeconds, Env } from '../env';
 import { LogFunctionName, LogProcessFunction } from '../shipper/type';
-import { execFileSync } from 'child_process';
 
 export const SourceCode = path.resolve(__dirname, '..', '..', '..', 'dist');
 export const SourceCodeExtension = path.join(SourceCode, LogFunctionName);
@@ -94,14 +93,13 @@ export class LambdaLogShipperFunction extends Construct {
     });
     allParameters.push(configParameter);
 
-    this.lambda = new nodeLambda.NodejsFunction(this, 'Shipper', {
+    this.lambda = new lambda.Function(this, 'Shipper', {
       memorySize: props.memorySize ?? 256,
+      runtime: lambda.Runtime.NODEJS_14_X,
       vpc: props.vpc,
+      handler: 'index.handler',
       timeout,
-      entry: path.join(__dirname, '../../../src/shipper/index.ts'),
-      bundling: {
-        sourceMap: true,
-      },
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../../dist')),
       environment: {
         [Env.ConfigName]: configParameter.parameterName,
         [Env.ConfigRefreshTimeoutSeconds]: String(props.refreshDurationSeconds ?? DefaultConfigRefreshTimeoutSeconds),
