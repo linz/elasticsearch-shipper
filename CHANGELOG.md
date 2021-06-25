@@ -1,3 +1,17 @@
+## [1.1.2](https://github.com/linz/elasticsearch-shipper/compare/v1.1.1...v1.1.2) (2021-06-25)
+
+
+### Bug Fixes
+
+* use standard lambda function as bundling typescript is hard for dependencies ([#329](https://github.com/linz/elasticsearch-shipper/issues/329)) ([153bd71](https://github.com/linz/elasticsearch-shipper/commit/153bd714bd2498a9ed245d2b23ab38998bc2b7be))
+
+
+### Features
+
+* allow buckets not created by cdk to be used as sources ([#328](https://github.com/linz/elasticsearch-shipper/issues/328)) ([8bc57e8](https://github.com/linz/elasticsearch-shipper/commit/8bc57e858ba726257ef4b654b19b34738feb46a2))
+
+
+
 ## [1.1.1](https://github.com/linz/elasticsearch-shipper/compare/v1.1.0...v1.1.1) (2021-06-18)
 
 
