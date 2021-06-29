@@ -441,10 +441,10 @@
     "@aws-cdk/core" "1.110.0"
     constructs "^3.3.69"
 
-"@aws-cdk/cfnspec@1.110.0":
-  version "1.110.0"
-  resolved "https://registry.yarnpkg.com/@aws-cdk/cfnspec/-/cfnspec-1.110.0.tgz#780589c6a692e7d5dacae3ed163a146dd7209c08"
-  integrity sha512-WA5WOWnxZkpertq32Ekl7Co8V2d4GcZzHQiZXgmfxhHF2z5smXoMT5LrvlHUV8grmzze5wYyti1QtpGLOw2x+A==
+"@aws-cdk/cfnspec@1.110.1":
+  version "1.110.1"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/cfnspec/-/cfnspec-1.110.1.tgz#6bbfd8f55f4fbd1dc2238b321d3053be58e35fd7"
+  integrity sha512-5cSKh20hKEiQUd0IzKn69ns2zwq7MmgeJLdO38Bf5dHf8VEVjfZnCAxho7daUJT0kolQWW9Dr1ZeJau/rFvyXA==
   dependencies:
     md5 "^2.3.0"
 
@@ -456,12 +456,20 @@
     jsonschema "^1.4.0"
     semver "^7.3.5"
 
-"@aws-cdk/cloudformation-diff@1.110.0":
-  version "1.110.0"
-  resolved "https://registry.yarnpkg.com/@aws-cdk/cloudformation-diff/-/cloudformation-diff-1.110.0.tgz#50e7cec6149be78a93e935b7979c9079b173a4d7"
-  integrity sha512-b1/DJ2eSZc7jRGnFlqTOK+b8QkWrHLm4SdhBR5YyIFWZRpYf0Xp9pJYgtQ9e7wrRKtx3isxhxg9WZxXl9gEeig==
+"@aws-cdk/cloud-assembly-schema@1.110.1":
+  version "1.110.1"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-1.110.1.tgz#84736bdd7f7092856b450f8b357a05677cf7c4d2"
+  integrity sha512-rsv6yNhRXkqO8UP0UOzRH60Cx89vGSUKcWSzyvvL9VrTpozYCUBMMuTqhZsmArAv82PYzb1pTDcwUnJKDLhWtQ==
   dependencies:
-    "@aws-cdk/cfnspec" "1.110.0"
+    jsonschema "^1.4.0"
+    semver "^7.3.5"
+
+"@aws-cdk/cloudformation-diff@1.110.1":
+  version "1.110.1"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/cloudformation-diff/-/cloudformation-diff-1.110.1.tgz#1442d84ca02c5671423f7fd3bfb8d4126d8656e3"
+  integrity sha512-QaVc4YFBwLzp4uPD6enSNAV5stUvJ6aQ0km9hC2BPR68vc0NAHKX+ZZbJoiKPu/0aXjzrYvEqYw4qRIM0d6RlQ==
+  dependencies:
+    "@aws-cdk/cfnspec" "1.110.1"
     "@types/node" "^10.17.60"
     colors "^1.4.0"
     diff "^5.0.0"
@@ -505,10 +513,23 @@
     "@aws-cdk/cloud-assembly-schema" "1.110.0"
     semver "^7.3.5"
 
+"@aws-cdk/cx-api@1.110.1":
+  version "1.110.1"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/cx-api/-/cx-api-1.110.1.tgz#909ab5d48e6f51b6cfebfefc29868b51dd9e9897"
+  integrity sha512-InY00PETF2wYiRA6SsldsjceIi4uRt5ED0nTNx0fApBr6k4OUfBUV44wUyTm6ZuNzeTU3qxaDKH2APRfiH06yA==
+  dependencies:
+    "@aws-cdk/cloud-assembly-schema" "1.110.1"
+    semver "^7.3.5"
+
 "@aws-cdk/region-info@1.110.0":
   version "1.110.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/region-info/-/region-info-1.110.0.tgz#536545a802944b5aca3a4e44fc03fd178f99f135"
   integrity sha512-AYnzjqW8WVcQi0Hpjxabi0M3YUraiV7OPpuhZYurOtZpaODBcX7epGxvTrth5YswoJO4cqAd6zNMTqc/cIhkiA==
+
+"@aws-cdk/region-info@1.110.1":
+  version "1.110.1"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/region-info/-/region-info-1.110.1.tgz#27eec01f1db9768bdbbfe2037c3e65d9b372b74f"
+  integrity sha512-sRRTO2qH8kWsh4s62bKTmk9IU8uXYmRJHkOjWo6RUC/W0sv7S6VeB1XHZ7QReDF3woJ/n3oPJzsf/bu33m4l+g==
 
 "@babel/code-frame@7.12.11":
   version "7.12.11"
@@ -1012,18 +1033,18 @@ atomic-sleep@^1.0.0:
   integrity sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==
 
 "aws-cdk@>= 1.110.0":
-  version "1.110.0"
-  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-1.110.0.tgz#7d05f0ef31b0426e41d0c6d26739d69a1fe5670e"
-  integrity sha512-50BDYKYc6yCYP6oCo6t7/Thxv692vthM4zLNUNJlto4zTrl1oQk2ra4x1qtzQvCPf0UON2l/ch0yknzuxny9Iw==
+  version "1.110.1"
+  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-1.110.1.tgz#d0b78a66536a6da14fe4e78fd9156a1905d7d0af"
+  integrity sha512-9OZtCcHVUt1xeDutxWZdjOhKelqfFBI7az63rdFgPJxCspg3HxQNrrcqDGMZZ3R/fSeVol/zoZz5wHWB730qLw==
   dependencies:
-    "@aws-cdk/cloud-assembly-schema" "1.110.0"
-    "@aws-cdk/cloudformation-diff" "1.110.0"
-    "@aws-cdk/cx-api" "1.110.0"
-    "@aws-cdk/region-info" "1.110.0"
+    "@aws-cdk/cloud-assembly-schema" "1.110.1"
+    "@aws-cdk/cloudformation-diff" "1.110.1"
+    "@aws-cdk/cx-api" "1.110.1"
+    "@aws-cdk/region-info" "1.110.1"
     archiver "^5.3.0"
     aws-sdk "^2.848.0"
     camelcase "^6.2.0"
-    cdk-assets "1.110.0"
+    cdk-assets "1.110.1"
     colors "^1.4.0"
     decamelize "^5.0.0"
     fs-extra "^9.1.0"
@@ -1040,22 +1061,7 @@ atomic-sleep@^1.0.0:
     yaml "1.10.2"
     yargs "^16.2.0"
 
-aws-sdk@^2.547.0:
-  version "2.850.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.850.0.tgz#be58a03f8e418590e2739844fe3f847c7246f9fb"
-  integrity sha512-RqPeSKe1JlhTUL9+xUsp771ZtMY7JICoQEnFJuJ+JVqGyILhg95L4t8S5KnznUfWYc0pcpTiHKLmPteHyHS3pw==
-  dependencies:
-    buffer "4.9.2"
-    events "1.1.1"
-    ieee754 "1.1.13"
-    jmespath "0.15.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    uuid "3.3.2"
-    xml2js "0.4.19"
-
-aws-sdk@^2.848.0:
+aws-sdk@^2.547.0, aws-sdk@^2.848.0:
   version "2.931.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.931.0.tgz#7fdc886fa7697095203fe7de16bc948a8b1c8daa"
   integrity sha512-Db97/aJq8zYl8mHzY6dNO6m9S89TqN4HEUUc2aCYQCTyMb/eNrjf+uZTnutnQbJkClqHzxFcWc3aqe5VlTac/A==
@@ -1207,13 +1213,13 @@ camelcase@^6.0.0, camelcase@^6.2.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-6.2.0.tgz#924af881c9d525ac9d87f40d964e5cea982a1809"
   integrity sha512-c7wVvbw3f37nuobQNtgsgG9POC9qMbNuMQmTCqZv23b6MIz0fcYpBiOlv9gEN/hdLdnZTDQhg6e9Dq5M1vKvfg==
 
-cdk-assets@1.110.0:
-  version "1.110.0"
-  resolved "https://registry.yarnpkg.com/cdk-assets/-/cdk-assets-1.110.0.tgz#bc14776b317293ae652370c5d3e9934ebd01b0c2"
-  integrity sha512-tT2kLwbsAedQlXIHhi5tl/K6P4ilhrOt8JJ5BMqcU606TXMnUfz991TcO3zHdjJgMPHdm72t3EdeoiM7pTc21Q==
+cdk-assets@1.110.1:
+  version "1.110.1"
+  resolved "https://registry.yarnpkg.com/cdk-assets/-/cdk-assets-1.110.1.tgz#103ee721fbde9df9b6776710dab4fa44f62d9912"
+  integrity sha512-Jkp+4q/HBLT+Vd6XH1aaOY+VYkcefLEANQO2XmOgfgj94AJSUPsMJmxDX31QojYGyaEJl51MK79x+LaPxtekuQ==
   dependencies:
-    "@aws-cdk/cloud-assembly-schema" "1.110.0"
-    "@aws-cdk/cx-api" "1.110.0"
+    "@aws-cdk/cloud-assembly-schema" "1.110.1"
+    "@aws-cdk/cx-api" "1.110.1"
     archiver "^5.3.0"
     aws-sdk "^2.848.0"
     glob "^7.1.7"
