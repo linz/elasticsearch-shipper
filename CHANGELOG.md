@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/linz/elasticsearch-shipper/compare/v1.1.2...v1.2.0) (2021-06-30)
+
+
+### Bug Fixes
+
+* retry fetching ssm parameters upto 3 times ([#335](https://github.com/linz/elasticsearch-shipper/issues/335)) ([11cff36](https://github.com/linz/elasticsearch-shipper/commit/11cff366d2d2add85066be29cebda90743f9e2a1))
+
+
+### Features
+
+* include index name and elastic cluster id in log message when dropping logs ([#334](https://github.com/linz/elasticsearch-shipper/issues/334)) ([f06fb60](https://github.com/linz/elasticsearch-shipper/commit/f06fb60a6592cd63ed9b3d8b54cc225d508fc290))
+
+
+
 ## [1.1.2](https://github.com/linz/elasticsearch-shipper/compare/v1.1.1...v1.1.2) (2021-06-25)
 
 
