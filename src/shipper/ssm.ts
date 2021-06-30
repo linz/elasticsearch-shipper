@@ -26,7 +26,7 @@ export class SsmCache {
         return JSON.parse(config.Parameter.Value as string);
       } catch (e) {
         failures.push(e);
-        await new Promise((resolve) => setTimeout(resolve, RetryDelay + i * RetryDelay));
+        await new Promise((resolve) => setTimeout(resolve, RetryDelayMilliseconds + i * RetryDelayMilliseconds));
       }
     }
     throw new Error('Failed to read: ' + configName + ' Reasons:' + failures.map((c) => c.toString()).join('\n'));
