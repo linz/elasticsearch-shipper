@@ -66,16 +66,15 @@ export class ElasticSearch {
 
   /**
    * Load all the items in the queue into elastic search
-   *
-   * @returns list of log objects that failed to load
    */
-  async save(logger?: typeof Log): Promise<void> {
+  async save(LogOpt?: typeof Log): Promise<void> {
     const client = await this.createClient();
     const startTime = Date.now();
     const logs = this.logs;
     const indexes = this.indexes;
     this.logs = [];
     this.indexes = new Map();
+    const logger = LogOpt?.child({ elasticId: this.connectionId });
 
     const indexesUsed = new Set<string>();
     const stats = await client.helpers.bulk({
@@ -87,8 +86,9 @@ export class ElasticSearch {
           index: { _index: indexName },
         };
       },
-      onDrop(err: OnDropDocument<LogObject>) {
-        logger?.error({ logMessage: JSON.stringify(err.document), error: err.error }, 'FailedIndex');
+      onDrop(lo: OnDropDocument<LogObject>) {
+        const indexName = indexes.get(lo.document['@id']);
+        logger?.error({ indexName, logMessage: JSON.stringify(lo.document), error: lo.error }, 'FailedIndex');
       },
       // Wait up to 1 second before flushing
       flushInterval: 1000,
