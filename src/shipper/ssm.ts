@@ -3,7 +3,7 @@ import { RefreshTimeoutSeconds } from './shipper.config';
 
 export const ssm = new SSM();
 
-const RetryDelay = 50;
+const RetryDelayMilliseconds = 50;
 const RetryCount = 3;
 
 export class SsmCache {
