@@ -3,6 +3,9 @@ import { RefreshTimeoutSeconds } from './shipper.config';
 
 export const ssm = new SSM();
 
+const RetryDelayMilliseconds = 50;
+const RetryCount = 3;
+
 export class SsmCache {
   static cache: Map<string, { value: Promise<unknown>; time: number }> = new Map();
 
@@ -15,8 +18,17 @@ export class SsmCache {
   }
 
   static async fetch(configName: string): Promise<unknown> {
-    const config = await ssm.getParameter({ Name: configName }).promise();
-    if (config.Parameter == null) throw new Error(`Could not retrieve parameter at ${configName}`);
-    return JSON.parse(config.Parameter.Value as string);
+    const failures: Error[] = [];
+    for (let i = 0; i < RetryCount; i++) {
+      try {
+        const config = await ssm.getParameter({ Name: configName }).promise();
+        if (config.Parameter == null) throw new Error(`Could not retrieve parameter at ${configName}`);
+        return JSON.parse(config.Parameter.Value as string);
+      } catch (e) {
+        failures.push(e);
+        await new Promise((resolve) => setTimeout(resolve, RetryDelayMilliseconds + i * RetryDelayMilliseconds));
+      }
+    }
+    throw new Error('Failed to read: ' + configName + ' Reasons:' + failures.map((c) => c.toString()).join('\n'));
   }
 }
