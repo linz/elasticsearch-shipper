@@ -11,6 +11,7 @@ import { LogShipperConfigAccount } from '../config/config';
 import { LogShipperConfigAccountValidator } from '../config/config.elastic';
 import { DefaultConfigRefreshTimeoutSeconds, DefaultExecutionTimeoutSeconds, Env } from '../env';
 import { LogFunctionName, LogProcessFunction } from '../shipper/type';
+import { PolicyStatement } from '@aws-cdk/aws-iam';
 
 export const SourceCode = path.resolve(__dirname, '..', '..', '..', 'dist');
 export const SourceCodeExtension = path.join(SourceCode, LogFunctionName);
@@ -108,6 +109,13 @@ export class LambdaLogShipperFunction extends Construct {
       },
       logRetention: RetentionDays.ONE_MONTH,
     });
+
+    this.lambda.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['es:*'],
+        resources: ['*'],
+      }),
+    );
 
     for (const param of allParameters) param.grantRead(this.lambda);
   }
