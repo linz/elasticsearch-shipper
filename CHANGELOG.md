@@ -1,3 +1,21 @@
+# [2.0.0](https://github.com/linz/elasticsearch-shipper/compare/v1.2.0...v2.0.0) (2021-07-15)
+
+
+### Features
+
+* switch to s3 assets for configuration ([#360](https://github.com/linz/elasticsearch-shipper/issues/360)) ([b400ee8](https://github.com/linz/elasticsearch-shipper/commit/b400ee84593229aa1226dab42ebb988b837afc51))
+
+
+### BREAKING CHANGES
+
+* this changes configuration from using SSM to S3, any reference to `/config/value` should be changed to `ssm://config/value`
+
+* refactor: remove unused code
+
+* refactor: put back accidently deleted code
+
+
+
 # [1.2.0](https://github.com/linz/elasticsearch-shipper/compare/v1.1.2...v1.2.0) (2021-06-30)
 
 
