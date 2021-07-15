@@ -2,11 +2,12 @@ import { S3EventRecord } from 'aws-lambda';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { LogShipperConfigAccount } from '../../config/config';
+import { Env } from '../../env';
 import { Log } from '../../logger';
-import { handler, S3 } from '../../shipper/app';
+import { handler, s3 } from '../../shipper/app';
 import { ElasticSearch } from '../../shipper/elastic';
 import { LogShipper } from '../../shipper/shipper.config';
-import { SsmCache } from '../../shipper/ssm';
+import { ConfigCache } from '../../shipper/config';
 import { LogObject } from '../../shipper/type';
 import { EVENT_DATA, EVENT_DATA_ACCOUNT } from '../event.data';
 import { getCloudWatchEvent, LOG_DATA, toLogStream } from '../log.data';
@@ -19,6 +20,7 @@ describe('HandlerIntegration', () => {
   let fakeAccount: LogShipperConfigAccount;
 
   beforeEach(async () => {
+    process.env[Env.ConfigUri] = 's3://foo/bar';
     fakeAccount = {
       elastic: '/fake',
       id: EVENT_DATA_ACCOUNT,
@@ -28,15 +30,14 @@ describe('HandlerIntegration', () => {
       index: 'weekly',
       logGroups: [{ filter: '**', tags: ['@logGroup'], prefix: '@logGroup', index: 'daily' }],
     };
-    sandbox.stub(SsmCache, 'get').callsFake(async (key) => {
-      if (key === '/es-shipper-config/accounts') return ['/es-shipper-config/account-fake'];
-      if (key === '/es-shipper-config/account-fake') return fakeAccount;
+    sandbox.stub(ConfigCache, 'get').callsFake(async (key) => {
+      if (key === 's3://foo/bar') return [fakeAccount];
       throw new Error('Invalid key fetch: ' + key);
     });
     sandbox.stub(ElasticSearch.prototype, 'save').resolves();
 
     const s3Return = { promise: () => Promise.resolve({ Body: toLogStream() }) } as any;
-    s3Stub = sandbox.stub(S3, 'getObject') as any;
+    s3Stub = sandbox.stub(s3, 'getObject') as any;
     s3Stub.returns(s3Return);
   });
 
@@ -127,7 +128,7 @@ describe('HandlerIntegration', () => {
       await handler({ Records: [EVENT_DATA] });
       expect(true).eq(false);
     } catch (e) {
-      expect(e.message).contains('/es-shipper-config/account-fake');
+      expect(e.message).contains('s3://foo/bar');
     }
   });
 

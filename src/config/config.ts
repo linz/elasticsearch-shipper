@@ -3,14 +3,12 @@ import {
   LogShipperConfigAccountValidator,
   LogShipperConfigGroupValidator,
   LogShipperConfigIndexDateValidator,
-  LogShipperConfigValidator,
   LogShipperConnectionAwsValidator,
   LogShipperConnectionBasicValidator,
   LogShipperConnectionCloudValidator,
   LogShipperConnectionValidator,
 } from './config.elastic';
 
-export type LogShipperConfig = z.infer<typeof LogShipperConfigValidator>;
 export type LogShipperConnection = z.infer<typeof LogShipperConnectionValidator>;
 export type LogShipperConfigAccount = z.infer<typeof LogShipperConfigAccountValidator>;
 export type LogShipperConfigLogGroup = z.infer<typeof LogShipperConfigGroupValidator>;

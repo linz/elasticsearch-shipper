@@ -1,12 +1,10 @@
-import SSM from 'aws-sdk/clients/ssm';
+import { fsa } from '@linzjs/s3fs';
 import { RefreshTimeoutSeconds } from './shipper.config';
-
-export const ssm = new SSM();
 
 const RetryDelayMilliseconds = 50;
 const RetryCount = 3;
 
-export class SsmCache {
+export class ConfigCache {
   static cache: Map<string, { value: Promise<unknown>; time: number }> = new Map();
 
   static get(configName: string): Promise<unknown> {
@@ -17,18 +15,19 @@ export class SsmCache {
     return existing.value;
   }
 
-  static async fetch(configName: string): Promise<unknown> {
+  static async fetch(configUri: string): Promise<unknown> {
+    // TODO this is for backwards compatibility this should be removed once everything is prefixed with a ssm://
+    if (configUri.startsWith('/')) configUri = 'ssm:/' + configUri; // all SSM params should have a `/`
     const failures: Error[] = [];
     for (let i = 0; i < RetryCount; i++) {
       try {
-        const config = await ssm.getParameter({ Name: configName }).promise();
-        if (config.Parameter == null) throw new Error(`Could not retrieve parameter at ${configName}`);
-        return JSON.parse(config.Parameter.Value as string);
+        const object = await fsa.read(configUri);
+        return JSON.parse(object.toString());
       } catch (e) {
         failures.push(e);
         await new Promise((resolve) => setTimeout(resolve, RetryDelayMilliseconds + i * RetryDelayMilliseconds));
       }
     }
-    throw new Error('Failed to read: ' + configName + ' Reasons:' + failures.map((c) => c.toString()).join('\n'));
+    throw new Error('Failed to read: ' + configUri + ' Reasons:' + failures.map((c) => c.toString()).join('\n'));
   }
 }

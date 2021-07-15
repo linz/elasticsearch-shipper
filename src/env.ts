@@ -6,7 +6,7 @@ export const Env = {
   /** Name of the bucket to get log files from */
   BucketName: 'BUCKET_NAME',
   /** Parameter store name to retrieve config from */
-  ConfigName: 'CONFIG_NAME',
+  ConfigUri: 'CONFIG_URI',
   /** How long the config should be cached in seconds*/
   ConfigRefreshTimeoutSeconds: 'CONFIG_REFRESH_TIMEOUT_SECONDS',
   /** Maximum execution time of the lambda */
