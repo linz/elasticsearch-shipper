@@ -1,3 +1,4 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
@@ -32,7 +33,10 @@ export class LogShipperStack extends cdk.Stack {
   public constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const vpc = ec2.Vpc.fromLookup(this, 'EsVpc', { tags: { BaseVPC: 'true' } });
+
     this.logShipper = new LambdaLogShipperFunction(this, 'Shipper', {
+      vpc,
       config: Config,
       refreshDurationSeconds: CONFIG_REFRESH_TIMEOUT_SECONDS,
       executionTimeoutSeconds: EXECUTION_TIMEOUT_SECONDS,
