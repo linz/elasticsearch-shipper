@@ -1,6 +1,6 @@
 import { LogShipperConfigAccount } from '../config/config';
 
-export const ExampleConfigKeys = ['/es-shipper-config/config-min'];
+// export const ExampleConfigKeys = ['/es-shipper-config/config-min'];
 
 export const ExampleConfigMinimal: LogShipperConfigAccount = {
   elastic: '/es-shipper-config/account-min',
@@ -22,12 +22,8 @@ export const ExampleConfigComplex: LogShipperConfigAccount = {
   logGroups: [{ filter: '**', drop: false, index: 'daily', prefix: 'all-tags' }],
 };
 
-export const ExampleConfigMap: Record<string, unknown> = {
-  '/es-shipper-config/accounts': ExampleConfigKeys,
-  '/es-shipper-config/config-min': ExampleConfigMinimal,
-  '/es-shipper-config/config-complex': ExampleConfigComplex,
-};
-
-export async function configLookup(key: string): Promise<unknown> {
-  return ExampleConfigMap[key];
-}
+// export const ExampleConfigMap: Record<string, unknown> = {
+//   '/es-shipper-config/accounts': ExampleConfigKeys,
+//   '/es-shipper-config/config-min': ExampleConfigMinimal,
+//   '/es-shipper-config/config-complex': ExampleConfigComplex,
+// };

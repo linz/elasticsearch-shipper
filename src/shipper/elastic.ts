@@ -5,7 +5,7 @@ import { LogShipperConfigIndexDate } from '../config/config';
 import { ConnectionValidator } from '../config/config.elastic';
 import { Log } from '../logger';
 import { getIndexDate } from './elastic.index';
-import { SsmCache } from './ssm';
+import { ConfigCache } from './config';
 import { LogObject } from './type';
 
 export class ElasticSearch {
@@ -20,7 +20,7 @@ export class ElasticSearch {
   }
 
   private async createClient(): Promise<Client> {
-    const cfg = await SsmCache.get(this.connectionId);
+    const cfg = await ConfigCache.get(this.connectionId);
     const cloud = ConnectionValidator.Cloud.safeParse(cfg);
     if (cloud.success) {
       return new Client({

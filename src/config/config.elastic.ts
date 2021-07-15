@@ -94,5 +94,3 @@ export const LogShipperConfigAccountValidator = z.object({
   /** Configuration for log groups inside this account */
   logGroups: z.array(LogShipperConfigGroupValidator),
 });
-
-export const LogShipperConfigValidator = z.array(z.string());

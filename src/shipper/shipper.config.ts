@@ -1,13 +1,13 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsLogEvent } from 'aws-lambda';
 import minimatch from 'minimatch';
 import { LogShipperConfigAccount, LogShipperConfigLogGroup } from '../config/config';
-import { LogShipperConfigAccountValidator, LogShipperConfigValidator } from '../config/config.elastic';
-import { DefaultConfigRefreshTimeoutSeconds, DefaultParameterStoreBasePath, Env } from '../env';
+import { LogShipperConfigAccountValidator } from '../config/config.elastic';
+import { DefaultConfigRefreshTimeoutSeconds, Env } from '../env';
 import { Log } from '../logger';
 import { ElasticSearch } from './elastic';
 import { onLogExtractJson } from './log.funcs/extract.json';
 import { onLogTag } from './log.funcs/tag';
-import { SsmCache } from './ssm';
+import { ConfigCache } from './config';
 import { LogObject, LogProcessFunction } from './type';
 
 export const RefreshTimeoutSeconds = Number(
@@ -30,25 +30,21 @@ export class LogShipper {
 
   static async load(logger?: typeof Log): Promise<LogShipper> {
     if (LogShipper.INSTANCE == null || LogShipper.INSTANCE.isRefreshNeeded) {
-      const configName = process.env[Env.ConfigName] ?? DefaultParameterStoreBasePath;
-      const data = await SsmCache.get(configName);
-      const cfg = LogShipperConfigValidator.parse(data);
+      const configUri = process.env[Env.ConfigUri];
+      if (configUri == null) throw new Error(`Failed to load configuration $${Env.ConfigUri} is missing`);
+      const configRaw = await ConfigCache.get(configUri);
 
       const accounts: LogShipperConfigAccount[] = [];
-      await Promise.all(
-        cfg.map(async (configId) => {
-          const raw = await SsmCache.get(configId);
-          const rawList = Array.isArray(raw) ? raw : [raw];
-          for (const account of rawList) {
-            const res = LogShipperConfigAccountValidator.safeParse(account);
-            if (!res.success) {
-              logger?.fatal({ errors: res.error }, 'Failed to parse ' + configId);
-              throw new Error('Failed to parse ' + configId);
-            }
-            accounts.push(account);
-          }
-        }),
-      );
+
+      if (!Array.isArray(configRaw)) throw new Error('Configuration is not an array uri:' + configUri);
+      for (const account of configRaw) {
+        const res = LogShipperConfigAccountValidator.safeParse(account);
+        if (!res.success) {
+          logger?.fatal({ errors: res.error }, 'Failed to parse uri:' + configUri);
+          throw new Error('Failed to parse uri:' + configUri);
+        }
+        accounts.push(account);
+      }
 
       LogShipper.INSTANCE = new LogShipper(accounts);
     }

@@ -3,15 +3,22 @@ import 'source-map-support/register';
 // Source map support must come first
 import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lambda';
 import * as util from 'util';
-import * as AWS from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
+import SSM from 'aws-sdk/clients/ssm';
 import * as zlib from 'zlib';
 import { LogShipper } from './shipper.config';
 import { Log } from '../logger';
 import { ulid } from 'ulid';
 import { processCloudWatchData, splitJsonString, isCloudWatchEvent, s3ToString } from './log.handle';
 import { Metrics } from '@basemaps/metrics';
+import { fsa, FsS3 } from '@linzjs/s3fs';
+import { FsSsm } from './fs.ssm';
 
-export const S3 = new AWS.S3({ region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2' });
+export const s3 = new S3({ region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2' });
+export const ssm = new SSM({ region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2' });
+
+fsa.register('s3://', new FsS3(s3));
+fsa.register('ssm://', new FsSsm(ssm));
 
 const gunzip: (buf: Buffer) => Promise<Buffer> = util.promisify(zlib.gunzip);
 
@@ -39,7 +46,7 @@ async function processS3Event(event: S3Event, logShipper: LogShipper, logger: ty
 
     logger.info({ source }, 'ProcessEvent');
 
-    const object = await S3.getObject(params).promise();
+    const object = await s3.getObject(params).promise();
     const unzipped = await gunzip(object.Body as Buffer);
     const jsonLines = splitJsonString(unzipped.toString());
 

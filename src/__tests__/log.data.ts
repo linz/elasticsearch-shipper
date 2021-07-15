@@ -1,4 +1,4 @@
-import { CloudWatchLogsDecodedData, CloudWatchLogsEvent } from 'aws-lambda';
+import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lambda';
 import { gzipSync } from 'zlib';
 import { EVENT_DATA_ACCOUNT } from './event.data';
 
@@ -61,4 +61,8 @@ export function toLogStream(logData = LOG_DATA): Buffer {
 export function getCloudWatchEvent(logData = LOG_DATA[1]): CloudWatchLogsEvent {
   const data = gzipSync(JSON.stringify(logData)).toString('base64');
   return { awslogs: { data } };
+}
+
+export function getS3Event(): S3Event {
+  return { Records: [{ s3: { bucket: { name: 'log-bucket' }, object: { key: 'log-key' } } }] as any };
 }
