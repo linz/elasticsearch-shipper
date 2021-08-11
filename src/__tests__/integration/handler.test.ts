@@ -138,7 +138,7 @@ describe('HandlerIntegration', () => {
     const firstLog = getLog(0);
     const indexInsert = shipper.getElastic(fakeAccount).indexes.get(firstLog['@id']);
 
-    expect(indexInsert).eq('@logGroup-111111111111-2019-10-25'); // Daily index with @logGroup prefix
+    expect(indexInsert).eq('@logGroup-2019-10-25'); // Daily index with @logGroup prefix
     expect(firstLog['@tags']).deep.eq(['@account', '@logGroup', 'Lambda log']);
   });
 
@@ -154,7 +154,7 @@ describe('HandlerIntegration', () => {
     const firstLog = getLog(0);
     const indexInsert = shipper.getElastic(fakeAccount).indexes.get(firstLog['@id']);
 
-    expect(indexInsert).eq('@account-111111111111-2019-10-24'); // Weekly index with @account prefix
+    expect(indexInsert).eq('@account-2019-10-24'); // Weekly index with @account prefix
     expect(firstLog['@tags']).deep.eq(['@account', 'Lambda log']);
   });
 });

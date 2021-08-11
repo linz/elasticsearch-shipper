@@ -17,50 +17,50 @@ describe('ElasticSearch', () => {
   it('should create monthly index names', () => {
     const es = new ElasticSearch('');
     const indexName = es.getIndexName(makeLog('2019-10-12T15'), 'prefix', 'monthly');
-    expect(indexName).to.equal('prefix-1234-2019-10');
+    expect(indexName).to.equal('prefix-2019-10');
 
     const indexNameB = es.getIndexName(makeLog('2019-10-13T15'), 'prefix', 'monthly');
-    expect(indexNameB).to.equal('prefix-1234-2019-10');
+    expect(indexNameB).to.equal('prefix-2019-10');
   });
 
   it('should create yearly index names', () => {
     const es = new ElasticSearch('');
     const indexName = es.getIndexName(makeLog('2019-10-12T15'), 'prefix', 'yearly');
-    expect(indexName).to.equal('prefix-1234-2019');
+    expect(indexName).to.equal('prefix-2019');
 
     const indexNameB = es.getIndexName(makeLog('2019-10-13T15'), 'prefix', 'yearly');
-    expect(indexNameB).to.equal('prefix-1234-2019');
+    expect(indexNameB).to.equal('prefix-2019');
   });
 
   it('should create daily index names when DAILY_INDEX is true', () => {
     const es = new ElasticSearch('');
     const indexName = es.getIndexName(makeLog('2019-10-12T15'), 'prefix', 'daily');
-    expect(indexName).to.equal('prefix-1234-2019-10-12');
+    expect(indexName).to.equal('prefix-2019-10-12');
 
     const indexNameB = es.getIndexName(makeLog('2019-10-13T15'), 'prefix', 'daily');
-    expect(indexNameB).to.equal('prefix-1234-2019-10-13');
+    expect(indexNameB).to.equal('prefix-2019-10-13');
   });
 
   it('should create weekly index names', () => {
     const es = new ElasticSearch('');
 
-    expect(es.getIndexName(makeLog('2019-10-05T15:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-1234-2019-10-03');
-    expect(es.getIndexName(makeLog('2019-10-06T15:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-1234-2019-10-03');
-    expect(es.getIndexName(makeLog('2019-10-07T15:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-1234-2019-10-03');
-    expect(es.getIndexName(makeLog('2019-10-16T15:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-1234-2019-10-10');
-    expect(es.getIndexName(makeLog('2019-10-16T23:59:59.999Z'), 'prefix', 'weekly')).to.equal('prefix-1234-2019-10-10');
-    expect(es.getIndexName(makeLog('2019-10-17T00:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-1234-2019-10-17');
+    expect(es.getIndexName(makeLog('2019-10-05T15:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-2019-10-03');
+    expect(es.getIndexName(makeLog('2019-10-06T15:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-2019-10-03');
+    expect(es.getIndexName(makeLog('2019-10-07T15:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-2019-10-03');
+    expect(es.getIndexName(makeLog('2019-10-16T15:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-2019-10-10');
+    expect(es.getIndexName(makeLog('2019-10-16T23:59:59.999Z'), 'prefix', 'weekly')).to.equal('prefix-2019-10-10');
+    expect(es.getIndexName(makeLog('2019-10-17T00:00:00.000Z'), 'prefix', 'weekly')).to.equal('prefix-2019-10-17');
   });
 
   it('should create numeric index names', () => {
     const es = new ElasticSearch('');
 
-    expect(es.getIndexName(makeLog('2019-10-05T15:00:00.000Z'), 'prefix', 2)).to.equal('prefix-1234-2019-10-05');
-    expect(es.getIndexName(makeLog('2019-10-06T15:00:00.000Z'), 'prefix', 2)).to.equal('prefix-1234-2019-10-05');
-    expect(es.getIndexName(makeLog('2019-10-07T15:00:00.000Z'), 'prefix', 2)).to.equal('prefix-1234-2019-10-07');
+    expect(es.getIndexName(makeLog('2019-10-05T15:00:00.000Z'), 'prefix', 2)).to.equal('prefix-2019-10-05');
+    expect(es.getIndexName(makeLog('2019-10-06T15:00:00.000Z'), 'prefix', 2)).to.equal('prefix-2019-10-05');
+    expect(es.getIndexName(makeLog('2019-10-07T15:00:00.000Z'), 'prefix', 2)).to.equal('prefix-2019-10-07');
 
-    expect(es.getIndexName(makeLog('2019-10-16T15:00:00.000Z'), 'prefix', 3)).to.equal('prefix-1234-2019-10-14');
-    expect(es.getIndexName(makeLog('2019-10-16T23:59:59.999Z'), 'prefix', 3)).to.equal('prefix-1234-2019-10-14');
-    expect(es.getIndexName(makeLog('2019-10-17T00:00:00.000Z'), 'prefix', 3)).to.equal('prefix-1234-2019-10-17');
+    expect(es.getIndexName(makeLog('2019-10-16T15:00:00.000Z'), 'prefix', 3)).to.equal('prefix-2019-10-14');
+    expect(es.getIndexName(makeLog('2019-10-16T23:59:59.999Z'), 'prefix', 3)).to.equal('prefix-2019-10-14');
+    expect(es.getIndexName(makeLog('2019-10-17T00:00:00.000Z'), 'prefix', 3)).to.equal('prefix-2019-10-17');
   });
 });
