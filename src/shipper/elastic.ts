@@ -110,6 +110,6 @@ export class ElasticSearch {
    */
   getIndexName(logObj: LogObject, prefix: string, indexType: LogShipperConfigIndexDate): string {
     const indexDate = getIndexDate(logObj['@timestamp'], indexType);
-    return `${prefix}-${logObj['@owner']}-${indexDate}`;
+    return `${prefix}-${indexDate}`;
   }
 }

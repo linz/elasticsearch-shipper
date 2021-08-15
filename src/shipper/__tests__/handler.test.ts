@@ -63,7 +63,7 @@ describe('processData', () => {
     expect(firstLogLine['toDrop']).eq('something');
 
     const firstIndex = es.indexes.get(firstLogLine['@id']);
-    expect(firstIndex).equal('foo-index-123-' + new Date().toISOString().substring(0, 10));
+    expect(firstIndex).equal('foo-index-' + new Date().toISOString().substring(0, 10));
   });
 
   it('should drop keys', async () => {
