@@ -1,3 +1,12 @@
+# [3.0.0](https://github.com/linz/elasticsearch-shipper/compare/v2.0.0...v3.0.0) (2021-08-16)
+
+
+### Features
+
+* remove account id from index name ([#397](https://github.com/linz/elasticsearch-shipper/issues/397)) ([c1462b9](https://github.com/linz/elasticsearch-shipper/commit/c1462b92f014c3aac250197979ef3cc60fe81b99))
+
+
+
 # [2.0.0](https://github.com/linz/elasticsearch-shipper/compare/v1.2.0...v2.0.0) (2021-07-15)
 
 
