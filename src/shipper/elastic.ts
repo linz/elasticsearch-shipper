@@ -81,6 +81,7 @@ export class ElasticSearch {
    * Load all the items in the queue into elastic search
    */
   async save(LogOpt?: typeof Log): Promise<void> {
+    if (this.logCount === 0) return;
     const client = await this.createClient();
     const startTime = Date.now();
     const logs = this.logs;

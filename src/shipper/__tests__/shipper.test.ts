@@ -17,7 +17,8 @@ describe('LogShipper', () => {
   it('should fail if ssm config is not valid', async () => {
     const loadStub = sandbox.stub(ConfigCache, 'get').returns(Promise.resolve({}));
     const shipper = new LogShipper([]);
-    shipper.getElastic(ExampleConfigMinimal);
+    const es = shipper.getElastic(ExampleConfigMinimal);
+    es.logs.push({} as any); // need one log to trigger a save
 
     const logStub = { error: sandbox.stub() };
     expect(loadStub.called).equal(false);
