@@ -26,29 +26,37 @@ export function isCloudWatchEvent(e: any): e is CloudWatchLogsEvent {
 export async function processCloudWatchData(
   logShipper: LogShipper,
   c: CloudWatchLogsDecodedData,
-  logger: typeof Log,
+  Logger: typeof Log,
   source?: string,
 ): Promise<void> {
   if (c.logEvents.length === 0) return;
   const accountId = c.owner;
-  const logInfo: Record<string, unknown> = {
+  const logger = Logger.child({
     account: accountId,
     logCount: c.logEvents.length,
     source,
     logGroup: c.logGroup,
     logStream: c.logStream,
-  };
+  });
 
   const accounts = logShipper.getAccounts(accountId);
-  if (accounts.length === 0) return logger.warn(logInfo, 'Account:Skipped');
+  if (accounts.length === 0) return logger.warn('Account:Skipped');
   for (const account of accounts) {
-    if (account.drop) return logger.info(logInfo, 'Account:Dropped');
+    if (account.drop) {
+      logger.info({ configName: account.name }, 'Account:Dropped');
+      continue;
+    }
 
     const streamConfig = logShipper.getLogConfig(account, c.logGroup);
-    if (streamConfig == null) return logger.warn(logInfo, 'LogGroup:Skipped');
-    if (streamConfig.drop) return logger.info(logInfo, 'LogGroup:Dropped');
-
-    logger.info(logInfo, 'ProcessEvents');
+    if (streamConfig == null) {
+      logger.warn({ configName: account.name }, 'LogGroup:Skipped');
+      continue;
+    }
+    if (streamConfig.drop) {
+      logger.info({ configName: account.name }, 'LogGroup:Dropped');
+      continue;
+    }
+    logger.info({ configName: account.name }, 'ProcessEvents');
 
     // Find the appropriate config
     // Uses logGroup, then account, then global config for all options
