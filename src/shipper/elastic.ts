@@ -32,7 +32,12 @@ export class ElasticSearch {
     this.connectionId = connectionId;
   }
 
-  async createClient(): Promise<Client> {
+  private _client: Promise<Client>;
+  get client(): Promise<Client> {
+    if (this._client == null) this._client = this.createClient();
+    return this._client;
+  }
+  private async createClient(): Promise<Client> {
     const cfg = await ConfigCache.get(this.connectionId);
     const cloud = ConnectionValidator.Cloud.safeParse(cfg);
     if (cloud.success) {
@@ -82,7 +87,7 @@ export class ElasticSearch {
    */
   async save(LogOpt?: typeof Log): Promise<void> {
     if (this.logCount === 0) return;
-    const client = await this.createClient();
+    const client = await this.client;
     const startTime = Date.now();
     const logs = this.logs;
     const indexes = this.indexes;
