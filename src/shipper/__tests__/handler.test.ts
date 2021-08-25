@@ -1,8 +1,10 @@
 'use strict';
+import { Client } from '@elastic/elasticsearch';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { LogShipperConfigAccount } from '../../config/config';
 import { Log } from '../../logger';
+import { FailedInsertDocument } from '../elastic';
 import { processCloudWatchData, splitJsonString } from '../log.handle';
 import { LogShipper } from '../shipper.config';
 
@@ -89,5 +91,43 @@ describe('processData', () => {
     await processCloudWatchData(shipper, logLine, Log);
     expect(saveStub.callCount).equal(0);
     expect(es.logs.length).eq(0);
+  });
+
+  const ElasticError = { type: 'error', reason: 'elastic', caused_by: { type: 'error', reason: 'elastic2' } };
+
+  it('should use the dead letter queue', async () => {
+    const es = shipper.getElastic(fakeConfig);
+    await processCloudWatchData(shipper, logLine, Log);
+
+    const client = new Client({ node: 'https://127.0.0.1', auth: { username: 'foo', password: 'bar' } });
+    sandbox.stub(es, 'createClient').resolves(client);
+
+    const bulkStub = sandbox.stub(client.helpers, 'bulk');
+
+    let dropCount = 0;
+    bulkStub.onFirstCall().callsFake((args) => {
+      if (!Array.isArray(args.datasource)) throw new Error('Datasource must be an array');
+
+      for (const obj of args.datasource) {
+        dropCount++;
+        args.onDrop?.({ status: 10, document: obj, error: ElasticError, retried: true });
+      }
+      return Promise.resolve({}) as any;
+    });
+
+    // Second call is the DLQ insert
+    bulkStub
+      .onSecondCall()
+      .resolves({ total: 1, failed: 0, retry: 0, successful: 0, time: 0, bytes: 0, aborted: false });
+
+    await es.save();
+
+    expect(bulkStub.callCount).eq(2);
+    expect(dropCount).eq(1);
+
+    const datasource = bulkStub.getCall(1).args[0].datasource as Array<FailedInsertDocument>;
+    expect(Array.isArray(datasource)).eq(true);
+    expect(datasource[0]['@id']).eq('1');
+    expect(datasource[0].reason).deep.eq(ElasticError);
   });
 });
