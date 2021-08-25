@@ -8,9 +8,22 @@ import { getIndexDate } from './elastic.index';
 import { ConfigCache } from './config';
 import { LogObject } from './type';
 
-export class ElasticSearch {
-  _client: Promise<Client> | null;
+export interface FailedInsertDocument {
+  reason: {
+    type: string;
+    reason: string;
+    caused_by: {
+      type: string;
+      reason: string;
+    };
+  };
+  document: string;
+  '@id': string;
+  '@timestamp': string;
+  '@index': string;
+}
 
+export class ElasticSearch {
   logs: LogObject[] = [];
   indexes: Map<string, string> = new Map();
   connectionId: string;
@@ -19,7 +32,7 @@ export class ElasticSearch {
     this.connectionId = connectionId;
   }
 
-  private async createClient(): Promise<Client> {
+  async createClient(): Promise<Client> {
     const cfg = await ConfigCache.get(this.connectionId);
     const cloud = ConnectionValidator.Cloud.safeParse(cfg);
     if (cloud.success) {
@@ -76,19 +89,26 @@ export class ElasticSearch {
     this.indexes = new Map();
     const logger = LogOpt?.child({ elasticId: this.connectionId });
 
+    const droppedLogs: FailedInsertDocument[] = [];
     const indexesUsed = new Set<string>();
     const stats = await client.helpers.bulk({
       datasource: logs,
       onDocument: (lo: LogObject) => {
         const indexName = indexes.get(lo['@id']) as string;
         indexesUsed.add(indexName);
-        return {
-          index: { _index: indexName },
-        };
+        return { index: { _index: indexName } };
       },
       onDrop(lo: OnDropDocument<LogObject>) {
+        const document = JSON.stringify(lo.document);
         const indexName = indexes.get(lo.document['@id']);
-        logger?.error({ indexName, logMessage: JSON.stringify(lo.document), error: lo.error }, 'FailedIndex');
+
+        droppedLogs.push({
+          '@id': lo.document['@id'],
+          '@timestamp': lo.document['@timestamp'],
+          '@index': indexName ?? 'unknown',
+          document,
+          reason: lo.error,
+        });
       },
       // Wait up to 1 second before flushing
       flushInterval: 1000,
@@ -96,8 +116,24 @@ export class ElasticSearch {
 
     const duration = Date.now() - startTime;
     const indexList = [...indexesUsed.keys()];
-    if (stats.failed > 0) {
-      logger?.error({ stats, indexList, duration }, 'Inserts:Failed');
+    if (droppedLogs.length > 0) {
+      // Save all the failed documents into a dead letter queue with the same name
+      const dlqStats = await client.helpers.bulk({
+        datasource: droppedLogs,
+        onDocument: (lo: FailedInsertDocument) => {
+          // Create a new index always prefixed with dlq and always suffixed with todays date
+          const indexName = `dlq-${getIndexDate(lo['@timestamp'], 'daily')}`;
+          return { index: { _index: indexName } };
+        },
+        onDrop(lo: OnDropDocument<FailedInsertDocument>) {
+          const indexName = indexes.get(lo.document['@id']);
+          const document = JSON.stringify(lo.document);
+          logger?.error({ indexName, logMessage: document, error: lo.error }, 'FailedIndex');
+        },
+        // Wait up to 1 second before flushing
+        flushInterval: 1000,
+      });
+      logger?.error({ stats, dlqStats, indexList, duration }, 'Inserts:Failed');
     } else {
       logger?.info({ stats, indexList, duration }, 'Inserts:Ok');
     }
