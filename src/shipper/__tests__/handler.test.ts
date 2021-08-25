@@ -70,7 +70,7 @@ describe('processData', () => {
     const fakeConfigB = { ...fakeConfig, elastic: 'fake-elastic-2' };
     shipper.accounts.push(fakeConfigB);
     const es = shipper.getElastic(fakeConfig);
-    const esB = shipper.getElastic(fakeConfig);
+    const esB = shipper.getElastic(fakeConfigB);
 
     await processCloudWatchData(shipper, logLine, Log);
     expect(es.logs.length).eq(1);
