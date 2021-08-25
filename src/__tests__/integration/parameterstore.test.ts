@@ -33,9 +33,9 @@ describe('AccountConfigFilter', () => {
 
   it('should correctly parse parameter store configs', async () => {
     const config = shipper.getAccount('1234567890');
-    expect(config).not.eq(null);
-    expect(config?.id).to.eq('1234567890');
-    expect(config?.tags).to.contain('hello');
-    expect(config?.logGroups).to.not.be.undefined;
+    expect(config.length).eq(1);
+    expect(config[0].id).to.eq('1234567890');
+    expect(config[0].tags).to.contain('hello');
+    expect(config[0].logGroups).to.not.be.undefined;
   });
 });

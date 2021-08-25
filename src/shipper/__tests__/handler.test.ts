@@ -66,6 +66,19 @@ describe('processData', () => {
     expect(firstIndex).equal('foo-index-' + new Date().toISOString().substring(0, 10));
   });
 
+  it('should match multiple configurations', async () => {
+    const fakeConfigB = { ...fakeConfig, elastic: 'fake-elastic-2' };
+    shipper.accounts.push(fakeConfigB);
+    const es = shipper.getElastic(fakeConfig);
+    const esB = shipper.getElastic(fakeConfig);
+
+    await processCloudWatchData(shipper, logLine, Log);
+    expect(es.logs.length).eq(1);
+    expect(esB.logs.length).eq(1);
+
+    expect(esB.logs).deep.eq(es.logs);
+  });
+
   it('should drop keys', async () => {
     const es = shipper.getElastic(fakeConfig);
 
