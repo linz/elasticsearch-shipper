@@ -75,7 +75,8 @@ export async function handler(event: S3Event | CloudWatchLogsEvent, context?: Co
   }
   metrics.end('Process');
 
-  if (logShipper.logCount > 0) {
+  const logCount = logShipper.logCount;
+  if (logCount > 0) {
     metrics.start('Elastic:Save');
     await logShipper.save(logger);
     metrics.end('Elastic:Save');
@@ -86,7 +87,7 @@ export async function handler(event: S3Event | CloudWatchLogsEvent, context?: Co
     {
       '@type': 'report',
       metrics: metrics.metrics,
-      logCount: logShipper.logCount,
+      logCount,
       aws: { lambdaId: context?.awsRequestId },
       duration,
     },
