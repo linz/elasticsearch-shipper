@@ -1,3 +1,13 @@
+# [3.1.0](https://github.com/linz/elasticsearch-shipper/compare/v3.0.0...v3.1.0) (2021-08-25)
+
+
+### Features
+
+* support logs being sent to multiple locations  ([#417](https://github.com/linz/elasticsearch-shipper/issues/417)) ([0344e64](https://github.com/linz/elasticsearch-shipper/commit/0344e64a7db0584c515d2439d0f3b9a8215906a6))
+* support sending logs to a dead letter queue if the fail to index ([#416](https://github.com/linz/elasticsearch-shipper/issues/416)) ([c0a9a0e](https://github.com/linz/elasticsearch-shipper/commit/c0a9a0ea69b2ddfd9acbf003d8cd0d5b3eee4fd5))
+
+
+
 # [3.0.0](https://github.com/linz/elasticsearch-shipper/compare/v2.0.0...v3.0.0) (2021-08-16)
 
 
