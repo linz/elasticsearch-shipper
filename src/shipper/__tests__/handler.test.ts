@@ -68,6 +68,45 @@ describe('processData', () => {
     expect(firstIndex).equal('foo-index-' + new Date().toISOString().substring(0, 10));
   });
 
+  it('should match multiple configurations', async () => {
+    const fakeConfigB = { ...fakeConfig, elastic: 'fake-elastic-2' };
+    shipper.accounts.push(fakeConfigB);
+    const es = shipper.getElastic(fakeConfig);
+    const esB = shipper.getElastic(fakeConfigB);
+
+    await processCloudWatchData(shipper, logLine, Log);
+    expect(es.logs.length).eq(1);
+    expect(esB.logs.length).eq(1);
+
+    expect(esB.logs).deep.eq(es.logs);
+  });
+
+  it('should work with multiple configurations and drops', async () => {
+    const fakeConfigB = { ...fakeConfig, elastic: 'fake-elastic-2' };
+    fakeConfig.drop = true;
+    shipper.accounts.push(fakeConfigB);
+    const es = shipper.getElastic(fakeConfig);
+    const esB = shipper.getElastic(fakeConfigB);
+    await processCloudWatchData(shipper, logLine, Log);
+    expect(es.logs.length).eq(0);
+    expect(esB.logs.length).eq(1);
+  });
+
+  it('should work with multiple configurations and account drops', async () => {
+    const fakeConfigB = {
+      ...fakeConfig,
+      logGroups: [{ ...fakeConfig.logGroups[0] }],
+      elastic: 'fake-elastic-2',
+    };
+    fakeConfig.logGroups[0].drop = true;
+    shipper.accounts.push(fakeConfigB);
+    const es = shipper.getElastic(fakeConfig);
+    const esB = shipper.getElastic(fakeConfigB);
+    await processCloudWatchData(shipper, logLine, Log);
+    expect(es.logs.length).eq(0);
+    expect(esB.logs.length).eq(1);
+  });
+
   it('should drop keys', async () => {
     const es = shipper.getElastic(fakeConfig);
 
