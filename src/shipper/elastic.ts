@@ -37,7 +37,14 @@ export class ElasticSearch {
     if (this._client == null) this._client = this.createClient();
     return this._client;
   }
-  private async createClient(): Promise<Client> {
+
+  async close(): Promise<void> {
+    if (this._client == null) return;
+    const client = await this._client;
+    await client.close();
+  }
+
+  async createClient(): Promise<Client> {
     const cfg = await ConfigCache.get(this.connectionId);
     const cloud = ConnectionValidator.Cloud.safeParse(cfg);
     if (cloud.success) {
