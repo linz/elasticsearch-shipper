@@ -32,7 +32,7 @@ describe('AccountConfigFilter', () => {
   });
 
   it('should correctly parse parameter store configs', async () => {
-    const config = shipper.getAccount('1234567890');
+    const config = shipper.getAccounts('1234567890');
     expect(config.length).eq(1);
     expect(config[0].id).to.eq('1234567890');
     expect(config[0].tags).to.contain('hello');

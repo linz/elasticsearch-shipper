@@ -39,7 +39,7 @@ export async function processCloudWatchData(
     logStream: c.logStream,
   };
 
-  const accounts = logShipper.getAccount(accountId);
+  const accounts = logShipper.getAccounts(accountId);
   if (accounts.length === 0) return logger.warn(logInfo, 'Account:Skipped');
   for (const account of accounts) {
     if (account.drop) return logger.info(logInfo, 'Account:Dropped');

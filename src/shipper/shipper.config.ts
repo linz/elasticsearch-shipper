@@ -58,7 +58,7 @@ export class LogShipper {
     for (const fn of LogShipper.DefaultLogProcessFunctions) this.onLog.push(fn);
   }
 
-  getAccount(accountId: string): LogShipperConfigAccount[] {
+  getAccounts(accountId: string): LogShipperConfigAccount[] {
     return this.accounts.filter((f) => f.id === accountId);
   }
 
