@@ -98,7 +98,17 @@ export async function handler(event: S3Event | CloudWatchLogsEvent, context?: Co
     metrics.end('Elastic:Save');
   }
 
-  console.log(accountStats);
+  const logObject: Record<string, unknown> = {};
+
+  // 99% of all log entries are for one account, this makes it easier to aggregate across
+  const sts = Object.entries(accountStats);
+  if (sts.length === 1) {
+    logObject['accountId'] = sts[0];
+    logObject['stats'] = sts[1];
+  } else {
+    logObject['accountStats'] = accountStats;
+  }
+
   const duration = Date.now() - startTime;
   logger.info(
     {
@@ -106,7 +116,7 @@ export async function handler(event: S3Event | CloudWatchLogsEvent, context?: Co
       metrics: metrics.metrics,
       logCount,
       aws: { lambdaId: context?.awsRequestId },
-      stats: accountStats,
+      ...logObject,
       duration,
     },
     'ShippingDone',
