@@ -1,18 +1,17 @@
-import 'source-map-support/register';
-
-// Source map support must come first
-import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, Context, S3Event } from 'aws-lambda';
-import * as util from 'util';
-import S3 from 'aws-sdk/clients/s3';
-import SSM from 'aws-sdk/clients/ssm';
-import * as zlib from 'zlib';
-import { LogShipper } from './shipper.config';
-import { Log } from '../logger';
-import { ulid } from 'ulid';
-import { processCloudWatchData, splitJsonString, isCloudWatchEvent, s3ToString, LogStats, LogStat } from './log.handle';
 import { Metrics } from '@basemaps/metrics';
 import { fsa, FsS3 } from '@linzjs/s3fs';
+// Source map support must come first
+import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, Context, S3Event } from 'aws-lambda';
+import S3 from 'aws-sdk/clients/s3';
+import SSM from 'aws-sdk/clients/ssm';
+import 'source-map-support/register';
+import { ulid } from 'ulid';
+import * as util from 'util';
+import * as zlib from 'zlib';
+import { Log } from '../logger';
 import { FsSsm } from './fs.ssm';
+import { isCloudWatchEvent, LogStats, processCloudWatchData, s3ToString, splitJsonString } from './log.handle';
+import { LogShipper } from './shipper.config';
 
 export const s3 = new S3({ region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2' });
 export const ssm = new SSM({ region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2' });
