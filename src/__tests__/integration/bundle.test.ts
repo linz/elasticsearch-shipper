@@ -130,4 +130,46 @@ describe('bundled lambda', () => {
       .map((c) => JSON.parse(c));
     expect(lines.length).equal(6);
   });
+
+  it('should resume from a stopped state', async () => {
+    process.env[Env.ConfigUri] = 's3://foo/config-bar';
+
+    const s3Stub = sandbox.stub(pkg.s3, 'getObject').callsFake((args: any) => {
+      if (args.Key === 'config-bar') return AwsStub.toS3([fakeConfig]);
+      return AwsStub.toS3(toLogStream());
+    });
+
+    const ssmStub = sandbox.stub(pkg.ssm, 'getParameter').callsFake((args: any) => AwsStub.toSsm(configMap[args.Name]));
+
+    const s3Event = getS3Event();
+    await pkg.handler(s3Event);
+
+    expect(s3Stub.callCount).to.equal(2); // should load config
+    expect(s3Stub.getCall(0).args[0]).deep.equal({ Key: 'config-bar', Bucket: 'foo' });
+    expect(s3Stub.getCall(1).args[0]).deep.equal({ Key: 'log-key', Bucket: 'log-bucket' });
+    expect(ssmStub.callCount).to.equal(1); // should load elastic credentials
+    expect(ssmStub.getCall(0).args[0]).deep.equal({ Name: fakeConfig.elastic });
+
+    await pkg.handler(s3Event);
+
+    expect(s3Stub.callCount).to.equal(3); // Config should not be loaded again
+    expect(s3Stub.getCall(0).args[0]).deep.equal({ Key: 'config-bar', Bucket: 'foo' });
+    expect(s3Stub.getCall(1).args[0]).deep.equal({ Key: 'log-key', Bucket: 'log-bucket' });
+    expect(s3Stub.getCall(2).args[0]).deep.equal({ Key: 'log-key', Bucket: 'log-bucket' });
+
+    expect(ssmStub.callCount).to.equal(2); // should load elastic credentials
+    expect(ssmStub.getCall(0).args[0]).deep.equal({ Name: fakeConfig.elastic });
+    expect(ssmStub.getCall(1).args[0]).deep.equal({ Name: fakeConfig.elastic });
+
+    expect(requests.length).equal(2);
+
+    const [{ req, body }] = requests;
+    expect(req.headers['authorization']).eq('Basic Zm9vOmJhcg==');
+    expect(req.url).equal('/_bulk');
+    const lines = body
+      .trim()
+      .split('\n')
+      .map((c) => JSON.parse(c));
+    expect(lines.length).equal(6);
+  });
 });
