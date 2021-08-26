@@ -11,6 +11,7 @@ export class ConfigCache {
     let existing = this.cache.get(configName);
     if (existing == null || existing.time + RefreshTimeoutSeconds * 1000 < Date.now()) {
       existing = { value: this.fetch(configName), time: Date.now() };
+      this.cache.set(configName, existing);
     }
     return existing.value;
   }

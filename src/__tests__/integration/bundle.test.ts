@@ -48,6 +48,7 @@ describe('bundled lambda', () => {
   afterEach(() => {
     sandbox.restore();
     pkg.LogShipper.INSTANCE = null;
+    pkg.SsmCache.cache.clear();
     requests.length = 0;
   });
 
@@ -157,9 +158,8 @@ describe('bundled lambda', () => {
     expect(s3Stub.getCall(1).args[0]).deep.equal({ Key: 'log-key', Bucket: 'log-bucket' });
     expect(s3Stub.getCall(2).args[0]).deep.equal({ Key: 'log-key', Bucket: 'log-bucket' });
 
-    expect(ssmStub.callCount).to.equal(2); // should load elastic credentials
+    expect(ssmStub.callCount).to.equal(1); // should load elastic credentials once
     expect(ssmStub.getCall(0).args[0]).deep.equal({ Name: fakeConfig.elastic });
-    expect(ssmStub.getCall(1).args[0]).deep.equal({ Name: fakeConfig.elastic });
 
     expect(requests.length).equal(2);
 
