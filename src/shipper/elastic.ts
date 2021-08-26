@@ -32,6 +32,18 @@ export class ElasticSearch {
     this.connectionId = connectionId;
   }
 
+  private _client: Promise<Client>;
+  get client(): Promise<Client> {
+    if (this._client == null) this._client = this.createClient();
+    return this._client;
+  }
+
+  async close(): Promise<void> {
+    if (this._client == null) return;
+    const client = await this._client;
+    await client.close();
+  }
+
   async createClient(): Promise<Client> {
     const cfg = await ConfigCache.get(this.connectionId);
     const cloud = ConnectionValidator.Cloud.safeParse(cfg);
@@ -81,7 +93,8 @@ export class ElasticSearch {
    * Load all the items in the queue into elastic search
    */
   async save(LogOpt?: typeof Log): Promise<void> {
-    const client = await this.createClient();
+    if (this.logCount === 0) return;
+    const client = await this.client;
     const startTime = Date.now();
     const logs = this.logs;
     const indexes = this.indexes;

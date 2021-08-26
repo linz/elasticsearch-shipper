@@ -75,6 +75,7 @@ export class LogShipper {
   async save(logger: typeof Log): Promise<void> {
     for (const elastic of this.elastic.values()) {
       await elastic.save(logger);
+      await elastic.close();
     }
   }
 

@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 
 // Source map support must come first
-import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lambda';
+import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, Context, S3Event } from 'aws-lambda';
 import * as util from 'util';
 import S3 from 'aws-sdk/clients/s3';
 import SSM from 'aws-sdk/clients/ssm';
@@ -61,7 +61,7 @@ async function processS3Event(event: S3Event, logShipper: LogShipper, logger: ty
   }
 }
 
-export async function handler(event: S3Event | CloudWatchLogsEvent): Promise<void> {
+export async function handler(event: S3Event | CloudWatchLogsEvent, context?: Context): Promise<void> {
   const startTime = Date.now();
   const logger = Log.child({ id: ulid() });
   const logShipper = await LogShipper.load(logger);
@@ -75,12 +75,22 @@ export async function handler(event: S3Event | CloudWatchLogsEvent): Promise<voi
   }
   metrics.end('Process');
 
-  if (logShipper.logCount > 0) {
+  const logCount = logShipper.logCount;
+  if (logCount > 0) {
     metrics.start('Elastic:Save');
     await logShipper.save(logger);
     metrics.end('Elastic:Save');
   }
 
   const duration = Date.now() - startTime;
-  logger.info({ '@type': 'report', metrics: metrics.metrics, logCount: logShipper.logCount, duration }, 'ShippingDone');
+  logger.info(
+    {
+      '@type': 'report',
+      metrics: metrics.metrics,
+      logCount,
+      aws: { lambdaId: context?.awsRequestId },
+      duration,
+    },
+    'ShippingDone',
+  );
 }
