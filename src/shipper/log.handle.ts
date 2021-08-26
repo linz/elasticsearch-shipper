@@ -23,7 +23,8 @@ export function isCloudWatchEvent(e: any): e is CloudWatchLogsEvent {
   return e['awslogs'] != null;
 }
 
-export type LogStats = Record<string, { total: number; skipped: 0; dropped: 0; shipped: 0 }>;
+export type LogStats = Record<string, LogStat>;
+export type LogStat = { total: number; skipped: number; dropped: number; shipped: number };
 
 export async function processCloudWatchData(
   logShipper: LogShipper,
@@ -32,10 +33,12 @@ export async function processCloudWatchData(
   source?: string,
 ): Promise<LogStats> {
   if (c.logEvents.length === 0) return {};
+  const logCount = c.logEvents.length;
+
   const accountId = c.owner;
   const logger = Logger.child({
     account: accountId,
-    logCount: c.logEvents.length,
+    logCount,
     source,
     logGroup: c.logGroup,
     logStream: c.logStream,
@@ -43,8 +46,8 @@ export async function processCloudWatchData(
 
   const accounts = logShipper.getAccounts(accountId);
   if (accounts.length === 0) {
-    logger.warn('Account:Skipped');
-    return {};
+    logger.trace('Account:Skipped');
+    return { [accountId]: { total: logCount, skipped: 0, dropped: logCount, shipped: 0 } };
   }
 
   const stats: LogStats = {};
@@ -55,25 +58,24 @@ export async function processCloudWatchData(
       stats[accountId] = accountStat;
     }
 
-    const logCount = c.logEvents.length;
     accountStat.total += logCount;
 
     if (account.drop) {
-      logger.info({ configName: account.name }, 'Account:Dropped');
+      logger.trace({ configName: account.name }, 'Account:Dropped');
       accountStat.dropped += logCount;
       continue;
     }
 
     const streamConfig = logShipper.getLogConfig(account, c.logGroup);
     if (streamConfig == null) {
-      logger.warn({ configName: account.name }, 'LogGroup:Skipped');
+      logger.trace({ configName: account.name }, 'LogGroup:Skipped');
       accountStat.skipped += logCount;
 
       continue;
     }
 
     if (streamConfig.drop) {
-      logger.info({ configName: account.name }, 'LogGroup:Dropped');
+      logger.trace({ configName: account.name }, 'LogGroup:Dropped');
       accountStat.dropped += logCount;
       continue;
     }
@@ -100,7 +102,7 @@ export async function processCloudWatchData(
       logShipper.getElastic(account).queue(logObject, prefix, index);
     }
     accountStat.shipped += logCount;
-    logger.info({ configName: account.name }, 'LogGroup:Processed');
+    logger.debug({ configName: account.name }, 'LogGroup:Processed');
   }
 
   return stats;

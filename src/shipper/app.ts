@@ -9,7 +9,7 @@ import * as zlib from 'zlib';
 import { LogShipper } from './shipper.config';
 import { Log } from '../logger';
 import { ulid } from 'ulid';
-import { processCloudWatchData, splitJsonString, isCloudWatchEvent, s3ToString, LogStats } from './log.handle';
+import { processCloudWatchData, splitJsonString, isCloudWatchEvent, s3ToString, LogStats, LogStat } from './log.handle';
 import { Metrics } from '@basemaps/metrics';
 import { fsa, FsS3 } from '@linzjs/s3fs';
 import { FsSsm } from './fs.ssm';
@@ -28,7 +28,7 @@ async function processCloudWatchEvent(
   logger: typeof Log,
 ): Promise<LogStats> {
   /** Is this data being supplied directly by a cloudwatch -> lambda invocation */
-  logger.info('Process:CloudWatch');
+  logger.trace('Process:CloudWatch');
 
   const zippedInput = Buffer.from(event.awslogs.data, 'base64');
   const buffer = await gunzip(zippedInput);
@@ -38,7 +38,7 @@ async function processCloudWatchEvent(
 }
 
 async function processS3Event(event: S3Event, logShipper: LogShipper, logger: typeof Log): Promise<LogStats> {
-  logger.info({ records: event.Records.length }, 'Process:S3');
+  logger.trace({ records: event.Records.length }, 'Process:S3');
 
   const stats: LogStats = {};
   for (const record of event.Records) {
@@ -46,13 +46,13 @@ async function processS3Event(event: S3Event, logShipper: LogShipper, logger: ty
     const params = { Bucket: record.s3.bucket.name, Key: record.s3.object.key };
     const source = s3ToString(params);
 
-    logger.info({ source }, 'ProcessEvent');
+    logger.trace({ source }, 'ProcessEvent');
 
     const object = await s3.getObject(params).promise();
     const unzipped = await gunzip(object.Body as Buffer);
     const jsonLines = splitJsonString(unzipped.toString());
 
-    logger.info({ source, lines: jsonLines.length }, 'ProcessingLines');
+    logger.trace({ source, lines: jsonLines.length }, 'ProcessingLines');
 
     for (const line of jsonLines) {
       if (line == null || line === '') continue;
