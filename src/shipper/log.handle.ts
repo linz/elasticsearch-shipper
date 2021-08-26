@@ -1,4 +1,4 @@
-import { CloudWatchLogsDecodedData, CloudWatchLogsEvent } from 'aws-lambda';
+import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lambda';
 import { Log } from '../logger';
 import { LogShipper } from './shipper.config';
 
@@ -43,20 +43,20 @@ export async function processCloudWatchData(
   if (accounts.length === 0) return logger.warn('Account:Skipped');
   for (const account of accounts) {
     if (account.drop) {
-      logger.info({ configName: account.name }, 'Account:Dropped');
+      logger.info({ configName: account.name, logCount: c.logEvents.length, logDropped: true }, 'Account:Dropped');
       continue;
     }
 
     const streamConfig = logShipper.getLogConfig(account, c.logGroup);
     if (streamConfig == null) {
-      logger.warn({ configName: account.name }, 'LogGroup:Skipped');
+      logger.warn({ configName: account.name, logCount: c.logEvents.length }, 'LogGroup:Skipped');
       continue;
     }
+
     if (streamConfig.drop) {
-      logger.info({ configName: account.name }, 'LogGroup:Dropped');
+      logger.info({ configName: account.name, logCount: c.logEvents.length, logDropped: true }, 'LogGroup:Dropped');
       continue;
     }
-    logger.info({ configName: account.name }, 'ProcessEvents');
 
     // Find the appropriate config
     // Uses logGroup, then account, then global config for all options
@@ -64,6 +64,7 @@ export async function processCloudWatchData(
     const prefix = streamConfig.prefix ?? account.prefix;
     const index = streamConfig.index ?? account.index;
 
+    let logCount = 0;
     for (const logLine of c.logEvents) {
       const logObject = logShipper.getLogObject(c, logLine, source);
       if (logObject == null) continue;
@@ -77,7 +78,9 @@ export async function processCloudWatchData(
         for (const key of streamConfig.dropKeys) delete logObject[key];
       }
 
+      logCount++;
       logShipper.getElastic(account).queue(logObject, prefix, index);
     }
+    logger.info({ configName: account.name, logCount }, 'LogGroup:Processed');
   }
 }
