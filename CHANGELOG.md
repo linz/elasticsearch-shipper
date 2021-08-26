@@ -1,3 +1,13 @@
+# [3.3.0](https://github.com/linz/elasticsearch-shipper/compare/v3.2.1...v3.3.0) (2021-08-26)
+
+
+### Features
+
+* count the number of records processed per account ([2ebce93](https://github.com/linz/elasticsearch-shipper/commit/2ebce934d21eb8e8425c334f9328f979f9c37610))
+* track per account stats ([e10db81](https://github.com/linz/elasticsearch-shipper/commit/e10db818c250059cb84ca06d2fa9cbca20c91793))
+
+
+
 ## [3.2.1](https://github.com/linz/elasticsearch-shipper/compare/v3.2.0...v3.2.1) (2021-08-26)
 
 
