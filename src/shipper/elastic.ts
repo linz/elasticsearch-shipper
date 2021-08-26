@@ -32,7 +32,7 @@ export class ElasticSearch {
     this.connectionId = connectionId;
   }
 
-  private _client: Promise<Client>;
+  private _client: Promise<Client> | null;
   get client(): Promise<Client> {
     if (this._client == null) this._client = this.createClient();
     return this._client;
@@ -42,6 +42,7 @@ export class ElasticSearch {
     if (this._client == null) return;
     const client = await this._client;
     await client.close();
+    this._client = null;
   }
 
   async createClient(): Promise<Client> {
