@@ -1,3 +1,12 @@
+# [3.4.0](https://github.com/linz/elasticsearch-shipper/compare/v3.3.0...v3.4.0) (2021-08-26)
+
+
+### Features
+
+* provide more details if only one aws account was used ([06a5700](https://github.com/linz/elasticsearch-shipper/commit/06a57005525e97255d2ca7558df182c92ed5b5d2))
+
+
+
 # [3.3.0](https://github.com/linz/elasticsearch-shipper/compare/v3.2.1...v3.3.0) (2021-08-26)
 
 
