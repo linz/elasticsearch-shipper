@@ -1,3 +1,13 @@
+## [3.2.1](https://github.com/linz/elasticsearch-shipper/compare/v3.2.0...v3.2.1) (2021-08-26)
+
+
+### Bug Fixes
+
+* config was not being cached ([#420](https://github.com/linz/elasticsearch-shipper/issues/420)) ([f18e8f3](https://github.com/linz/elasticsearch-shipper/commit/f18e8f3be9703af718cd6aa021eb05a80eb6b642))
+* remove closed connections ([#419](https://github.com/linz/elasticsearch-shipper/issues/419)) ([2e55ff7](https://github.com/linz/elasticsearch-shipper/commit/2e55ff71913067a5e64db0dd7e0331a49ecf88a7))
+
+
+
 # [3.2.0](https://github.com/linz/elasticsearch-shipper/compare/v3.1.0...v3.2.0) (2021-08-26)
 
 
