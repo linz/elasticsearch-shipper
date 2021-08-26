@@ -9,7 +9,7 @@ import * as zlib from 'zlib';
 import { LogShipper } from './shipper.config';
 import { Log } from '../logger';
 import { ulid } from 'ulid';
-import { processCloudWatchData, splitJsonString, isCloudWatchEvent, s3ToString } from './log.handle';
+import { processCloudWatchData, splitJsonString, isCloudWatchEvent, s3ToString, LogStats } from './log.handle';
 import { Metrics } from '@basemaps/metrics';
 import { fsa, FsS3 } from '@linzjs/s3fs';
 import { FsSsm } from './fs.ssm';
@@ -26,7 +26,7 @@ async function processCloudWatchEvent(
   event: CloudWatchLogsEvent,
   logShipper: LogShipper,
   logger: typeof Log,
-): Promise<void> {
+): Promise<LogStats> {
   /** Is this data being supplied directly by a cloudwatch -> lambda invocation */
   logger.info('Process:CloudWatch');
 
@@ -34,11 +34,13 @@ async function processCloudWatchEvent(
   const buffer = await gunzip(zippedInput);
   const awsLogsData: CloudWatchLogsDecodedData = JSON.parse(buffer.toString('utf8'));
 
-  await processCloudWatchData(logShipper, awsLogsData, logger);
+  return await processCloudWatchData(logShipper, awsLogsData, logger);
 }
 
-async function processS3Event(event: S3Event, logShipper: LogShipper, logger: typeof Log): Promise<void> {
+async function processS3Event(event: S3Event, logShipper: LogShipper, logger: typeof Log): Promise<LogStats> {
   logger.info({ records: event.Records.length }, 'Process:S3');
+
+  const stats: LogStats = {};
   for (const record of event.Records) {
     /** Data is supplied from a s3 object creation */
     const params = { Bucket: record.s3.bucket.name, Key: record.s3.object.key };
@@ -56,9 +58,22 @@ async function processS3Event(event: S3Event, logShipper: LogShipper, logger: ty
       if (line == null || line === '') continue;
 
       const obj: CloudWatchLogsDecodedData = JSON.parse(line);
-      await processCloudWatchData(logShipper, obj, logger, params.Key);
+      const stat = await processCloudWatchData(logShipper, obj, logger, params.Key);
+      for (const [accountId, s] of Object.entries(stat)) {
+        // Doesnt exist just replace
+        const current = stats[accountId];
+        if (current == null) {
+          stats[accountId] = s;
+          break;
+        }
+        current.total += s.total;
+        current.dropped += s.dropped;
+        current.shipped += s.shipped;
+        current.skipped += s.skipped;
+      }
     }
   }
+  return stats;
 }
 
 export async function handler(event: S3Event | CloudWatchLogsEvent, context?: Context): Promise<void> {
@@ -68,10 +83,11 @@ export async function handler(event: S3Event | CloudWatchLogsEvent, context?: Co
   const metrics = new Metrics();
 
   metrics.start('Process');
+  let accountStats: LogStats | null = null;
   if (isCloudWatchEvent(event)) {
-    await processCloudWatchEvent(event, logShipper, logger);
+    accountStats = await processCloudWatchEvent(event, logShipper, logger);
   } else {
-    await processS3Event(event, logShipper, logger);
+    accountStats = await processS3Event(event, logShipper, logger);
   }
   metrics.end('Process');
 
@@ -82,6 +98,7 @@ export async function handler(event: S3Event | CloudWatchLogsEvent, context?: Co
     metrics.end('Elastic:Save');
   }
 
+  console.log(accountStats);
   const duration = Date.now() - startTime;
   logger.info(
     {
@@ -89,6 +106,7 @@ export async function handler(event: S3Event | CloudWatchLogsEvent, context?: Co
       metrics: metrics.metrics,
       logCount,
       aws: { lambdaId: context?.awsRequestId },
+      stats: accountStats,
       duration,
     },
     'ShippingDone',
