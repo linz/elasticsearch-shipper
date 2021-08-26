@@ -1,3 +1,12 @@
+# [3.2.0](https://github.com/linz/elasticsearch-shipper/compare/v3.1.0...v3.2.0) (2021-08-26)
+
+
+### Bug Fixes
+
+* misc fixes ([#418](https://github.com/linz/elasticsearch-shipper/issues/418)) ([e5162fe](https://github.com/linz/elasticsearch-shipper/commit/e5162fee8f10f92861e6725af0699e09df06dc22))
+
+
+
 # [3.1.0](https://github.com/linz/elasticsearch-shipper/compare/v3.0.0...v3.1.0) (2021-08-25)
 
 
