@@ -103,8 +103,8 @@ export async function handler(event: S3Event | CloudWatchLogsEvent, context?: Co
   // 99% of all log entries are for one account, this makes it easier to aggregate across
   const sts = Object.entries(accountStats);
   if (sts.length === 1) {
-    logObject['accountId'] = sts[0];
-    logObject['stats'] = sts[1];
+    logObject['accountId'] = sts[0][0];
+    logObject['stats'] = sts[0][1];
   } else {
     logObject['accountStats'] = accountStats;
   }
