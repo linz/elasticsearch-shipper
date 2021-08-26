@@ -1,3 +1,12 @@
+## [3.4.2](https://github.com/linz/elasticsearch-shipper/compare/v3.4.1...v3.4.2) (2021-08-26)
+
+
+### Bug Fixes
+
+* greatly reduce log levels ([74009ad](https://github.com/linz/elasticsearch-shipper/commit/74009ad30464f5fd7a5ab47ff62207237e202abe))
+
+
+
 ## [3.4.1](https://github.com/linz/elasticsearch-shipper/compare/v3.4.0...v3.4.1) (2021-08-26)
 
 
