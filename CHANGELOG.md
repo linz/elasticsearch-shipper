@@ -1,3 +1,12 @@
+## [3.4.1](https://github.com/linz/elasticsearch-shipper/compare/v3.4.0...v3.4.1) (2021-08-26)
+
+
+### Bug Fixes
+
+* correct array indexes for account stats ([e83dd1d](https://github.com/linz/elasticsearch-shipper/commit/e83dd1d26dd2d0321c81e7372b956997bb50fe33))
+
+
+
 # [3.4.0](https://github.com/linz/elasticsearch-shipper/compare/v3.3.0...v3.4.0) (2021-08-26)
 
 
