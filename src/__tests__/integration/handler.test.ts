@@ -13,7 +13,6 @@ import { EVENT_DATA, EVENT_DATA_ACCOUNT } from '../event.data';
 import { getCloudWatchEvent, LOG_DATA, toLogStream } from '../log.data';
 import { RequestEvents } from '../../shipper/log.handle';
 
-// lf.Logger = 'silent';
 
 describe('HandlerIntegration', () => {
   let s3Stub: sinon.SinonStub;
