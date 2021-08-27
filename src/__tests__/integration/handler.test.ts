@@ -35,8 +35,8 @@ describe('HandlerIntegration', () => {
     });
     sandbox.stub(ElasticSearch.prototype, 'save').resolves();
 
-    const s3Return = { promise: () => Promise.resolve({ Body: toLogStream() }) } as any;
-    s3Stub = sandbox.stub(s3, 'getObject') as any;
+    const s3Return = { promise: (): Promise<unknown> => Promise.resolve({ Body: toLogStream() }) };
+    s3Stub = sandbox.stub(s3, 'getObject');
     s3Stub.returns(s3Return);
   });
 
