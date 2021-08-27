@@ -29,7 +29,7 @@ describe('bundled lambda', () => {
   // Stupid little http server, to log incoming requests
   const requests: { req: http.IncomingMessage; body: string }[] = [];
   const server = http.createServer((req, res) => {
-    const body: any[] = [];
+    const body: unknown[] = [];
     req.on('readable', () => body.push(req.read()));
     req.on('end', () => {
       requests.push({ req, body: body.join('') });
@@ -72,15 +72,25 @@ describe('bundled lambda', () => {
     logGroups: [{ filter: '**', tags: ['@logGroup'], prefix: '@logGroup', index: 'daily' }],
   } as LogShipperConfigAccount;
 
+  it('should reject on unhandled errors', async () => {
+    process.env[Env.ConfigUri] = 's3://foo/config-bar';
+
+    sandbox.stub(pkg.s3, 'getObject').callsFake(() => null);
+
+    const ret = await new Promise((r) => pkg.handler(getCloudWatchEvent(), {}, r));
+    expect(ret).instanceOf(Error);
+    expect(String(ret)).includes('Failed to read: "s3://foo/config-bar"');
+  });
+
   it('should be handle a cloudwatch event', async () => {
     process.env[Env.ConfigUri] = 's3://foo/config-bar';
 
-    const s3Stub = sandbox.stub(pkg.s3, 'getObject').callsFake((args: any) => {
+    const s3Stub = sandbox.stub(pkg.s3, 'getObject').callsFake((args) => {
       if (args.Key === 'config-bar') return AwsStub.toS3([fakeConfig]);
       return AwsStub.toS3(toLogStream());
     });
 
-    const ssmStub = sandbox.stub(pkg.ssm, 'getParameter').callsFake((args: any) => AwsStub.toSsm(configMap[args.Name]));
+    const ssmStub = sandbox.stub(pkg.ssm, 'getParameter').callsFake((args) => AwsStub.toSsm(configMap[args.Name]));
 
     await new Promise((r) => pkg.handler(getCloudWatchEvent(), {}, r));
 
@@ -104,12 +114,12 @@ describe('bundled lambda', () => {
   it('should be handle a s3 event', async () => {
     process.env[Env.ConfigUri] = 's3://foo/config-bar';
 
-    const s3Stub = sandbox.stub(pkg.s3, 'getObject').callsFake((args: any) => {
+    const s3Stub = sandbox.stub(pkg.s3, 'getObject').callsFake((args) => {
       if (args.Key === 'config-bar') return AwsStub.toS3([fakeConfig]);
       return AwsStub.toS3(toLogStream());
     });
 
-    const ssmStub = sandbox.stub(pkg.ssm, 'getParameter').callsFake((args: any) => AwsStub.toSsm(configMap[args.Name]));
+    const ssmStub = sandbox.stub(pkg.ssm, 'getParameter').callsFake((args) => AwsStub.toSsm(configMap[args.Name]));
 
     const s3Event = getS3Event();
     await new Promise((r) => pkg.handler(s3Event, {}, r));
@@ -135,12 +145,12 @@ describe('bundled lambda', () => {
   it('should resume from a stopped state', async () => {
     process.env[Env.ConfigUri] = 's3://foo/config-bar';
 
-    const s3Stub = sandbox.stub(pkg.s3, 'getObject').callsFake((args: any) => {
+    const s3Stub = sandbox.stub(pkg.s3, 'getObject').callsFake((args) => {
       if (args.Key === 'config-bar') return AwsStub.toS3([fakeConfig]);
       return AwsStub.toS3(toLogStream());
     });
 
-    const ssmStub = sandbox.stub(pkg.ssm, 'getParameter').callsFake((args: any) => AwsStub.toSsm(configMap[args.Name]));
+    const ssmStub = sandbox.stub(pkg.ssm, 'getParameter').callsFake((args) => AwsStub.toSsm(configMap[args.Name]));
 
     const s3Event = getS3Event();
     await new Promise((r) => pkg.handler(s3Event, {}, r));

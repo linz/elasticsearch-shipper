@@ -89,7 +89,5 @@ async function main(baseRequest: LambdaRequest<RequestEvents>): Promise<void> {
     req.set('stats', stats.value);
     req.set('accountId', accountId.value);
   }
-
-  console.log('Done');
 }
 export const handler = lf.handler(main);
