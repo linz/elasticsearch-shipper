@@ -1,9 +1,9 @@
 'use strict';
 import { Client } from '@elastic/elasticsearch';
+import { lf } from '@linzjs/lambda';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { LogShipperConfigAccount } from '../../config/config';
-import { LogType, lf } from '@linzjs/lambda';
 import { FailedInsertDocument } from '../elastic';
 import { LogRequest, processCloudWatchData, splitJsonString } from '../log.handle';
 import { LogShipper } from '../shipper.config';
