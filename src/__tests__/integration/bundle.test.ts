@@ -82,7 +82,7 @@ describe('bundled lambda', () => {
 
     const ssmStub = sandbox.stub(pkg.ssm, 'getParameter').callsFake((args: any) => AwsStub.toSsm(configMap[args.Name]));
 
-    await pkg.handler(getCloudWatchEvent());
+    await new Promise((r) => pkg.handler(getCloudWatchEvent(), {}, r));
 
     expect(s3Stub.callCount).to.equal(1); // should load config
     expect(s3Stub.getCall(0).args[0]).deep.equal({ Key: 'config-bar', Bucket: 'foo' });
@@ -112,7 +112,7 @@ describe('bundled lambda', () => {
     const ssmStub = sandbox.stub(pkg.ssm, 'getParameter').callsFake((args: any) => AwsStub.toSsm(configMap[args.Name]));
 
     const s3Event = getS3Event();
-    await pkg.handler(s3Event);
+    await new Promise((r) => pkg.handler(s3Event, {}, r));
 
     expect(s3Stub.callCount).to.equal(2); // should load config
     expect(s3Stub.getCall(0).args[0]).deep.equal({ Key: 'config-bar', Bucket: 'foo' });
@@ -143,7 +143,7 @@ describe('bundled lambda', () => {
     const ssmStub = sandbox.stub(pkg.ssm, 'getParameter').callsFake((args: any) => AwsStub.toSsm(configMap[args.Name]));
 
     const s3Event = getS3Event();
-    await pkg.handler(s3Event);
+    await new Promise((r) => pkg.handler(s3Event, {}, r));
 
     expect(s3Stub.callCount).to.equal(2); // should load config
     expect(s3Stub.getCall(0).args[0]).deep.equal({ Key: 'config-bar', Bucket: 'foo' });
@@ -151,7 +151,7 @@ describe('bundled lambda', () => {
     expect(ssmStub.callCount).to.equal(1); // should load elastic credentials
     expect(ssmStub.getCall(0).args[0]).deep.equal({ Name: fakeConfig.elastic });
 
-    await pkg.handler(s3Event);
+    await new Promise((r) => pkg.handler(s3Event, {}, r));
 
     expect(s3Stub.callCount).to.equal(3); // Config should not be loaded again
     expect(s3Stub.getCall(0).args[0]).deep.equal({ Key: 'config-bar', Bucket: 'foo' });

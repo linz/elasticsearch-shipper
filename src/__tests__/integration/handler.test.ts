@@ -1,9 +1,9 @@
-import { S3EventRecord } from 'aws-lambda';
+import { CloudFrontRequestEvent, Context, S3Event, S3EventRecord } from 'aws-lambda';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { LogShipperConfigAccount } from '../../config/config';
 import { Env } from '../../env';
-import { Log } from '../../logger';
+import { LogType, lf } from '@linzjs/lambda';
 import { handler, s3 } from '../../shipper/app';
 import { ElasticSearch } from '../../shipper/elastic';
 import { LogShipper } from '../../shipper/shipper.config';
@@ -11,8 +11,9 @@ import { ConfigCache } from '../../shipper/config';
 import { LogObject } from '../../shipper/type';
 import { EVENT_DATA, EVENT_DATA_ACCOUNT } from '../event.data';
 import { getCloudWatchEvent, LOG_DATA, toLogStream } from '../log.data';
+import { RequestEvents } from '../../shipper/log.handle';
 
-Log.level = 'silent';
+// lf.Logger = 'silent';
 
 describe('HandlerIntegration', () => {
   let s3Stub: sinon.SinonStub;
@@ -50,6 +51,10 @@ describe('HandlerIntegration', () => {
     return LogShipper.INSTANCE?.getElastic(fakeAccount).logs[index] as LogObject;
   }
 
+  function handle(event: RequestEvents): Promise<void> {
+    return new Promise((resolve) => handler(event, {} as Context, () => resolve()));
+  }
+
   function validateItems(): void {
     const firstLog = getLog(0);
     expect(firstLog['@id']).to.equal('35055956108947449057450672217285886913339043275993776128');
@@ -69,7 +74,7 @@ describe('HandlerIntegration', () => {
   }
 
   it('should process s3 test data', async () => {
-    await handler({ Records: [EVENT_DATA] });
+    await handle({ Records: [EVENT_DATA] });
 
     expect(s3Stub.callCount).to.equal(1);
     const firstS3Call = s3Stub.args[0];
@@ -86,7 +91,7 @@ describe('HandlerIntegration', () => {
   });
 
   it('should process cloudwatch data', async () => {
-    await handler(getCloudWatchEvent());
+    await handle(getCloudWatchEvent());
 
     expect(s3Stub.callCount).to.equal(0);
 
@@ -102,8 +107,8 @@ describe('HandlerIntegration', () => {
     newEventData.s3.object.key = 'abc123';
     s3Stub.returns({ promise: () => Promise.resolve({ Body: toLogStream([newLogData]) }) } as any);
 
-    await handler(getCloudWatchEvent(newLogData));
-    await handler({ Records: [newEventData] });
+    await handle(getCloudWatchEvent(newLogData));
+    await handle({ Records: [newEventData] });
 
     expect(s3Stub.callCount).to.equal(1);
 
@@ -113,8 +118,8 @@ describe('HandlerIntegration', () => {
 
   it('should drop by account when told to', async () => {
     fakeAccount.drop = true;
-    await handler(getCloudWatchEvent());
-    await handler({ Records: [EVENT_DATA] });
+    await handle(getCloudWatchEvent());
+    await handle({ Records: [EVENT_DATA] });
 
     expect(s3Stub.callCount).to.equal(1);
 
@@ -124,16 +129,22 @@ describe('HandlerIntegration', () => {
 
   it('should error if the config is invalid', async () => {
     delete (fakeAccount as any).logGroups;
-    try {
-      await handler({ Records: [EVENT_DATA] });
-      expect(true).eq(false);
-    } catch (e) {
-      expect(e.message).contains('s3://foo/bar');
-    }
+
+    lf.Logger.level = 'info';
+    sandbox.stub(lf.Logger, 'child').returns(lf.Logger);
+    sandbox.stub(lf.Logger, 'fatal');
+    const logStubError = sandbox.stub(lf.Logger, 'error');
+    await handle({ Records: [EVENT_DATA] });
+
+    expect(logStubError.callCount).eq(1);
+    expect(logStubError.args[0][0]['@type']).eq('report');
+    expect(logStubError.args[0][0]['status']).eq(500);
+    expect(String(logStubError.args[0][0]['err'])).eq('Error: Failed to parse uri: s3://foo/bar');
+    expect(logStubError.args[0][1]).eq('Lambda:Done');
   });
 
   it('should use the index prefixes in order', async () => {
-    await handler({ Records: [EVENT_DATA] });
+    await handle({ Records: [EVENT_DATA] });
     const shipper = LogShipper.INSTANCE!;
     const firstLog = getLog(0);
     const indexInsert = shipper.getElastic(fakeAccount).indexes.get(firstLog['@id']);
@@ -148,7 +159,7 @@ describe('HandlerIntegration', () => {
     delete fakeAccount.logGroups[0].tags;
     delete fakeAccount.logGroups[0].prefix;
 
-    await handler({ Records: [EVENT_DATA] });
+    await handle({ Records: [EVENT_DATA] });
     const shipper = LogShipper.INSTANCE!;
 
     const firstLog = getLog(0);

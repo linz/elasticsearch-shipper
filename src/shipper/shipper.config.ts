@@ -3,12 +3,12 @@ import minimatch from 'minimatch';
 import { LogShipperConfigAccount, LogShipperConfigLogGroup } from '../config/config';
 import { LogShipperConfigAccountValidator } from '../config/config.elastic';
 import { DefaultConfigRefreshTimeoutSeconds, Env } from '../env';
-import { Log } from '../logger';
 import { ElasticSearch } from './elastic';
 import { onLogExtractJson } from './log.funcs/extract.json';
 import { onLogTag } from './log.funcs/tag';
 import { ConfigCache } from './config';
 import { LogObject, LogProcessFunction } from './type';
+import { LogType } from '@linzjs/lambda';
 
 export const RefreshTimeoutSeconds = Number(
   process.env[Env.ConfigRefreshTimeoutSeconds] ?? DefaultConfigRefreshTimeoutSeconds,
@@ -28,7 +28,7 @@ export class LogShipper {
    */
   onLog: LogProcessFunction[] = [];
 
-  static async load(logger?: typeof Log): Promise<LogShipper> {
+  static async load(logger?: LogType): Promise<LogShipper> {
     if (LogShipper.INSTANCE == null || LogShipper.INSTANCE.isRefreshNeeded) {
       const configUri = process.env[Env.ConfigUri];
       if (configUri == null) throw new Error(`Failed to load configuration $${Env.ConfigUri} is missing`);
@@ -40,8 +40,8 @@ export class LogShipper {
       for (const account of configRaw) {
         const res = LogShipperConfigAccountValidator.safeParse(account);
         if (!res.success) {
-          logger?.fatal({ errors: res.error }, 'Failed to parse uri:' + configUri);
-          throw new Error('Failed to parse uri:' + configUri);
+          logger?.fatal({ errors: res.error }, 'Failed to parse uri: ' + configUri);
+          throw new Error('Failed to parse uri: ' + configUri);
         }
         accounts.push(account);
       }
@@ -72,7 +72,7 @@ export class LogShipper {
     return total;
   }
 
-  async save(logger: typeof Log): Promise<void> {
+  async save(logger: LogType): Promise<void> {
     for (const elastic of this.elastic.values()) {
       await elastic.save(logger);
       await elastic.close();
