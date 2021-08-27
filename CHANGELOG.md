@@ -1,3 +1,12 @@
+# [3.5.0](https://github.com/linz/elasticsearch-shipper/compare/v3.4.2...v3.5.0) (2021-08-27)
+
+
+### Features
+
+* switch to `@linzjs/lambda` ([#423](https://github.com/linz/elasticsearch-shipper/issues/423)) ([29c51e7](https://github.com/linz/elasticsearch-shipper/commit/29c51e788cc3555f18e4593f3930412a80b63d83))
+
+
+
 ## [3.4.2](https://github.com/linz/elasticsearch-shipper/compare/v3.4.1...v3.4.2) (2021-08-26)
 
 
