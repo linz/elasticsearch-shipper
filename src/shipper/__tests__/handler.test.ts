@@ -1,12 +1,15 @@
 'use strict';
 import { Client } from '@elastic/elasticsearch';
+import { lf } from '@linzjs/lambda';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { LogShipperConfigAccount } from '../../config/config';
-import { Log } from '../../logger';
 import { FailedInsertDocument } from '../elastic';
-import { processCloudWatchData, splitJsonString } from '../log.handle';
+import { LogRequest, processCloudWatchData, splitJsonString } from '../log.handle';
 import { LogShipper } from '../shipper.config';
+import { LogStats } from '../stats';
+
+lf.Logger.level = 'silent';
 
 describe('splitJSONString', () => {
   it('works without a callback', () => {
@@ -30,6 +33,7 @@ describe('processData', () => {
     logEvents: [{ id: '1', timestamp: Date.now(), message: JSON.stringify({ key: 'value', toDrop: 'something' }) }],
   };
   let fakeConfig: LogShipperConfigAccount;
+  let fakeRequest: LogRequest;
 
   beforeEach(() => {
     fakeConfig = {
@@ -47,6 +51,7 @@ describe('processData', () => {
       ],
     };
     shipper = new LogShipper([fakeConfig]);
+    fakeRequest = { shipper, log: lf.Logger, stats: new LogStats() } as LogRequest;
   });
 
   afterEach(() => {
@@ -56,7 +61,7 @@ describe('processData', () => {
   it('should save a log line', async () => {
     const es = shipper.getElastic(fakeConfig);
     const saveStub = sandbox.stub(es, 'save');
-    await processCloudWatchData(shipper, logLine, Log);
+    await processCloudWatchData(fakeRequest, logLine);
     expect(saveStub.callCount).equal(0);
     expect(es.logCount).eq(1);
 
@@ -74,7 +79,7 @@ describe('processData', () => {
     const es = shipper.getElastic(fakeConfig);
     const esB = shipper.getElastic(fakeConfigB);
 
-    await processCloudWatchData(shipper, logLine, Log);
+    await processCloudWatchData(fakeRequest, logLine);
     expect(es.logs.length).eq(1);
     expect(esB.logs.length).eq(1);
 
@@ -87,7 +92,7 @@ describe('processData', () => {
     shipper.accounts.push(fakeConfigB);
     const es = shipper.getElastic(fakeConfig);
     const esB = shipper.getElastic(fakeConfigB);
-    await processCloudWatchData(shipper, logLine, Log);
+    await processCloudWatchData(fakeRequest, logLine);
     expect(es.logs.length).eq(0);
     expect(esB.logs.length).eq(1);
   });
@@ -102,7 +107,7 @@ describe('processData', () => {
     shipper.accounts.push(fakeConfigB);
     const es = shipper.getElastic(fakeConfig);
     const esB = shipper.getElastic(fakeConfigB);
-    await processCloudWatchData(shipper, logLine, Log);
+    await processCloudWatchData(fakeRequest, logLine);
     expect(es.logs.length).eq(0);
     expect(esB.logs.length).eq(1);
   });
@@ -113,7 +118,7 @@ describe('processData', () => {
     const saveStub = sandbox.stub(es, 'save');
     fakeConfig.logGroups[0].dropKeys = ['toDrop'];
 
-    await processCloudWatchData(shipper, logLine, Log);
+    await processCloudWatchData(fakeRequest, logLine);
     expect(saveStub.callCount).equal(0);
     expect(es.logs.length).eq(1);
 
@@ -127,7 +132,7 @@ describe('processData', () => {
 
     const saveStub = sandbox.stub(es, 'save');
     fakeConfig.logGroups[0].drop = true;
-    await processCloudWatchData(shipper, logLine, Log);
+    await processCloudWatchData(fakeRequest, logLine);
     expect(saveStub.callCount).equal(0);
     expect(es.logs.length).eq(0);
   });
@@ -136,7 +141,7 @@ describe('processData', () => {
 
   it('should use the dead letter queue', async () => {
     const es = shipper.getElastic(fakeConfig);
-    await processCloudWatchData(shipper, logLine, Log);
+    await processCloudWatchData(fakeRequest, logLine);
 
     const client = new Client({ node: 'https://127.0.0.1', auth: { username: 'foo', password: 'bar' } });
     sandbox.stub(es, 'createClient').resolves(client);

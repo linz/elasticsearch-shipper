@@ -1,11 +1,11 @@
 import { awsGetCredentials, createAWSConnection } from '@acuris/aws-es-connection';
 import { Client } from '@elastic/elasticsearch';
 import { OnDropDocument } from '@elastic/elasticsearch/lib/Helpers';
+import { LogType } from '@linzjs/lambda';
 import { LogShipperConfigIndexDate } from '../config/config';
 import { ConnectionValidator } from '../config/config.elastic';
-import { Log } from '../logger';
-import { getIndexDate } from './elastic.index';
 import { ConfigCache } from './config';
+import { getIndexDate } from './elastic.index';
 import { LogObject } from './type';
 
 export interface FailedInsertDocument {
@@ -93,7 +93,7 @@ export class ElasticSearch {
   /**
    * Load all the items in the queue into elastic search
    */
-  async save(LogOpt?: typeof Log): Promise<void> {
+  async save(LogOpt?: LogType): Promise<void> {
     if (this.logCount === 0) return;
     const client = await this.client;
     const startTime = Date.now();

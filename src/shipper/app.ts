@@ -1,123 +1,93 @@
-import { Metrics } from '@basemaps/metrics';
-import { fsa, FsS3 } from '@linzjs/s3fs';
 // Source map support must come first
-import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, Context, S3Event } from 'aws-lambda';
+import 'source-map-support/register';
+// ---
+
+import { LambdaRequest, lf } from '@linzjs/lambda';
+import { fsa, FsS3 } from '@linzjs/s3fs';
+import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lambda';
 import S3 from 'aws-sdk/clients/s3';
 import SSM from 'aws-sdk/clients/ssm';
-import 'source-map-support/register';
-import { ulid } from 'ulid';
 import * as util from 'util';
 import * as zlib from 'zlib';
-import { Log } from '../logger';
 import { FsSsm } from './fs.ssm';
-import { isCloudWatchEvent, LogStats, processCloudWatchData, s3ToString, splitJsonString } from './log.handle';
+import {
+  isCloudWatchEvent,
+  isS3Event,
+  LogRequest,
+  processCloudWatchData,
+  RequestEvents,
+  s3ToString,
+  splitJsonString,
+} from './log.handle';
 import { LogShipper } from './shipper.config';
+import { LogStats } from './stats';
 
-export const s3 = new S3({ region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2' });
-export const ssm = new SSM({ region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2' });
+const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2';
+export const s3 = new S3({ region });
+export const ssm = new SSM({ region });
 
 fsa.register('s3://', new FsS3(s3));
 fsa.register('ssm://', new FsSsm(ssm));
 
 const gunzip: (buf: Buffer) => Promise<Buffer> = util.promisify(zlib.gunzip);
 
-async function processCloudWatchEvent(
-  event: CloudWatchLogsEvent,
-  logShipper: LogShipper,
-  logger: typeof Log,
-): Promise<LogStats> {
-  /** Is this data being supplied directly by a cloudwatch -> lambda invocation */
-  logger.trace('Process:CloudWatch');
-
-  const zippedInput = Buffer.from(event.awslogs.data, 'base64');
+async function onCloudWatchEvent(req: LogRequest<CloudWatchLogsEvent>): Promise<void> {
+  const zippedInput = Buffer.from(req.event.awslogs.data, 'base64');
   const buffer = await gunzip(zippedInput);
-  const awsLogsData: CloudWatchLogsDecodedData = JSON.parse(buffer.toString('utf8'));
+  const logData: CloudWatchLogsDecodedData = JSON.parse(buffer.toString('utf8'));
 
-  return await processCloudWatchData(logShipper, awsLogsData, logger);
+  req.set('source', 'cloudwatch');
+  await processCloudWatchData(req, logData);
 }
 
-async function processS3Event(event: S3Event, logShipper: LogShipper, logger: typeof Log): Promise<LogStats> {
-  logger.trace({ records: event.Records.length }, 'Process:S3');
-
-  const stats: LogStats = {};
-  for (const record of event.Records) {
+async function onS3Event(req: LogRequest<S3Event>): Promise<void> {
+  const sources: string[] = [];
+  let byteCount = 0;
+  for (const record of req.event.Records) {
     /** Data is supplied from a s3 object creation */
     const params = { Bucket: record.s3.bucket.name, Key: record.s3.object.key };
     const source = s3ToString(params);
-
-    logger.trace({ source }, 'ProcessEvent');
+    sources.push(source);
 
     const object = await s3.getObject(params).promise();
     const unzipped = await gunzip(object.Body as Buffer);
     const jsonLines = splitJsonString(unzipped.toString());
-
-    logger.trace({ source, lines: jsonLines.length }, 'ProcessingLines');
+    byteCount += unzipped.length;
 
     for (const line of jsonLines) {
       if (line == null || line === '') continue;
 
-      const obj: CloudWatchLogsDecodedData = JSON.parse(line);
-      const stat = await processCloudWatchData(logShipper, obj, logger, params.Key);
-      for (const [accountId, s] of Object.entries(stat)) {
-        // Doesnt exist just replace
-        const current = stats[accountId];
-        if (current == null) {
-          stats[accountId] = s;
-          break;
-        }
-        current.total += s.total;
-        current.dropped += s.dropped;
-        current.shipped += s.shipped;
-        current.skipped += s.skipped;
-      }
+      const logData: CloudWatchLogsDecodedData = JSON.parse(line);
+      await processCloudWatchData(req, logData, record.s3.object.key);
     }
   }
-  return stats;
+
+  req.set('source', 's3');
+  req.set('sources', sources);
+  req.set('bytes', byteCount);
 }
 
-export async function handler(event: S3Event | CloudWatchLogsEvent, context?: Context): Promise<void> {
-  const startTime = Date.now();
-  const logger = Log.child({ id: ulid() });
-  const logShipper = await LogShipper.load(logger);
-  const metrics = new Metrics();
+async function main(baseRequest: LambdaRequest<RequestEvents>): Promise<void> {
+  const req = baseRequest as LogRequest<RequestEvents>;
+  req.stats = new LogStats();
+  req.shipper = await LogShipper.load(baseRequest.log);
 
-  metrics.start('Process');
-  let accountStats: LogStats | null = null;
-  if (isCloudWatchEvent(event)) {
-    accountStats = await processCloudWatchEvent(event, logShipper, logger);
-  } else {
-    accountStats = await processS3Event(event, logShipper, logger);
-  }
-  metrics.end('Process');
+  if (isCloudWatchEvent(req)) await onCloudWatchEvent(req);
+  else if (isS3Event(req)) await onS3Event(req);
+  else throw new Error('Unknown request type');
 
-  const logCount = logShipper.logCount;
-  if (logCount > 0) {
-    metrics.start('Elastic:Save');
-    await logShipper.save(logger);
-    metrics.end('Elastic:Save');
+  req.set('logCount', req.shipper.logCount);
+  if (req.shipper.logCount > 0) {
+    req.timer.start('elastic:save');
+    await req.shipper.save(req.log);
+    req.timer.end('elastic:end');
   }
 
-  const logObject: Record<string, unknown> = {};
-
-  // 99% of all log entries are for one account, this makes it easier to aggregate across
-  const sts = Object.entries(accountStats);
-  if (sts.length === 1) {
-    logObject['accountId'] = sts[0][0];
-    logObject['stats'] = sts[0][1];
-  } else {
-    logObject['accountStats'] = accountStats;
+  if (req.stats.accounts.size === 1) {
+    const stats = req.stats.accounts.values().next();
+    const accountId = req.stats.accounts.keys().next();
+    req.set('stats', stats.value);
+    req.set('accountId', accountId.value);
   }
-
-  const duration = Date.now() - startTime;
-  logger.info(
-    {
-      '@type': 'report',
-      metrics: metrics.metrics,
-      logCount,
-      aws: { lambdaId: context?.awsRequestId },
-      ...logObject,
-      duration,
-    },
-    'ShippingDone',
-  );
 }
+export const handler = lf.handler(main);

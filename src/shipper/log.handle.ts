@@ -1,6 +1,11 @@
-import { CloudWatchLogsDecodedData, CloudWatchLogsEvent } from 'aws-lambda';
-import { Log } from '../logger';
+import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lambda';
+import { LambdaRequest } from '@linzjs/lambda';
 import { LogShipper } from './shipper.config';
+import { LogStats } from './stats';
+
+export type RequestEvents = S3Event | CloudWatchLogsEvent;
+
+export type LogRequest<T = RequestEvents> = LambdaRequest<T> & { shipper: LogShipper; stats: LogStats };
 
 export interface S3Location {
   Key: string;
@@ -19,45 +24,37 @@ export function s3ToString(loc: S3Location): string {
   return `s3://${loc.Bucket}/${loc.Key}`;
 }
 
-export function isCloudWatchEvent(e: any): e is CloudWatchLogsEvent {
-  return e['awslogs'] != null;
+export function isCloudWatchEvent(req: LambdaRequest<any>): req is LambdaRequest<CloudWatchLogsEvent> {
+  return 'awslogs' in req.event;
+}
+export function isS3Event(req: LambdaRequest<any>): req is LambdaRequest<S3Event> {
+  return 'Records' in req.event;
 }
 
-export type LogStats = Record<string, LogStat>;
-export type LogStat = { total: number; skipped: number; dropped: number; shipped: number };
-
 export async function processCloudWatchData(
-  logShipper: LogShipper,
+  req: LogRequest,
   c: CloudWatchLogsDecodedData,
-  Logger: typeof Log,
   source?: string,
-): Promise<LogStats> {
-  if (c.logEvents.length === 0) return {};
+): Promise<void> {
+  if (c.logEvents.length === 0) return;
   const logCount = c.logEvents.length;
 
   const accountId = c.owner;
-  const logger = Logger.child({
+  const logger = req.log.child({
     account: accountId,
     logCount,
-    source,
     logGroup: c.logGroup,
     logStream: c.logStream,
   });
 
-  const accounts = logShipper.getAccounts(accountId);
+  const accounts = req.shipper.getAccounts(accountId);
   if (accounts.length === 0) {
     logger.trace('Account:Skipped');
-    return { [accountId]: { total: logCount, skipped: 0, dropped: logCount, shipped: 0 } };
+    return;
   }
 
-  const stats: LogStats = {};
   for (const account of accounts) {
-    let accountStat = stats[account.id];
-    if (accountStat == null) {
-      accountStat = { total: 0, skipped: 0, dropped: 0, shipped: 0 };
-      stats[accountId] = accountStat;
-    }
-
+    const accountStat = req.stats.account(account.id);
     accountStat.total += logCount;
 
     if (account.drop) {
@@ -66,11 +63,10 @@ export async function processCloudWatchData(
       continue;
     }
 
-    const streamConfig = logShipper.getLogConfig(account, c.logGroup);
+    const streamConfig = req.shipper.getLogConfig(account, c.logGroup);
     if (streamConfig == null) {
       logger.trace({ configName: account.name }, 'LogGroup:Skipped');
       accountStat.skipped += logCount;
-
       continue;
     }
 
@@ -87,7 +83,7 @@ export async function processCloudWatchData(
     const index = streamConfig.index ?? account.index;
 
     for (const logLine of c.logEvents) {
-      const logObject = logShipper.getLogObject(c, logLine, source);
+      const logObject = req.shipper.getLogObject(c, logLine, source);
       if (logObject == null) continue;
       if (streamTags.length > 0) logObject['@tags'] = streamTags.concat(logObject['@tags'] ?? []);
 
@@ -99,11 +95,9 @@ export async function processCloudWatchData(
         for (const key of streamConfig.dropKeys) delete logObject[key];
       }
 
-      logShipper.getElastic(account).queue(logObject, prefix, index);
+      req.shipper.getElastic(account).queue(logObject, prefix, index);
     }
     accountStat.shipped += logCount;
     logger.debug({ configName: account.name }, 'LogGroup:Processed');
   }
-
-  return stats;
 }
