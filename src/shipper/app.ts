@@ -80,7 +80,7 @@ async function main(baseRequest: LambdaRequest<RequestEvents>): Promise<void> {
   if (req.shipper.logCount > 0) {
     req.timer.start('elastic:save');
     await req.shipper.save(req.log);
-    req.timer.end('elastic:end');
+    req.timer.end('elastic:save');
   }
 
   if (req.stats.accounts.size === 1) {
