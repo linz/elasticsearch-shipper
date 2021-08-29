@@ -1,3 +1,12 @@
+## [3.5.1](https://github.com/linz/elasticsearch-shipper/compare/v3.5.0...v3.5.1) (2021-08-29)
+
+
+### Bug Fixes
+
+* correct end timer name ([#425](https://github.com/linz/elasticsearch-shipper/issues/425)) ([c671d9e](https://github.com/linz/elasticsearch-shipper/commit/c671d9eb527db70b89557f0204f5aa5a1fa9ca0a))
+
+
+
 # [3.5.0](https://github.com/linz/elasticsearch-shipper/compare/v3.4.2...v3.5.0) (2021-08-27)
 
 
