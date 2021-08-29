@@ -49,8 +49,9 @@ describe('HandlerIntegration', () => {
     return LogShipper.INSTANCE?.getElastic(fakeAccount).logs[index] as LogObject;
   }
 
-  function handle(event: RequestEvents): Promise<void> {
-    return new Promise((resolve) => handler(event, {} as Context, () => resolve()));
+  function handle(event: RequestEvents): Promise<unknown> {
+    const ctx = {} as Context;
+    return new Promise((resolve, reject) => handler(event, ctx, (a, b) => (a ? reject(a) : resolve(b))));
   }
 
   function validateItems(): void {
@@ -132,8 +133,12 @@ describe('HandlerIntegration', () => {
     sandbox.stub(lf.Logger, 'child').returns(lf.Logger);
     sandbox.stub(lf.Logger, 'fatal');
     const logStubError = sandbox.stub(lf.Logger, 'error');
-    await handle({ Records: [EVENT_DATA] });
-
+    try {
+      await handle({ Records: [EVENT_DATA] });
+      expect(true).equal(false); // Should have thrown
+    } catch (e) {
+      expect(String(e)).includes('Error: Failed to parse uri: s3://foo/bar');
+    }
     expect(logStubError.callCount).eq(1);
     expect(logStubError.args[0][0]['@type']).eq('report');
     expect(logStubError.args[0][0]['status']).eq(500);
