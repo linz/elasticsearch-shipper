@@ -1,3 +1,12 @@
+## [3.5.2](https://github.com/linz/elasticsearch-shipper/compare/v3.5.1...v3.5.2) (2021-08-30)
+
+
+### Features
+
+* track slow requests ([#427](https://github.com/linz/elasticsearch-shipper/issues/427)) ([df7f2ca](https://github.com/linz/elasticsearch-shipper/commit/df7f2ca0fa123d139078e4dd6f2b3f56334e4bc5))
+
+
+
 ## [3.5.1](https://github.com/linz/elasticsearch-shipper/compare/v3.5.0...v3.5.1) (2021-08-29)
 
 
