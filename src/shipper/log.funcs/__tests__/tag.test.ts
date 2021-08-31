@@ -44,4 +44,21 @@ describe('onLogTag', () => {
     expect(ret).to.eq(undefined);
     expect(msg['@tags']).deep.eq(['Lambda log']);
   });
+
+  it('should parse access log lines', () => {
+    msg.message =
+      '1.2.3.4 - - [31/Aug/2021:01:45:31 +0000] "GET /ping HTTP/1.1" 200 0 "-" "ELB-HealthChecker/2.0" "1.2.3.4"';
+    accessLogTest(msg);
+  });
+  it('should parse access log lines with no bytes', () => {
+    msg.message =
+      '1.2.3.4 - - [31/Aug/2021:01:45:31 +0000] "GET /ping HTTP/1.1" 200 - "-" "ELB-HealthChecker/2.0" "1.2.3.4"';
+    accessLogTest(msg);
+  });
 });
+
+function accessLogTest(msg: LogObject): void {
+  const ret = onLogTag(msg);
+  expect(ret).to.eq(undefined);
+  expect(msg['@tags']).deep.eq(['Access log']);
+}
