@@ -35,7 +35,7 @@ describe('onLogTag', () => {
     msg.message = 'END RequestId: be0262fa-d7f9-47b8-985e-9bb41e77b624'.padEnd(2049, '-');
     const ret = onLogTag(msg);
     expect(ret).to.eq(undefined);
-    expect(msg['@tags']).deep.eq([]);
+    expect(msg['@tags']).deep.eq(['Oversized log']);
   });
 
   it('should not skip largeish log lines', () => {
