@@ -1,3 +1,18 @@
+## [3.5.3](https://github.com/linz/elasticsearch-shipper/compare/v3.5.2...v3.5.3) (2021-08-31)
+
+
+### Bug Fixes
+
+* Access log regex ([#433](https://github.com/linz/elasticsearch-shipper/issues/433)) ([73b8712](https://github.com/linz/elasticsearch-shipper/commit/73b8712a7e1bcb8a263e5ab06291132582b776f5))
+* avoid running regexps on large inputs ([#432](https://github.com/linz/elasticsearch-shipper/issues/432)) ([dd1cafa](https://github.com/linz/elasticsearch-shipper/commit/dd1cafa4d03725b4905f47ee0f94c612812fef98))
+
+
+### Reverts
+
+* Revert "feat: track slow requests (#427)" ([57d60bb](https://github.com/linz/elasticsearch-shipper/commit/57d60bb8f2ed6921e12b573f7309a222d5f7e97c)), closes [#427](https://github.com/linz/elasticsearch-shipper/issues/427)
+
+
+
 ## [3.5.2](https://github.com/linz/elasticsearch-shipper/compare/v3.5.1...v3.5.2) (2021-08-30)
 
 
