@@ -32,21 +32,16 @@ fsa.register('ssm://', new FsSsm(ssm));
 const gunzip: (buf: Buffer) => Promise<Buffer> = util.promisify(zlib.gunzip);
 
 async function onCloudWatchEvent(req: LogRequest<CloudWatchLogsEvent>): Promise<void> {
-  req.set('source', 'cloudwatch');
-
   const zippedInput = Buffer.from(req.event.awslogs.data, 'base64');
   const buffer = await gunzip(zippedInput);
   const logData: CloudWatchLogsDecodedData = JSON.parse(buffer.toString('utf8'));
 
-  req.set('bytes', buffer.length);
+  req.set('source', 'cloudwatch');
   await processCloudWatchData(req, logData);
 }
 
 async function onS3Event(req: LogRequest<S3Event>): Promise<void> {
   const sources: string[] = [];
-  req.set('source', 's3');
-  req.set('sources', sources);
-
   let byteCount = 0;
   for (const record of req.event.Records) {
     /** Data is supplied from a s3 object creation */
@@ -67,70 +62,32 @@ async function onS3Event(req: LogRequest<S3Event>): Promise<void> {
     }
   }
 
+  req.set('source', 's3');
+  req.set('sources', sources);
   req.set('bytes', byteCount);
-}
-
-/**
- * Trace more information of requests that are taking too long to process
- */
-function handleSlowRequest(req: LogRequest<RequestEvents>): void {
-  try {
-    if (isCloudWatchEvent(req)) {
-      req.set('source', 'cloudwatch');
-    } else if (isS3Event(req)) {
-      req.set('source', 's3');
-      // List of source files
-      req.set(
-        'sourceList',
-        req.event.Records.map((c) => `s3://${c.s3.bucket.name}/${c.s3.object.key}`),
-      );
-      // List of accountIds being used
-      req.set(
-        'accountIds',
-        req.event.Records.map((c) => c.s3.object.key.split('/')[0]),
-      );
-    }
-
-    if (req.shipper) {
-      for (const [key, value] of req.shipper.elastic.entries()) {
-        req.set('elastic', { [key]: value.logCount });
-      }
-    }
-  } catch (e) {
-    req.set('slowErr', e);
-  }
-
-  req.log.warn({ ...req.logContext, metrics: req.stats }, 'SlowRequest');
-  console.log('SlowRequests', { ...req.logContext, metrics: req.stats });
 }
 
 async function main(baseRequest: LambdaRequest<RequestEvents>): Promise<void> {
   const req = baseRequest as LogRequest<RequestEvents>;
-  // Track requests that take longer than 10 seconds and output more logging
-  const slowTimer = setTimeout(() => handleSlowRequest(req), 10_000);
-  try {
-    req.stats = new LogStats();
-    req.shipper = await LogShipper.load(baseRequest.log);
+  req.stats = new LogStats();
+  req.shipper = await LogShipper.load(baseRequest.log);
 
-    if (isCloudWatchEvent(req)) await onCloudWatchEvent(req);
-    else if (isS3Event(req)) await onS3Event(req);
-    else throw new Error('Unknown request type');
+  if (isCloudWatchEvent(req)) await onCloudWatchEvent(req);
+  else if (isS3Event(req)) await onS3Event(req);
+  else throw new Error('Unknown request type');
 
-    req.set('logCount', req.shipper.logCount);
-    if (req.shipper.logCount > 0) {
-      req.timer.start('elastic:save');
-      await req.shipper.save(req.log);
-      req.timer.end('elastic:save');
-    }
+  req.set('logCount', req.shipper.logCount);
+  if (req.shipper.logCount > 0) {
+    req.timer.start('elastic:save');
+    await req.shipper.save(req.log);
+    req.timer.end('elastic:save');
+  }
 
-    if (req.stats.accounts.size === 1) {
-      const stats = req.stats.accounts.values().next();
-      const accountId = req.stats.accounts.keys().next();
-      req.set('stats', stats.value);
-      req.set('accountId', accountId.value);
-    }
-  } finally {
-    clearTimeout(slowTimer);
+  if (req.stats.accounts.size === 1) {
+    const stats = req.stats.accounts.values().next();
+    const accountId = req.stats.accounts.keys().next();
+    req.set('stats', stats.value);
+    req.set('accountId', accountId.value);
   }
 }
 export const handler = lf.handler(main);
