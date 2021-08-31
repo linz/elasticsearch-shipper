@@ -10,6 +10,8 @@ export const LambdaLogRegexp = /(START|REPORT|END) RequestId: [\-0-9a-f]+.*/;
  */
 export function onLogTag(lo: LogObject): boolean | void {
   if (lo.message == null) return;
+  // Large messages can cause the regexps to explode
+  if (lo.message.length > 2048) return;
   if (lo['@tags'] == null) return;
   const tags = lo['@tags'];
 
@@ -17,11 +19,13 @@ export function onLogTag(lo: LogObject): boolean | void {
     tags.push('Flow log');
     return true; // Drop flow logs.
   }
-  if (lo.message.match(AccessLogRegexp) != null) {
-    tags.push('Access log');
-  }
 
   if (lo.message.match(LambdaLogRegexp)) {
     tags.push('Lambda log');
+    return;
+  }
+
+  if (lo.message.match(AccessLogRegexp) != null) {
+    tags.push('Access log');
   }
 }
