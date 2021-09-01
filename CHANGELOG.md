@@ -1,3 +1,12 @@
+# [3.6.0](https://github.com/linz/elasticsearch-shipper/compare/v3.5.3...v3.6.0) (2021-09-01)
+
+
+### Features
+
+* Tag oversized logs. ([#434](https://github.com/linz/elasticsearch-shipper/issues/434)) ([8c974c5](https://github.com/linz/elasticsearch-shipper/commit/8c974c5faaeedc5efbe3aec882c008c9820e0f01))
+
+
+
 ## [3.5.3](https://github.com/linz/elasticsearch-shipper/compare/v3.5.2...v3.5.3) (2021-08-31)
 
 
