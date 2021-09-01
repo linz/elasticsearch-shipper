@@ -643,9 +643,9 @@
   integrity sha512-3O5VzbcOaPWrBhHUAhnP9+88BjenAb3xP5mXsD/djXgFsGCFhcuTGLBY9+LirFYpy9VKbcNjMiRYsku2lwmV6g==
 
 "@linzjs/s3fs@^6.4.0":
-  version "6.7.0"
-  resolved "https://registry.yarnpkg.com/@linzjs/s3fs/-/s3fs-6.7.0.tgz#f3b4954e3074472b46079ccf9b57f8abc182d745"
-  integrity sha512-e7nUvmXAmFu3auG7wUP7maudUAgir5H7S0zSAX3M1E0E4BDQN/2RDUWO8CWVga8dNSoRz5HeWIVN3HcdQ8lUIA==
+  version "6.8.0"
+  resolved "https://registry.yarnpkg.com/@linzjs/s3fs/-/s3fs-6.8.0.tgz#b13f3d52d1a4efe9230b6454e941fc6c76376da3"
+  integrity sha512-84OkllV0u+Ct0FHSsxLhSMab4ZILFEKaEXilM7hN9KbKxvy7fuYlg8Fou3l10Uct1cdBd9DWZzF/JIeZngEGQg==
 
 "@linzjs/style@^3.0.0":
   version "3.0.0"
