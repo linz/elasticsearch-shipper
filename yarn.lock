@@ -628,13 +628,13 @@
     semver "^7.3.5"
 
 "@linzjs/lambda@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@linzjs/lambda/-/lambda-1.0.1.tgz#6a6a19bfcc4585eb50d69f739829a8ac04c00853"
-  integrity sha512-s5TqP9j+9jWpviO6/VLVZWxVPMf15SB8XJdCsvjmTJQPqwz6yHjOT/wfLmBE0d35axGOCoePZL5DBNF5+gCx2Q==
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@linzjs/lambda/-/lambda-1.1.0.tgz#d3fb69386ddb6b4586c00f5143ed6842aa24e561"
+  integrity sha512-5rUz2vlkBvATmRGVnRjRPg58/HkAvfIz9nhaarik6sKb/7M9vqG0EMnSER3+Cmi0rvWjUMew3BZpPO1C8ekG8w==
   dependencies:
     "@linzjs/metrics" "^6.0.0"
     "@types/pino" "^6.3.11"
-    pino "^6.13.0"
+    pino "^6.13.1"
     ulid "^2.3.0"
 
 "@linzjs/metrics@^6.0.0":
@@ -3305,7 +3305,7 @@ pino-std-serializers@^3.1.0:
   resolved "https://registry.yarnpkg.com/pino-std-serializers/-/pino-std-serializers-3.1.1.tgz#5a9a00715c9ff3428d5555d4b023a3f8a5893e54"
   integrity sha512-Ud4+WzgEr/swOlfQdkxqKP2hlwuQlIqQ5YwYpo9MczNg2mpsKKyKgwQXW5KnP5tgH3/Cy9QRhAhLM8k1K+gfnA==
 
-pino@^6.13.0:
+pino@^6.13.1:
   version "6.13.1"
   resolved "https://registry.yarnpkg.com/pino/-/pino-6.13.1.tgz#3a484d4831ef185f8593fe9acdeeece47d85b32e"
   integrity sha512-QQf67BU+cANnc/2U+wzUV20UjO5oBryWpnNyKshdLfT9BdeiXlh9wxLGmOjAuBWMYITdMs+BtJSQQNlGRNbWpA==
