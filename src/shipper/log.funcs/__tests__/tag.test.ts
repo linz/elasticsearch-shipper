@@ -66,6 +66,18 @@ describe('onLogTag', () => {
     msg.message = '127.0.0.1 user-identifier frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326';
     accessLogTest(msg);
   });
+
+  it('should accept browser user agents', () => {
+    msg.message =
+      '10.160.178.65 - - [13/Sep/2021:19:04:39 +0000] "GET /survey/health HTTP/1.1" 200 25 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3579.0 Safari/537.36" "1.2.3.4"';
+    accessLogTest(msg);
+  });
+
+  it('should accept reverse proxied', () => {
+    msg.message =
+      '10.160.178.65 - - [13/Sep/2021:19:04:39 +0000] "GET /survey/health HTTP/1.1" 200 25 "-" "curl/1.2.3" "1.2.3.4, 6.7.8.9"';
+    accessLogTest(msg);
+  });
 });
 
 function accessLogTest(msg: LogObject): void {
