@@ -752,9 +752,9 @@
   integrity sha512-scN0hAWyLVAvLR9AyW7HoFF5sJZglyBsbPuHO4fv7JRvfmPBMfp1ozWqOf/e4wwPNxezBZXRfWzMb6iFLgEVRA==
 
 "@types/node@*", "@types/node@^16.9.6":
-  version "16.10.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.10.1.tgz#f3647623199ca920960006b3dccf633ea905f243"
-  integrity sha512-4/Z9DMPKFexZj/Gn3LylFgamNKHm4K3QDi0gz9B26Uk0c8izYf97B5fxfpspMNkWlFupblKM/nV8+NA9Ffvr+w==
+  version "16.10.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.10.2.tgz#5764ca9aa94470adb4e1185fe2e9f19458992b2e"
+  integrity sha512-zCclL4/rx+W5SQTzFs9wyvvyCwoK9QtBpratqz2IYJ3O8Umrn0m3nsTv0wQBk9sRGpvUe9CwPDrQFB10f1FIjQ==
 
 "@types/node@^10.17.60":
   version "10.17.60"
@@ -4389,6 +4389,6 @@ zip-stream@^4.1.0:
     readable-stream "^3.6.0"
 
 zod@^3.0.2:
-  version "3.9.4"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-3.9.4.tgz#c7ec1cad19a8801145930369602db7c6c3bdc685"
-  integrity sha512-eHSHpvWrA/zCf5tGTosnU/TMpu8cxKwIZUi5/sRrvzzSTv+QZoGyNon2alORHLT2XhMwwQ5V4PgU+LsIWe6/2g==
+  version "3.9.5"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.9.5.tgz#11ebe51bf0c0356cea4465177e917db5f71768f4"
+  integrity sha512-n8zC7CLFi/aOhKKrdczg8sCL8myY/mMa0Y6w6uKOFRaHZOD62bqMR2ah3rltZy381/JakY0TTh5IilHqH0BLBw==
