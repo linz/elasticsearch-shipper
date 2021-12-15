@@ -718,9 +718,9 @@
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
 "@types/aws-lambda@^8.10.34":
-  version "8.10.87"
-  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.87.tgz#5e90af2d4ffb41d3bf9c97080a5c4700ddf06436"
-  integrity sha512-fMYSgnIjFsTM3huCzqNvZm9gH4kFY5yIEOKYj9VtTG13TYd+wwweTbYAAO8OclcTbpezK+VsHNWIyHiAHgVCJg==
+  version "8.10.88"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.88.tgz#1f18ac2e15be30376e86a688a943390e7d6683e5"
+  integrity sha512-Gbdr5tmGMGV1bgWDEfgNnfqtS9YVKDCkyAgYPmYIeEQFTSjU+VzVoE0Gc1MyrzREdk3Iu5daUCRU9eQL5s+iYQ==
 
 "@types/chai@^4.2.4":
   version "4.3.0"
@@ -753,9 +753,9 @@
   integrity sha512-scN0hAWyLVAvLR9AyW7HoFF5sJZglyBsbPuHO4fv7JRvfmPBMfp1ozWqOf/e4wwPNxezBZXRfWzMb6iFLgEVRA==
 
 "@types/node@*", "@types/node@^16.9.6":
-  version "16.11.12"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.12.tgz#ac7fb693ac587ee182c3780c26eb65546a1a3c10"
-  integrity sha512-+2Iggwg7PxoO5Kyhvsq9VarmPbIelXP070HMImEpbtGCoyWNINQj4wzjbQCXzdHTRXnqufutJb5KAURZANNBAw==
+  version "16.11.13"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.13.tgz#6b71641b81a98c6a538d89892440c06f147edddc"
+  integrity sha512-eUXZzHLHoZqj1frtUetNkUetYoJ6X55UmrVnFD4DMhVeAmwLjniZhtBmsRiemQh4uq4G3vUra/Ws/hs9vEvL3Q==
 
 "@types/node@^10.17.60":
   version "10.17.60"
