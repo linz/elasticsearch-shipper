@@ -13,7 +13,7 @@
     "@aws-cdk/aws-lambda-nodejs": "^1.121.0",
     "@aws-cdk/aws-s3-assets": "^1.121.0",
     "@aws-cdk/core": "^1.121.0",
-    "@linzjs/lambda": "^1.0.1",
+    "@linzjs/lambda": "^3.0.1",
     "@linzjs/s3fs": "^6.4.0",
     "aws-cdk": "^1.121.0",
     "aws-sdk": "^2.547.0",
