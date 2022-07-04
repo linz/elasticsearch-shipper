@@ -15,7 +15,7 @@
     "@aws-cdk/core": "^1.121.0",
     "@linzjs/lambda": "^1.0.1",
     "@linzjs/s3fs": "^6.4.0",
-    "aws-cdk": "^1.121.0",
+    "aws-cdk": "^2.30.0",
     "aws-sdk": "^2.547.0",
     "esbuild": "^0.13.1",
     "jsondiffpatch": "^0.4.1",
