@@ -9,7 +9,7 @@
   "type": "module",
   "dependencies": {
     "@acuris/aws-es-connection": "^2.0.1",
-    "@linzjs/lambda": "^1.0.1",
+    "@linzjs/lambda": "^4.0.0",
     "@linzjs/s3fs": "^6.4.0",
     "aws-sdk": "^2.547.0",
     "jsondiffpatch": "^0.4.1",
