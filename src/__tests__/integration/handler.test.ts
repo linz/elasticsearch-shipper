@@ -5,7 +5,6 @@ import * as sinon from 'sinon';
 import { LogShipperConfigAccount } from '../../config/config';
 import { Env } from '../../env';
 import { handler, s3 } from '../../shipper/app';
-import { ConfigCache } from '../../shipper/config';
 import { ElasticSearch } from '../../shipper/elastic';
 import { RequestEvents } from '../../shipper/log.handle';
 import { LogShipper } from '../../shipper/shipper.config';

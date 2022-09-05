@@ -1,6 +1,4 @@
 import { fsa } from '@linzjs/s3fs';
-import { LogShipperConfigAccount } from '../config/config';
-import { LogShipperConfigAccountValidator } from '../config/config.elastic';
 import { RefreshTimeoutSeconds } from '../env';
 
 const RetryDelayMilliseconds = 50;
