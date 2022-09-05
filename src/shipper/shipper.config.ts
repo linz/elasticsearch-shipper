@@ -1,22 +1,14 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsLogEvent } from 'aws-lambda';
 import minimatch from 'minimatch';
 import { LogShipperConfigAccount, LogShipperConfigLogGroup } from '../config/config';
-import { LogShipperConfigAccountValidator } from '../config/config.elastic';
-import { DefaultConfigRefreshTimeoutSeconds, Env } from '../env';
 import { ElasticSearch } from './elastic';
 import { onLogExtractJson } from './log.funcs/extract.json';
 import { onLogTag } from './log.funcs/tag';
-import { ConfigCache } from './config';
 import { LogObject, LogProcessFunction } from './type';
 import { LogType } from '@linzjs/lambda';
 
-export const RefreshTimeoutSeconds = Number(
-  process.env[Env.ConfigRefreshTimeoutSeconds] ?? DefaultConfigRefreshTimeoutSeconds,
-);
-
 export class LogShipper {
   static INSTANCE: LogShipper | null;
-  initializedAt: number;
   accounts: LogShipperConfigAccount[];
 
   static DefaultLogProcessFunctions = [onLogExtractJson, onLogTag];
@@ -28,33 +20,19 @@ export class LogShipper {
    */
   onLog: LogProcessFunction[] = [];
 
-  static async load(logger?: LogType): Promise<LogShipper> {
-    if (LogShipper.INSTANCE == null || LogShipper.INSTANCE.isRefreshNeeded) {
-      const configUri = process.env[Env.ConfigUri];
-      if (configUri == null) throw new Error(`Failed to load configuration $${Env.ConfigUri} is missing`);
-      const configRaw = await ConfigCache.get(configUri);
+  static async get(): Promise<LogShipper> {
+    if (LogShipper.INSTANCE == null) throw new Error('LogShipper has not been configured');
+    return LogShipper.INSTANCE;
+  }
 
-      const accounts: LogShipperConfigAccount[] = [];
-
-      if (!Array.isArray(configRaw)) throw new Error('Configuration is not an array uri:' + configUri);
-      for (const account of configRaw) {
-        const res = LogShipperConfigAccountValidator.safeParse(account);
-        if (!res.success) {
-          logger?.fatal({ errors: res.error }, 'Failed to parse uri: ' + configUri);
-          throw new Error('Failed to parse uri: ' + configUri);
-        }
-        accounts.push(account);
-      }
-
-      LogShipper.INSTANCE = new LogShipper(accounts);
-    }
+  static configure(accounts: LogShipperConfigAccount[]): LogShipper {
+    if (LogShipper.INSTANCE) throw new Error('Duplicate LogShipper configuration');
+    LogShipper.INSTANCE = new LogShipper(accounts);
     return LogShipper.INSTANCE;
   }
 
   constructor(accounts: LogShipperConfigAccount[]) {
     this.accounts = accounts;
-    this.initializedAt = Date.now();
-
     for (const fn of LogShipper.DefaultLogProcessFunctions) this.onLog.push(fn);
   }
 
@@ -63,6 +41,7 @@ export class LogShipper {
   }
 
   getLogConfig(account: LogShipperConfigAccount, logGroup: string): LogShipperConfigLogGroup | undefined {
+    if (account == null || account.logGroups == null) return;
     return account.logGroups.find((f) => minimatch(logGroup, f.filter));
   }
 
@@ -116,11 +95,5 @@ export class LogShipper {
     }
 
     return logObj;
-  }
-  /**
-   * Check whether the config is due to be refreshed.
-   */
-  get isRefreshNeeded(): boolean {
-    return this.initializedAt + RefreshTimeoutSeconds * 1000 < new Date().getTime();
   }
 }

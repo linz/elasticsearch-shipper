@@ -7,12 +7,43 @@ Lambda function to ship logs from various AWS sources into a elastic search inst
 
 ## Usage
 
-This package exposes a AWS-CDK construct that can be imported into your CDK stack and can be used to configure logs to be automatically shipped into an elastic search of your choosing
+This package exposes a Lambda Function that can be used in a CDK stack that can be used to configure logs to be automatically shipped into an elastic search of your choosing
+
+
+`./src/config.mjs`
+```typescript
+export const Config = {
+  name: 'default',
+  accounts: [{
+    id: '1234567890',
+    elastic: '/es-shipper-config/elastic-default',
+    name: 'linz',
+    tags: ['hello'],
+    prefix: 'account-prefix',
+    logGroups: [{
+      filter: '**',
+      prefix: 'lg-prefix',
+    }],
+  }],
+}
+```
+
+`./src/index.mjs`
+```typescript
+import {Config} from './config.js'
+import {logHandler, LogShipper} from '@linzjs/cdk-elastic-shipper';
+LogShipper.configure(Config)
+
+export const handler = logHandler;
+```
 
 ```javascript 
-import * as cdk from '@aws-cdk/aws-cdk'
-import * as ssm from '@aws-cdk/aws-ssm'
-import { LambdaLogShipperFunction } from '@linzjs/cdk-elastic-shipper'
+import * as cdk from 'aws-cdk-lib';
+import { App, CfnOutput, Duration } from 'aws-cdk-lib';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as lNjs from 'aws-cdk-lib/aws-lambda-nodejs'
+import {Config} from './config.mjs'
+import {Env} from '@linzjs/cdk-elastic-shipper';
 
 export class YourStack extends cdk.Stack {
 
@@ -20,25 +51,34 @@ export class YourStack extends cdk.Stack {
     super(scope, id, props);
     const vpc = new ec2.Vpc(this, 'Vpc');
 
-    const config = {
-      name: 'default',
-      accounts: [{
-        id: '1234567890',
-        elastic: '/es-shipper-config/elastic-default',
-        name: 'linz',
-        tags: ['hello'],
-        prefix: 'account-prefix',
-        logGroups: [{
-          filter: '**',
-          prefix: 'lg-prefix',
-        }],
-      }],
-    };
-    this.logShipper = new LambdaLogShipperFunction(this, 'LogShipper', { config, vpc });
+    const cfg = validateConfig(Config)
+    // Validate all the connection references are valid
+    const allParameters: ssm.IStringParameter[] = [];
+    for (const elasticId of elasticIds) {
+      allParameters.push(ssm.StringParameter.fromStringParameterName(this, 'ElasticConfig' + elasticId, elasticId));
+    }
 
-    /** Register a listener on a bucket, so when files are added they are to submitted to the log shipper*/
-    const logBucket = new s3.Bucket(this, 'LogBucket');
-    this.logShipper.addS3Source(logBucket);
+    this.lambda = new NodejsFunction(this, 'Shipper', {
+        runtime: lambda.Runtime.NODEJS_16_X,
+        memorySize: 256,
+        timeout: Duration.seconds(30),
+        handler: 'handler',
+        entry: './src/index.mjs',
+        environment: {
+          // Deploy with a known hash and version
+          [Env.GitHash]: execFileSync('git', ['rev-parse', 'HEAD']).toString().trim(),
+          [Env.GitVersion]: execFileSync('git', ['describe', '--tags', '--always', '--match', 'v*']).toString().trim(),
+        },
+        logRetention: RetentionDays.ONE_MONTH,
+    });
+
+    for (const param of allParameters) param.grantRead(this.lambda);
+
+
+    /** Register a listener on a bucket, so when files are added they are to submitted to the log shipper */
+    const logBucket = new Bucket.fromName(this, 'LogBucket');
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new LambdaDestination(this.lambda));
+    bucket.grantRead(this.lambda);
   }
 }
 ```

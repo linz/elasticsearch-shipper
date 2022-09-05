@@ -9,7 +9,6 @@ import S3 from 'aws-sdk/clients/s3';
 import SSM from 'aws-sdk/clients/ssm';
 import * as util from 'util';
 import * as zlib from 'zlib';
-import { FsSsm } from './fs.ssm';
 import {
   isCloudWatchEvent,
   isS3Event,
@@ -21,6 +20,7 @@ import {
 } from './log.handle';
 import { LogShipper } from './shipper.config';
 import { LogStats } from './stats';
+import { FsSsm } from './fs.ssm';
 
 const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2';
 export const s3 = new S3({ region });
@@ -70,7 +70,7 @@ async function onS3Event(req: LogRequest<S3Event>): Promise<void> {
 async function main(baseRequest: LambdaRequest<RequestEvents>): Promise<void> {
   const req = baseRequest as LogRequest<RequestEvents>;
   req.stats = new LogStats();
-  req.shipper = await LogShipper.load(baseRequest.log);
+  req.shipper = await LogShipper.get();
 
   if (isCloudWatchEvent(req)) await onCloudWatchEvent(req);
   else if (isS3Event(req)) await onS3Event(req);

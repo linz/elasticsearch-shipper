@@ -18,3 +18,7 @@ export const Env = {
   /** Last git version */
   GitVersion: 'GIT_VERSION',
 };
+
+export const RefreshTimeoutSeconds = Number(
+  process.env[Env.ConfigRefreshTimeoutSeconds] ?? DefaultConfigRefreshTimeoutSeconds,
+);

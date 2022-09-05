@@ -29,10 +29,7 @@ describe('HandlerIntegration', () => {
       index: 'weekly',
       logGroups: [{ filter: '**', tags: ['@logGroup'], prefix: '@logGroup', index: 'daily' }],
     };
-    sandbox.stub(ConfigCache, 'get').callsFake(async (key) => {
-      if (key === 's3://foo/bar') return [fakeAccount];
-      throw new Error('Invalid key fetch: ' + key);
-    });
+    LogShipper.INSTANCE = new LogShipper([fakeAccount]);
     sandbox.stub(ElasticSearch.prototype, 'save').resolves();
 
     const s3Return = { promise: (): Promise<unknown> => Promise.resolve({ Body: toLogStream() }) };
@@ -128,6 +125,7 @@ describe('HandlerIntegration', () => {
 
   it('should error if the config is invalid', async () => {
     delete (fakeAccount as any).logGroups;
+    LogShipper.INSTANCE = null;
 
     lf.Logger.level = 'info';
     sandbox.stub(lf.Logger, 'child').returns(lf.Logger);
@@ -137,12 +135,13 @@ describe('HandlerIntegration', () => {
       await handle({ Records: [EVENT_DATA] });
       expect(true).equal(false); // Should have thrown
     } catch (e) {
-      expect(String(e)).includes('Error: Failed to parse uri: s3://foo/bar');
+      console.log(e);
+      expect(String(e)).includes('Error: LogShipper has not been configured');
     }
     expect(logStubError.callCount).eq(1);
     expect(logStubError.args[0][0]['@type']).eq('report');
     expect(logStubError.args[0][0]['status']).eq(500);
-    expect(String(logStubError.args[0][0]['err'])).eq('Error: Failed to parse uri: s3://foo/bar');
+    expect(String(logStubError.args[0][0]['err'])).eq('Error: LogShipper has not been configured');
     expect(logStubError.args[0][1]).eq('Lambda:Done');
   });
 
