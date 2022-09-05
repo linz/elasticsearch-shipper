@@ -142,7 +142,7 @@ export class ElasticSearch {
         onDrop(lo: OnDropDocument<FailedInsertDocument>) {
           const indexName = indexes.get(lo.document['@id']);
           const document = JSON.stringify(lo.document);
-          logger?.error({ indexName, logMessage: document, error: lo.error }, 'FailedIndex');
+          logger?.error({ indexName, logMessage: document.slice(0, 4096), error: lo.error }, 'FailedIndex');
         },
         // Wait up to 1 second before flushing
         flushInterval: 1000,
