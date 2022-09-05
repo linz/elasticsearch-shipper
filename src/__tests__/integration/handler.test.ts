@@ -134,7 +134,6 @@ describe('HandlerIntegration', () => {
       await handle({ Records: [EVENT_DATA] });
       expect(true).equal(false); // Should have thrown
     } catch (e) {
-      console.log(e);
       expect(String(e)).includes('Error: LogShipper has not been configured');
     }
     expect(logStubError.callCount).eq(1);
