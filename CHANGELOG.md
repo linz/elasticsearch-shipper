@@ -7,6 +7,20 @@
 
 
 
+## [3.7.0](https://github.com/linz/elasticsearch-shipper/compare/v3.6.2...v3.7.0) (2022-09-05)
+
+
+### Features
+
+* allow transformation of logs with a callback function ([6d4196c](https://github.com/linz/elasticsearch-shipper/commit/6d4196c320b98eacf1c5122bdb28a64e2642c7de))
+* remove CDK and let consumers build their own CDK ([2b8f966](https://github.com/linz/elasticsearch-shipper/commit/2b8f9667b5127e5c534fa1dfa1d4c9254ea9df79))
+
+
+### Bug Fixes
+
+* only log first 4KB of failed log lines ([99963cb](https://github.com/linz/elasticsearch-shipper/commit/99963cbea12fe280f142ed8fe7c5b5a7170c4e4b))
+* substr is deprecated ([acfca06](https://github.com/linz/elasticsearch-shipper/commit/acfca066768560f1a6f0416197b5ec5fd696fd15))
+
 ## [3.5.3](https://github.com/linz/elasticsearch-shipper/compare/v3.5.2...v3.5.3) (2021-08-31)
 
 
