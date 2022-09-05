@@ -14,7 +14,7 @@ jobs:
         id: release
         with:
           release-type: node
-          token: ${{ secrets.NPM_AUTH_TOKEN_LINZJS }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   publish-release:
     needs: release-please
