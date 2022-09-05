@@ -25,7 +25,7 @@ export class ConfigCache {
         const object = await fsa.read(configUri);
         return JSON.parse(object.toString());
       } catch (e) {
-        failures.push(e);
+        failures.push(e as Error);
         await new Promise((resolve) => setTimeout(resolve, RetryDelayMilliseconds + i * RetryDelayMilliseconds));
       }
     }
