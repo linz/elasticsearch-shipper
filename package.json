@@ -1,5 +1,5 @@
 {
-  "name": "@linzjs/cdk-elastic-shipper",
+  "name": "@linzjs/elasticsearch-shipper",
   "version": "3.6.2",
   "description": "Ship log lines to elasticsearch",
   "repository": "github:linz/elasticsearch-shipper",
@@ -47,9 +47,7 @@
   },
   "files": [
     "lls-config",
-    "config.example.json",
     "build/",
-    "dist/",
     "src/"
   ]
 }

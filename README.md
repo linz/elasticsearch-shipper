@@ -23,7 +23,7 @@ export const Config = {
     logGroups: [{
       filter: '**',
       prefix: 'lg-prefix',
-    }],
+    }]
   }],
 }
 ```
