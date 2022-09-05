@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import { LogObject } from '../shipper';
 import {
   LogShipperConfigAccountValidator,
   LogShipperConfigGroupValidator,
@@ -9,8 +10,21 @@ import {
   LogShipperConnectionValidator,
 } from './config.elastic';
 
+/** optional filter  */
+export type LogShipperTransform = (logOject: LogShipperContext) => true | undefined;
+
+export type LogShipperTransformer = {
+  transform?: LogShipperTransform;
+};
+
+export interface LogShipperContext {
+  log: LogObject;
+  index: LogShipperConfigIndexDate;
+  prefix: string;
+}
+
 export type LogShipperConnection = z.infer<typeof LogShipperConnectionValidator>;
-export type LogShipperConfigAccount = z.infer<typeof LogShipperConfigAccountValidator>;
+export type LogShipperConfigAccount = z.infer<typeof LogShipperConfigAccountValidator> & LogShipperTransformer;
 export type LogShipperConfigLogGroup = z.infer<typeof LogShipperConfigGroupValidator>;
 export type LogShipperConfigIndexDate = z.infer<typeof LogShipperConfigIndexDateValidator>;
 

@@ -2,7 +2,7 @@ import { awsGetCredentials, createAWSConnection } from '@acuris/aws-es-connectio
 import { Client } from '@elastic/elasticsearch';
 import { OnDropDocument } from '@elastic/elasticsearch/lib/Helpers';
 import { LogType } from '@linzjs/lambda';
-import { LogShipperConfigIndexDate } from '../config/config';
+import { LogShipperConfigIndexDate, LogShipperContext } from '../config/config';
 import { ConnectionValidator } from '../config/config.elastic';
 import { ConfigCache } from './config';
 import { getIndexDate } from './elastic.index';
@@ -80,10 +80,10 @@ export class ElasticSearch {
    * Queue a logObject to be bulk inserted
    * @param logObj log to queue
    */
-  queue(logObj: LogObject, prefix: string, indexType: LogShipperConfigIndexDate): void {
-    const indexName = this.getIndexName(logObj, prefix, indexType);
-    this.indexes.set(logObj['@id'], indexName);
-    this.logs.push(logObj);
+  queue(ctx: LogShipperContext): void {
+    const indexName = this.getIndexName(ctx.log, ctx.prefix, ctx.index);
+    this.indexes.set(ctx.log['@id'], indexName);
+    this.logs.push(ctx.log);
   }
 
   get logCount(): number {

@@ -2,6 +2,7 @@ import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lam
 import { LambdaRequest } from '@linzjs/lambda';
 import { LogShipper } from './shipper.config';
 import { LogStats } from './stats';
+import { LogShipperContext } from '../config/config';
 
 export type RequestEvents = S3Event | CloudWatchLogsEvent;
 
@@ -95,7 +96,12 @@ export async function processCloudWatchData(
         for (const key of streamConfig.dropKeys) delete logObject[key];
       }
 
-      req.shipper.getElastic(account).queue(logObject, prefix, index);
+      const logCtx: LogShipperContext = { log: logObject, prefix, index };
+      if (account.transform) {
+        if (account.transform(logCtx) === true) continue;
+      }
+
+      req.shipper.getElastic(account).queue(logCtx);
     }
     accountStat.shipped += logCount;
     logger.debug({ configName: account.name }, 'LogGroup:Processed');
