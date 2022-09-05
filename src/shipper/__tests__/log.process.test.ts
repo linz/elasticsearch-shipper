@@ -1,7 +1,7 @@
 import { CloudWatchLogsLogEvent } from 'aws-lambda';
 import { expect } from 'chai';
-import { LogShipper } from '../shipper.config';
-import { LogObject } from '../type';
+import { LogShipper } from '../shipper.config.js';
+import { LogObject } from '../type.js';
 
 describe('LogProcess', () => {
   let runCount = 0;

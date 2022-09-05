@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { LogObject } from '../../type';
-import { onLogTag } from '../tag';
+import { LogObject } from '../../type.js';
+import { onLogTag } from '../tag.js';
 
 describe('onLogTag', () => {
   let msg = { message: '' } as LogObject;

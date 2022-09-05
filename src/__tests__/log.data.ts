@@ -1,6 +1,6 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lambda';
 import { gzipSync } from 'zlib';
-import { EVENT_DATA_ACCOUNT } from './event.data';
+import { EVENT_DATA_ACCOUNT } from './event.data.js';
 
 export const LOG_DATA: CloudWatchLogsDecodedData[] = [
   {

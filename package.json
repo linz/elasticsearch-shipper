@@ -6,6 +6,7 @@
   "license": "MIT",
   "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",
+  "type": "module",
   "dependencies": {
     "@acuris/aws-es-connection": "^2.0.1",
     "@linzjs/lambda": "^1.0.1",
@@ -18,10 +19,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "bundle": "esbuild src/shipper/index.ts --bundle --platform=node --target=node14 --outfile=dist/index.js --external:aws-sdk",
-    "lint": "eslint 'src/**/*.ts' --fix",
-    "test": "mocha 'build/**/*.test.js'",
-    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
+    "lint": "npx eslint . --ignore-path .gitignore",
+    "test": "mocha 'build/**/*.test.js'"
   },
   "devDependencies": {
     "@elastic/elasticsearch": "^7.9.0",

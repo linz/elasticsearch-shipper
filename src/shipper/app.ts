@@ -1,12 +1,8 @@
-// Source map support must come first
-import 'source-map-support/register';
-// ---
-
 import { LambdaRequest, lf } from '@linzjs/lambda';
 import { fsa, FsS3 } from '@linzjs/s3fs';
 import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lambda';
-import S3 from 'aws-sdk/clients/s3';
-import SSM from 'aws-sdk/clients/ssm';
+import S3 from 'aws-sdk/clients/s3.js';
+import SSM from 'aws-sdk/clients/ssm.js';
 import * as util from 'util';
 import * as zlib from 'zlib';
 import {
@@ -17,10 +13,10 @@ import {
   RequestEvents,
   s3ToString,
   splitJsonString,
-} from './log.handle';
-import { LogShipper } from './shipper.config';
-import { LogStats } from './stats';
-import { FsSsm } from './fs.ssm';
+} from './log.handle.js';
+import { LogShipper } from './shipper.config.js';
+import { LogStats } from './stats.js';
+import { FsSsm } from './fs.ssm.js';
 
 const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2';
 export const s3 = new S3({ region });

@@ -1,10 +1,10 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsLogEvent } from 'aws-lambda';
 import minimatch from 'minimatch';
 import { LogShipperConfigAccount, LogShipperConfigLogGroup } from '../config/config';
-import { ElasticSearch } from './elastic';
-import { onLogExtractJson } from './log.funcs/extract.json';
-import { onLogTag } from './log.funcs/tag';
-import { LogObject, LogProcessFunction } from './type';
+import { ElasticSearch } from './elastic.js';
+import { onLogExtractJson } from './log.funcs/extract.json.js';
+import { onLogTag } from './log.funcs/tag.js';
+import { LogObject, LogProcessFunction } from './type.js';
 import { LogType } from '@linzjs/lambda';
 
 export class LogShipper {

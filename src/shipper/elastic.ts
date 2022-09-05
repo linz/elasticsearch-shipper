@@ -2,11 +2,11 @@ import { awsGetCredentials, createAWSConnection } from '@acuris/aws-es-connectio
 import { Client } from '@elastic/elasticsearch';
 import { OnDropDocument } from '@elastic/elasticsearch/lib/Helpers';
 import { LogType } from '@linzjs/lambda';
-import { LogShipperConfigIndexDate, LogShipperContext } from '../config/config';
-import { ConnectionValidator } from '../config/config.elastic';
-import { ConfigCache } from './config';
-import { getIndexDate } from './elastic.index';
-import { LogObject } from './type';
+import { LogShipperConfigIndexDate, LogShipperContext } from '../config/config.js';
+import { ConnectionValidator } from '../config/config.elastic.js';
+import { ConfigCache } from './config.js';
+import { getIndexDate } from './elastic.index.js';
+import { LogObject } from './type.js';
 
 export interface FailedInsertDocument {
   reason: {

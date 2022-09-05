@@ -1,10 +1,9 @@
-import * as aec from '@acuris/aws-es-connection';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { LogShipperConnectionAws, LogShipperConnectionBasic, LogShipperConnectionCloud } from '../../config/config';
-import { ConnectionValidator } from '../../config/config.elastic';
-import { ElasticSearch } from '../elastic';
-import { ConfigCache } from '../config';
+import { ConnectionValidator } from '../../config/config.elastic.js';
+import { LogShipperConnectionAws, LogShipperConnectionBasic, LogShipperConnectionCloud } from '../../config/config.js';
+import { ConfigCache } from '../config.js';
+import { ElasticSearch } from '../elastic.js';
 
 function clone<T>(a: T): T {
   return JSON.parse(JSON.stringify(a)) as T;
@@ -39,7 +38,6 @@ describe('ElasticSearchConfigValidator', () => {
   it('should create a aws connection', async () => {
     const es = new ElasticSearch('');
     sandbox.stub(ConfigCache, 'get').resolves({ url: 'https://foo ' });
-    sandbox.stub(aec, 'awsGetCredentials');
     return es.save().then((result) => {
       expect(result).to.not.equal(null);
     }); // Create a elastic client to the connection

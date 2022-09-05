@@ -1,8 +1,8 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lambda';
 import { LambdaRequest } from '@linzjs/lambda';
-import { LogShipper } from './shipper.config';
-import { LogStats } from './stats';
-import { LogShipperContext } from '../config/config';
+import { LogShipper } from './shipper.config.js';
+import { LogStats } from './stats.js';
+import { LogShipperContext } from '../config/config.js';
 
 export type RequestEvents = S3Event | CloudWatchLogsEvent;
 

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { LogShipperConfigAccount } from '../../config/config';
-import { LogShipper } from '../../shipper/shipper.config';
+import { LogShipperConfigAccount } from '../../config/config.js';
+import { LogShipper } from '../../shipper/shipper.config.js';
 
 describe('LogConfigFilter', () => {
   const shipper: LogShipper = new LogShipper([]);

@@ -3,11 +3,11 @@ import { Client } from '@elastic/elasticsearch';
 import { lf } from '@linzjs/lambda';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { LogShipperConfigAccount } from '../../config/config';
-import { FailedInsertDocument } from '../elastic';
-import { LogRequest, processCloudWatchData, splitJsonString } from '../log.handle';
-import { LogShipper } from '../shipper.config';
-import { LogStats } from '../stats';
+import { LogShipperConfigAccount } from '../../config/config.js';
+import { FailedInsertDocument } from '../elastic.js';
+import { LogRequest, processCloudWatchData, splitJsonString } from '../log.handle.js';
+import { LogShipper } from '../shipper.config.js';
+import { LogStats } from '../stats.js';
 
 lf.Logger.level = 'silent';
 

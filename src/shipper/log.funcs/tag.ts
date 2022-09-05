@@ -1,4 +1,4 @@
-import { LogObject } from '../type';
+import { LogObject } from '../type.js';
 
 export const FlowLogRegexp =
   /^[0-9] ([0-9]+|unknown) eni-[0-9a-f]+ ([0-9a-f.:]|-)+ ([0-9a-f.:]|-)+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [0-9]+ [0-9]+ (ACCEPT|REJECT|-) (OK|NODATA|SKIPDATA).*$/;

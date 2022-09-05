@@ -1,4 +1,4 @@
-import { LogShipperConfigAccount } from '../config/config';
+import { LogShipperConfigAccount } from '../config/config.js';
 
 export const ExampleConfigMinimal: LogShipperConfigAccount = {
   elastic: '/es-shipper-config/account-min',

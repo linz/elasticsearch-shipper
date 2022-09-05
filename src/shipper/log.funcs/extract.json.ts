@@ -1,4 +1,4 @@
-import { LogObject } from '../type';
+import { LogObject } from '../type.js';
 
 /**
  * Find JSON objects inside a string and extract them

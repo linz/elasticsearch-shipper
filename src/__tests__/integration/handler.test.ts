@@ -1,16 +1,16 @@
 import { lf } from '@linzjs/lambda';
 import { Context, S3EventRecord } from 'aws-lambda';
 import { expect } from 'chai';
-import * as sinon from 'sinon';
-import { LogShipperConfigAccount } from '../../config/config';
-import { Env } from '../../env';
-import { handler, s3 } from '../../shipper/app';
-import { ElasticSearch } from '../../shipper/elastic';
-import { RequestEvents } from '../../shipper/log.handle';
-import { LogShipper } from '../../shipper/shipper.config';
-import { LogObject } from '../../shipper/type';
-import { EVENT_DATA, EVENT_DATA_ACCOUNT } from '../event.data';
-import { getCloudWatchEvent, LOG_DATA, toLogStream } from '../log.data';
+import sinon from 'sinon';
+import { LogShipperConfigAccount } from '../../config/config.js';
+import { Env } from '../../env.js';
+import { handler, s3 } from '../../shipper/app.js';
+import { ElasticSearch } from '../../shipper/elastic.js';
+import { RequestEvents } from '../../shipper/log.handle.js';
+import { LogShipper } from '../../shipper/shipper.config.js';
+import { LogObject } from '../../shipper/type.js';
+import { EVENT_DATA, EVENT_DATA_ACCOUNT } from '../event.data.js';
+import { getCloudWatchEvent, LOG_DATA, toLogStream } from '../log.data.js';
 
 describe('HandlerIntegration', () => {
   let s3Stub: sinon.SinonStub;

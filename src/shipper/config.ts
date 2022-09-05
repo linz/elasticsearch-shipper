@@ -1,5 +1,5 @@
 import { fsa } from '@linzjs/s3fs';
-import { RefreshTimeoutSeconds } from '../env';
+import { RefreshTimeoutSeconds } from '../env.js';
 
 const RetryDelayMilliseconds = 50;
 const RetryCount = 3;

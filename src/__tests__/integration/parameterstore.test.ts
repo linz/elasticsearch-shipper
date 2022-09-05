@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import * as sinon from 'sinon';
-import { Env } from '../../env';
-import { LogShipper } from '../../shipper/shipper.config';
-import { ExampleConfigMinimal } from '../config.test';
+import sinon from 'sinon';
+import { Env } from '../../env.js';
+import { LogShipper } from '../../shipper/shipper.config.js';
+import { ExampleConfigMinimal } from '../config.test.js';
 
 describe('AccountConfigFilter', () => {
   const sandbox = sinon.createSandbox();

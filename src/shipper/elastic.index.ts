@@ -1,4 +1,4 @@
-import { LogShipperConfigIndexDate } from '../config/config';
+import { LogShipperConfigIndexDate } from '../config/config.js';
 
 /**
  * Number of characters needed to extract from a ISO string

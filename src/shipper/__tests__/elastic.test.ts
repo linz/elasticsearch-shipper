@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { ElasticSearch } from '../../shipper/elastic';
-import { LogObject } from '../../shipper/type';
+import { ElasticSearch } from '../../shipper/elastic.js';
+import { LogObject } from '../../shipper/type.js';
 
 describe('ElasticSearch', () => {
   function makeLog(time: string): LogObject {

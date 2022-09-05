@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { LogObject } from '../shipper';
+import { LogObject } from '../shipper/index.js';
 import {
   LogShipperConfigAccountValidator,
   LogShipperConfigGroupValidator,
@@ -8,7 +8,7 @@ import {
   LogShipperConnectionBasicValidator,
   LogShipperConnectionCloudValidator,
   LogShipperConnectionValidator,
-} from './config.elastic';
+} from './config.elastic.js';
 
 /** optional filter  */
 export type LogShipperTransform = (logOject: LogShipperContext) => true | undefined;
