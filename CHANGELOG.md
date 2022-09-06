@@ -7,6 +7,13 @@
 
 
 
+## [4.0.1](https://github.com/linz/elasticsearch-shipper/compare/v4.0.0...v4.0.1) (2022-09-06)
+
+
+### Bug Fixes
+
+* do not attempt to match weird messages ([68cf2db](https://github.com/linz/elasticsearch-shipper/commit/68cf2dbcf2c15badb5cf4aaa1a934105a4a2a94e))
+
 ## [4.0.0](https://github.com/linz/elasticsearch-shipper/compare/v3.7.0...v4.0.0) (2022-09-06)
 
 
