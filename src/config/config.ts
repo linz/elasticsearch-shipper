@@ -1,3 +1,4 @@
+import { CloudWatchLogsLogEvent } from 'aws-lambda';
 import * as z from 'zod';
 import { LogObject } from '../shipper/index.js';
 import {
@@ -18,8 +19,13 @@ export type LogShipperTransformer = {
 };
 
 export interface LogShipperContext {
+  /** Extracted log object */
   log: LogObject;
-  index: LogShipperConfigIndexDate;
+  /** How to group the prefix */
+  indexDate: LogShipperConfigIndexDate;
+  /** Original log message */
+  original: CloudWatchLogsLogEvent;
+  /** Index prefix */
   prefix: string;
 }
 

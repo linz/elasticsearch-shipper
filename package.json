@@ -13,8 +13,8 @@
     "@linzjs/lambda": "^4.0.0",
     "aws-sdk": "^2.547.0",
     "jsondiffpatch": "^0.4.1",
-    "minimatch": "^3.0.4",
-    "zod": "^3.0.2"
+    "minimatch": "^5.1.0",
+    "zod": "^3.18.0"
   },
   "scripts": {
     "build": "tsc",
@@ -31,16 +31,12 @@
     "@types/node": "^18.7.15",
     "@types/pino": "^7.0.5",
     "@types/sinon": "10.0.6",
-    "chai": "^4.2.0",
-    "mocha": "^9.0.0",
-    "sinon": "^11.0.0"
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "sinon": "^14.0.0"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "resolutions": {
-    "acorn": "^7.1.1",
-    "minimist": "^1.2.3"
   },
   "files": [
     "lls-config",

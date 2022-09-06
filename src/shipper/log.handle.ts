@@ -96,7 +96,7 @@ export async function processCloudWatchData(
         for (const key of streamConfig.dropKeys) delete logObject[key];
       }
 
-      const logCtx: LogShipperContext = { log: logObject, prefix, index };
+      const logCtx: LogShipperContext = { log: logObject, original: logLine, prefix, indexDate: index };
       if (account.transform) {
         if (account.transform(logCtx) === true) continue;
       }

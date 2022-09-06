@@ -81,7 +81,7 @@ export class ElasticSearch {
    * @param logObj log to queue
    */
   queue(ctx: LogShipperContext): void {
-    const indexName = this.getIndexName(ctx.log, ctx.prefix, ctx.index);
+    const indexName = this.getIndexName(ctx.log, ctx.prefix, ctx.indexDate);
     this.indexes.set(ctx.log['@id'], indexName);
     this.logs.push(ctx.log);
   }
