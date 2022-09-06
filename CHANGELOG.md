@@ -7,6 +7,20 @@
 
 
 
+## [4.0.0](https://github.com/linz/elasticsearch-shipper/compare/v3.7.0...v4.0.0) (2022-09-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* switch to esm
+
+### Features
+
+* export env const ([408f969](https://github.com/linz/elasticsearch-shipper/commit/408f969a56e50ec38e94481447935b6b1dedf7ce))
+* export logHandler as the lambda entry ([645f9ba](https://github.com/linz/elasticsearch-shipper/commit/645f9ba8ec362d87bfbdab89e91b9c9807583d2a))
+* expose original log message ([9d1e73e](https://github.com/linz/elasticsearch-shipper/commit/9d1e73e307f0e12452b28a7dfae2a37e0f54c794))
+* switch to esm ([14bc3a1](https://github.com/linz/elasticsearch-shipper/commit/14bc3a1f8cbd85cc8f98636cee030cec8e64e79d))
+
 ## [3.7.0](https://github.com/linz/elasticsearch-shipper/compare/v3.6.2...v3.7.0) (2022-09-05)
 
 
