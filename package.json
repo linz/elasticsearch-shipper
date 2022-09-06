@@ -9,12 +9,11 @@
   "type": "module",
   "dependencies": {
     "@acuris/aws-es-connection": "^2.0.1",
-    "@linzjs/lambda": "^1.0.1",
+    "@linzjs/lambda": "^4.0.0",
     "@linzjs/s3fs": "^6.4.0",
     "aws-sdk": "^2.547.0",
     "jsondiffpatch": "^0.4.1",
     "minimatch": "^3.0.4",
-    "source-map-support": "^0.5.16",
     "zod": "^3.0.2"
   },
   "scripts": {
@@ -25,15 +24,14 @@
   "devDependencies": {
     "@elastic/elasticsearch": "^7.9.0",
     "@linzjs/style": "^3.11.0",
-    "@types/aws-lambda": "^8.10.34",
-    "@types/chai": "^4.2.4",
-    "@types/minimatch": "^3.0.3",
+    "@types/aws-lambda": "^8.10.102",
+    "@types/chai": "^4.3.3",
+    "@types/minimatch": "^5.1.2",
     "@types/mocha": "^9.0.0",
-    "@types/node": "^16.9.6",
-    "@types/pino": "^6.3.8",
-    "@types/sinon": "^10.0.0",
+    "@types/node": "^18.7.15",
+    "@types/pino": "^7.0.5",
+    "@types/sinon": "10.0.6",
     "chai": "^4.2.0",
-    "conventional-changelog-cli": "^2.0.34",
     "mocha": "^9.0.0",
     "sinon": "^11.0.0"
   },
