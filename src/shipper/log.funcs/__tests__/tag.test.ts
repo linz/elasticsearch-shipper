@@ -38,6 +38,15 @@ describe('onLogTag', () => {
     expect(msg['@tags']).deep.eq(['Oversized log']);
   });
 
+  it('should not die when getting a weird message', () => {
+    expect(onLogTag({ '@tags': [], message: null } as any)).equal(undefined);
+    expect(onLogTag({ '@tags': [], message: {} } as any)).equal(undefined);
+    expect(onLogTag({ '@tags': [], message: [] } as any)).equal(undefined);
+    expect(onLogTag({ '@tags': [], message: 1 } as any)).equal(undefined);
+    expect(onLogTag({ '@tags': [], message: () => null } as any)).equal(undefined);
+    expect(onLogTag({ '@tags': [], message: new Error() } as any)).equal(undefined);
+  });
+
   it('should not skip largeish log lines', () => {
     msg.message = 'END RequestId: be0262fa-d7f9-47b8-985e-9bb41e77b624'.padEnd(2048, '-');
     const ret = onLogTag(msg);
