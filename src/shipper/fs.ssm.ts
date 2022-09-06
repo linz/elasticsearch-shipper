@@ -1,4 +1,4 @@
-import { FileInfo, FileSystem } from '@linzjs/s3fs';
+import { ChunkSource, FileInfo, FileSystem } from '@chunkd/core';
 import type SSM from 'aws-sdk/clients/ssm';
 import { Readable } from 'stream';
 
@@ -37,5 +37,14 @@ export class FsSsm implements FileSystem {
   }
   head(): Promise<FileInfo | null> {
     throw new Error('Not Implemented');
+  }
+  stream(): Readable {
+    throw new Error('Method not implemented.');
+  }
+  details(): AsyncGenerator<FileInfo, any, unknown> {
+    throw new Error('Method not implemented.');
+  }
+  source(): ChunkSource {
+    throw new Error('Method not implemented.');
   }
 }

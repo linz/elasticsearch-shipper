@@ -1,5 +1,6 @@
 import { LambdaRequest, lf } from '@linzjs/lambda';
-import { fsa, FsS3 } from '@linzjs/s3fs';
+import { fsa } from '@chunkd/fs';
+import { FsAwsS3 } from '@chunkd/source-aws';
 import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lambda';
 import S3 from 'aws-sdk/clients/s3.js';
 import SSM from 'aws-sdk/clients/ssm.js';
@@ -22,7 +23,7 @@ const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'ap-s
 export const s3 = new S3({ region });
 export const ssm = new SSM({ region });
 
-fsa.register('s3://', new FsS3(s3));
+fsa.register('s3://', new FsAwsS3(s3));
 fsa.register('ssm://', new FsSsm(ssm));
 
 const gunzip: (buf: Buffer) => Promise<Buffer> = util.promisify(zlib.gunzip);
