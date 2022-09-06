@@ -11,7 +11,7 @@ export const LambdaLogRegexp = /(START|REPORT|END) RequestId: [\-0-9a-f]+.*/;
  */
 export function onLogTag(lo: LogObject): boolean | void {
   if (lo.message == null) return;
-
+  if (typeof lo.message !== 'string') return;
   if (lo['@tags'] == null) return;
   const tags = lo['@tags'];
 
