@@ -7,6 +7,13 @@
 
 
 
+## [4.0.2](https://github.com/linz/elasticsearch-shipper/compare/v4.0.1...v4.0.2) (2022-09-07)
+
+
+### Bug Fixes
+
+* elasticsearch is a dep not a dev dep ([d5d4d1e](https://github.com/linz/elasticsearch-shipper/commit/d5d4d1e23796564803b073418d243e1efffd02a8))
+
 ## [4.0.1](https://github.com/linz/elasticsearch-shipper/compare/v4.0.0...v4.0.1) (2022-09-06)
 
 

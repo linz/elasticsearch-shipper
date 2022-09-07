@@ -1,6 +1,6 @@
 {
   "name": "@linzjs/elasticsearch-shipper",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Ship log lines to elasticsearch",
   "repository": "github:linz/elasticsearch-shipper",
   "license": "MIT",
