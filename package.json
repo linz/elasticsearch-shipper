@@ -8,6 +8,7 @@
   "types": "./build/src/index.d.ts",
   "type": "module",
   "dependencies": {
+    "@elastic/elasticsearch": "^7.9.0",
     "@acuris/aws-es-connection": "^2.0.1",
     "@chunkd/fs": "^8.5.1",
     "@linzjs/lambda": "^4.0.0",
@@ -22,7 +23,6 @@
     "test": "mocha 'build/**/*.test.js'"
   },
   "devDependencies": {
-    "@elastic/elasticsearch": "^7.9.0",
     "@linzjs/style": "^3.11.0",
     "@types/aws-lambda": "^8.10.102",
     "@types/chai": "^4.3.3",
