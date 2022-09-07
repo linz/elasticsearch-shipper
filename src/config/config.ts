@@ -1,6 +1,5 @@
-import { CloudWatchLogsLogEvent } from 'aws-lambda';
 import * as z from 'zod';
-import { LogObject } from '../shipper/index.js';
+import { LogTransformRequest, LogTransformResponse } from '../shipper/type.js';
 import {
   LogShipperConfigAccountValidator,
   LogShipperConfigGroupValidator,
@@ -11,23 +10,13 @@ import {
   LogShipperConnectionValidator,
 } from './config.elastic.js';
 
-/** optional filter  */
-export type LogShipperTransform = (logOject: LogShipperContext) => true | undefined;
+/** optional transformation / filter  */
+export type LogTransform = (logOject: LogTransformRequest) => LogTransformResponse;
 
 export type LogShipperTransformer = {
-  transform?: LogShipperTransform;
+  /** Optional parameters to transform the log */
+  transform?: LogTransform[];
 };
-
-export interface LogShipperContext {
-  /** Extracted log object */
-  log: LogObject;
-  /** How to group the prefix */
-  indexDate: LogShipperConfigIndexDate;
-  /** Original log message */
-  original: CloudWatchLogsLogEvent;
-  /** Index prefix */
-  prefix: string;
-}
 
 export type LogShipperConnection = z.infer<typeof LogShipperConnectionValidator>;
 export type LogShipperConfigAccount = z.infer<typeof LogShipperConfigAccountValidator> & LogShipperTransformer;

@@ -2,7 +2,8 @@ import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, S3Event } from 'aws-lam
 import { LambdaRequest } from '@linzjs/lambda';
 import { LogShipper } from './shipper.config.js';
 import { LogStats } from './stats.js';
-import { LogShipperContext } from '../config/config.js';
+import { LogTransform } from '../config/config.js';
+import { LogTransformDrop, LogTransformRequest } from './type.js';
 
 export type RequestEvents = S3Event | CloudWatchLogsEvent;
 
@@ -96,14 +97,24 @@ export async function processCloudWatchData(
         for (const key of streamConfig.dropKeys) delete logObject[key];
       }
 
-      const logCtx: LogShipperContext = { log: logObject, original: logLine, prefix, indexDate: index };
-      if (account.transform) {
-        if (account.transform(logCtx) === true) continue;
-      }
-
+      const logCtx: LogTransformRequest = { log: logObject, original: logLine, prefix, indexDate: index };
+      if (transformLog(logCtx, account.transform) === true) continue;
       req.shipper.getElastic(account).queue(logCtx);
     }
     accountStat.shipped += logCount;
     logger.debug({ configName: account.name }, 'LogGroup:Processed');
   }
+}
+
+/**
+ * Transform the log object,
+ *
+ * @returns true if the log should be dropped false otherwise
+ */
+function transformLog(logContext: LogTransformRequest, transforms?: LogTransform[]): boolean {
+  if (transforms == null) return false;
+  for (const transform of transforms) {
+    if (transform(logContext) === LogTransformDrop) return true;
+  }
+  return false;
 }

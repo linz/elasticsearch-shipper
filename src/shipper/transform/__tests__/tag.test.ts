@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { LogObject } from '../../type.js';
+import { createRequest } from '../../__tests__/log.transform.js';
 import { onLogTag } from '../tag.js';
 
 describe('onLogTag', () => {
@@ -17,7 +18,7 @@ describe('onLogTag', () => {
     const reqType = line.split(' ')[0];
     it('should tag lambda logs :' + reqType, () => {
       msg.message = line;
-      const ret = onLogTag(msg);
+      const ret = onLogTag(createRequest(msg));
       expect(ret).to.eq(undefined);
       expect(msg['@tags']).deep.eq(['Lambda log']);
     });
@@ -26,14 +27,14 @@ describe('onLogTag', () => {
   it('should drop flow logs', () => {
     msg.message =
       '2 418528898914 eni-ababababb 255.255.255.222 255.255.255.159 443 36215 6 17 6419 1630295292 1630295304 ACCEPT OK';
-    const ret = onLogTag(msg);
+    const ret = onLogTag(createRequest(msg));
     expect(ret).to.eq(true);
     expect(msg['@tags']).deep.eq(['Flow log']);
   });
 
   it('should skip large log lines', () => {
     msg.message = 'END RequestId: be0262fa-d7f9-47b8-985e-9bb41e77b624'.padEnd(2049, '-');
-    const ret = onLogTag(msg);
+    const ret = onLogTag(createRequest(msg));
     expect(ret).to.eq(undefined);
     expect(msg['@tags']).deep.eq(['Oversized log']);
   });
@@ -49,7 +50,7 @@ describe('onLogTag', () => {
 
   it('should not skip largeish log lines', () => {
     msg.message = 'END RequestId: be0262fa-d7f9-47b8-985e-9bb41e77b624'.padEnd(2048, '-');
-    const ret = onLogTag(msg);
+    const ret = onLogTag(createRequest(msg));
     expect(ret).to.eq(undefined);
     expect(msg['@tags']).deep.eq(['Lambda log']);
   });
@@ -79,7 +80,7 @@ describe('onLogTag', () => {
 });
 
 function accessLogTest(msg: LogObject): void {
-  const ret = onLogTag(msg);
+  const ret = onLogTag(createRequest(msg));
   expect(ret).to.eq(undefined);
   expect(msg['@tags']).deep.eq(['Access log']);
 }

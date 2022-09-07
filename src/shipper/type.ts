@@ -1,3 +1,6 @@
+import { CloudWatchLogsLogEvent } from 'aws-lambda';
+import { LogShipperConfigIndexDate } from '../config/config';
+
 export interface LogObject extends Record<string, string | number | string[] | boolean | undefined> {
   /** Log Id, generally very long number string
    * @example
@@ -32,3 +35,21 @@ export interface LogObject extends Record<string, string | number | string[] | b
 export type LogProcessFunction = (logObject: LogObject) => boolean | void;
 
 export const LogFunctionName = `log-fns.js`;
+
+/** Drop a log inside a transformation */
+export const LogTransformDrop = Symbol('LogDrop');
+export type LogTransformDropType = typeof LogTransformDrop;
+
+/** The result of the transformation */
+export type LogTransformResponse = LogTransformDropType | undefined;
+
+export interface LogTransformRequest {
+  /** Extracted log object */
+  log: LogObject;
+  /** How to group the prefix */
+  indexDate: LogShipperConfigIndexDate;
+  /** Original log message */
+  original: CloudWatchLogsLogEvent;
+  /** Index prefix */
+  prefix: string;
+}
