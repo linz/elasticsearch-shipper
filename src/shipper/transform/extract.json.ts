@@ -22,12 +22,12 @@ function extractJson(message: string): Record<string, any> | null {
  * @param ctx Log to transform
  */
 export function onLogExtractJson(lo: LogTransformRequest): LogTransformResponse {
-  if (lo.log.message == null) return;
+  if (lo.original.message == null) return;
 
-  const extracted = extractJson(lo.log.message);
+  const extracted = extractJson(lo.original.message);
   if (extracted == null) return;
 
   delete lo.log.message; // JSON logs don't need the raw JSON in the output
-  Object.assign(lo, extracted);
+  Object.assign(lo.log, extracted);
   return;
 }

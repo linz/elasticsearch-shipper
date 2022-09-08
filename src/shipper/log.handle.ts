@@ -3,7 +3,7 @@ import { LambdaRequest } from '@linzjs/lambda';
 import { LogShipper } from './shipper.config.js';
 import { LogStats } from './stats.js';
 import { LogTransform } from '../config/config.js';
-import { LogTransformDrop, LogTransformRequest } from './type.js';
+import { LogTransformDrop, LogTransformDropType, LogTransformRequest } from './type.js';
 
 export type RequestEvents = S3Event | CloudWatchLogsEvent;
 
@@ -89,16 +89,18 @@ export async function processCloudWatchData(
       if (logObject == null) continue;
       if (streamTags.length > 0) logObject['@tags'] = streamTags.concat(logObject['@tags'] ?? []);
 
-      // Trim out empty tags
-      if (logObject['@tags']?.length === 0) delete logObject['@tags'];
+      const logCtx: LogTransformRequest = { log: logObject, original: logLine, prefix, indexDate: index };
+      if (transformLog(logCtx, account.transform) === LogTransformDrop) continue;
 
       // Remove any keys that should be dropped
       if (Array.isArray(streamConfig.dropKeys)) {
         for (const key of streamConfig.dropKeys) delete logObject[key];
       }
 
-      const logCtx: LogTransformRequest = { log: logObject, original: logLine, prefix, indexDate: index };
-      if (transformLog(logCtx, account.transform) === true) continue;
+      // Trim out empty tags
+      if (logObject['@tags']?.length === 0) delete logObject['@tags'];
+
+      // Send it to elastic
       req.shipper.getElastic(account).queue(logCtx);
     }
     accountStat.shipped += logCount;
@@ -111,10 +113,11 @@ export async function processCloudWatchData(
  *
  * @returns true if the log should be dropped false otherwise
  */
-function transformLog(logContext: LogTransformRequest, transforms?: LogTransform[]): boolean {
-  if (transforms == null) return false;
+function transformLog(logContext: LogTransformRequest, transforms?: LogTransform[]): LogTransformDropType | void {
+  if (transforms == null) return;
   for (const transform of transforms) {
-    if (transform(logContext) === LogTransformDrop) return true;
+    if (transform(logContext) === LogTransformDrop) return LogTransformDrop;
   }
-  return false;
+
+  return;
 }

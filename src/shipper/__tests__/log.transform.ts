@@ -1,6 +1,11 @@
 import { LogObject, LogTransformRequest } from '../type.js';
 
-export function createRequest(lo: LogObject, prefix = 'prefix', indexDate = 7): LogTransformRequest {
+export function createRequest(
+  lo: LogObject,
+  rawMessage = JSON.stringify(lo),
+  prefix = 'prefix',
+  indexDate = 7,
+): LogTransformRequest {
   return {
     log: lo,
     prefix,
@@ -8,7 +13,7 @@ export function createRequest(lo: LogObject, prefix = 'prefix', indexDate = 7): 
     original: {
       id: Math.random().toString(32),
       timestamp: Number(lo['@timestamp'] ?? Date.now()),
-      message: JSON.stringify(lo),
+      message: rawMessage,
     },
   };
 }

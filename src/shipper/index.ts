@@ -17,5 +17,5 @@ export const Transform = {
   /** Attempt to parse the log as JSON */
   extractJson: onLogExtractJson,
   /** Apply tags to the logs based off regexps */
-  tagLog: onLogTag,
+  tag: onLogTag,
 } as const;

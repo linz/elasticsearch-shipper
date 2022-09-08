@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { LogObject } from '../../type.js';
+import { LogObject, LogTransformDrop } from '../../type.js';
 import { createRequest } from '../../__tests__/log.transform.js';
 import { onLogTag } from '../tag.js';
 
@@ -27,9 +27,8 @@ describe('onLogTag', () => {
   it('should drop flow logs', () => {
     msg.message =
       '2 418528898914 eni-ababababb 255.255.255.222 255.255.255.159 443 36215 6 17 6419 1630295292 1630295304 ACCEPT OK';
-    const ret = onLogTag(createRequest(msg));
-    expect(ret).to.eq(true);
-    expect(msg['@tags']).deep.eq(['Flow log']);
+    const ret = onLogTag(createRequest(msg, msg.message));
+    expect(ret).to.eq(LogTransformDrop);
   });
 
   it('should skip large log lines', () => {
@@ -40,17 +39,17 @@ describe('onLogTag', () => {
   });
 
   it('should not die when getting a weird message', () => {
-    expect(onLogTag({ '@tags': [], message: null } as any)).equal(undefined);
-    expect(onLogTag({ '@tags': [], message: {} } as any)).equal(undefined);
-    expect(onLogTag({ '@tags': [], message: [] } as any)).equal(undefined);
-    expect(onLogTag({ '@tags': [], message: 1 } as any)).equal(undefined);
-    expect(onLogTag({ '@tags': [], message: () => null } as any)).equal(undefined);
-    expect(onLogTag({ '@tags': [], message: new Error() } as any)).equal(undefined);
+    expect(onLogTag(createRequest({ '@tags': [], message: null } as any))).equal(undefined);
+    expect(onLogTag(createRequest({ '@tags': [], message: {} } as any))).equal(undefined);
+    expect(onLogTag(createRequest({ '@tags': [], message: [] } as any))).equal(undefined);
+    expect(onLogTag(createRequest({ '@tags': [], message: 1 } as any))).equal(undefined);
+    expect(onLogTag(createRequest({ '@tags': [], message: () => null } as any))).equal(undefined);
+    expect(onLogTag(createRequest({ '@tags': [], message: new Error() } as any))).equal(undefined);
   });
 
   it('should not skip largeish log lines', () => {
     msg.message = 'END RequestId: be0262fa-d7f9-47b8-985e-9bb41e77b624'.padEnd(2048, '-');
-    const ret = onLogTag(createRequest(msg));
+    const ret = onLogTag(createRequest(msg, msg.message));
     expect(ret).to.eq(undefined);
     expect(msg['@tags']).deep.eq(['Lambda log']);
   });
@@ -80,7 +79,7 @@ describe('onLogTag', () => {
 });
 
 function accessLogTest(msg: LogObject): void {
-  const ret = onLogTag(createRequest(msg));
+  const ret = onLogTag(createRequest(msg, msg.message));
   expect(ret).to.eq(undefined);
   expect(msg['@tags']).deep.eq(['Access log']);
 }

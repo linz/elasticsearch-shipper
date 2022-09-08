@@ -12,11 +12,11 @@ export const LambdaLogRegexp = /(START|REPORT|END) RequestId: [\-0-9a-f]+.*/;
  * @param req Log to transform
  */
 export function onLogTag(req: LogTransformRequest): LogTransformResponse {
-  const lo = req.log;
+  const lo = req.original;
   if (lo.message == null) return;
   if (typeof lo.message !== 'string') return;
-  if (lo['@tags'] == null) return;
-  const tags = lo['@tags'];
+  if (req.log['@tags'] == null) return;
+  const tags = req.log['@tags'];
 
   // Large messages can cause the regexps to explode
   if (lo.message.length > 2048) {

@@ -85,10 +85,6 @@ export class LogShipper {
 
     if (logObj['@timestamp'] == null) logObj['@timestamp'] = new Date().toISOString();
 
-    for (const logFn of this.onLog) {
-      if (logFn(logObj) === true) return null;
-    }
-
     return logObj;
   }
 }

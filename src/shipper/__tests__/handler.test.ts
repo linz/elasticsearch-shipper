@@ -8,6 +8,8 @@ import { FailedInsertDocument } from '../elastic.js';
 import { LogRequest, processCloudWatchData, splitJsonString } from '../log.handle.js';
 import { LogShipper } from '../shipper.config.js';
 import { LogStats } from '../stats.js';
+import { onLogExtractJson } from '../transform/extract.json.js';
+import { onLogTag } from '../transform/tag.js';
 
 lf.Logger.level = 'silent';
 
@@ -49,6 +51,7 @@ describe('processData', () => {
           index: 1,
         },
       ],
+      transform: [onLogTag, onLogExtractJson],
     };
     shipper = new LogShipper([fakeConfig]);
     fakeRequest = { shipper, log: lf.Logger, stats: new LogStats() } as LogRequest;
