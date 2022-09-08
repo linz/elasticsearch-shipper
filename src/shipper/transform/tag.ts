@@ -1,4 +1,5 @@
-import { LogObject } from '../type.js';
+import { Transform } from '../index.js';
+import { LogTransformRequest, LogTransformResponse } from '../type.js';
 
 export const FlowLogRegexp =
   /^[0-9] ([0-9]+|unknown) eni-[0-9a-f]+ ([0-9a-f.:]|-)+ ([0-9a-f.:]|-)+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [\-0-9]+ [0-9]+ [0-9]+ (ACCEPT|REJECT|-) (OK|NODATA|SKIPDATA).*$/;
@@ -7,13 +8,15 @@ export const AccessLogRegexp =
 export const LambdaLogRegexp = /(START|REPORT|END) RequestId: [\-0-9a-f]+.*/;
 /**
  * Attempt to parse log messages as various types then inject tags
- * @param lo Log to parse
+ *
+ * @param req Log to transform
  */
-export function onLogTag(lo: LogObject): boolean | void {
+export function onLogTag(req: LogTransformRequest): LogTransformResponse {
+  const lo = req.original;
   if (lo.message == null) return;
   if (typeof lo.message !== 'string') return;
-  if (lo['@tags'] == null) return;
-  const tags = lo['@tags'];
+  if (req.log['@tags'] == null) return;
+  const tags = req.log['@tags'];
 
   // Large messages can cause the regexps to explode
   if (lo.message.length > 2048) {
@@ -21,10 +24,7 @@ export function onLogTag(lo: LogObject): boolean | void {
     return;
   }
 
-  if (lo.message.match(FlowLogRegexp) != null) {
-    tags.push('Flow log');
-    return true; // Drop flow logs.
-  }
+  if (lo.message.match(FlowLogRegexp) != null) return Transform.Drop; // Drop flow logs.
 
   if (lo.message.match(LambdaLogRegexp)) {
     tags.push('Lambda log');
@@ -34,4 +34,5 @@ export function onLogTag(lo: LogObject): boolean | void {
   if (lo.message.match(AccessLogRegexp) != null) {
     tags.push('Access log');
   }
+  return;
 }
