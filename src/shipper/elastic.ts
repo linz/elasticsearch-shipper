@@ -2,11 +2,11 @@ import { awsGetCredentials, createAWSConnection } from '@acuris/aws-es-connectio
 import { Client } from '@elastic/elasticsearch';
 import { OnDropDocument } from '@elastic/elasticsearch/lib/Helpers';
 import { LogType } from '@linzjs/lambda';
-import { LogShipperConfigIndexDate, LogShipperContext } from '../config/config.js';
+import { LogShipperConfigIndexDate } from '../config/config.js';
 import { ConnectionValidator } from '../config/config.elastic.js';
 import { ConfigCache } from './config.js';
 import { getIndexDate } from './elastic.index.js';
-import { LogObject } from './type.js';
+import { LogObject, LogTransformRequest } from './type.js';
 
 export interface FailedInsertDocument {
   reason: {
@@ -80,7 +80,7 @@ export class ElasticSearch {
    * Queue a logObject to be bulk inserted
    * @param logObj log to queue
    */
-  queue(ctx: LogShipperContext): void {
+  queue(ctx: LogTransformRequest): void {
     const indexName = this.getIndexName(ctx.log, ctx.prefix, ctx.indexDate);
     this.indexes.set(ctx.log['@id'], indexName);
     this.logs.push(ctx.log);

@@ -1,4 +1,4 @@
-import { LogObject } from '../type.js';
+import { LogTransformRequest, LogTransformResponse } from '../type.js';
 
 /**
  * Find JSON objects inside a string and extract them
@@ -18,16 +18,16 @@ function extractJson(message: string): Record<string, any> | null {
 
 /**
  * Attempt to parse a JSON object from the log message
- * @param lo Log to parse
+ *
+ * @param ctx Log to transform
  */
-export function onLogExtractJson(lo: LogObject): boolean | void {
-  if (lo.message == null) return;
+export function onLogExtractJson(lo: LogTransformRequest): LogTransformResponse {
+  if (lo.original.message == null) return;
 
-  const extracted = extractJson(lo.message);
+  const extracted = extractJson(lo.original.message);
   if (extracted == null) return;
 
-  delete lo.message; // JSON logs don't need the raw JSON in the output
-  Object.assign(lo, extracted);
-
+  delete lo.log.message; // JSON logs don't need the raw JSON in the output
+  Object.assign(lo.log, extracted);
   return;
 }
