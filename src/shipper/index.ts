@@ -6,7 +6,9 @@ import { lf } from '@linzjs/lambda';
 import { handler } from './app.js';
 import { onLogExtractJson } from './transform/extract.json.js';
 import { onLogTag } from './transform/tag.js';
-import { LogTransformDrop } from './type.js';
+import { LogTransformDrop, LogTransformDropType, LogTransformRequest, LogTransformResponse } from './type.js';
+
+export { LogTransformDrop, LogTransformDropType, LogTransformRequest, LogTransformResponse };
 
 export const logHandler = handler;
 export const Log = lf.Logger;
