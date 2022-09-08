@@ -6,6 +6,7 @@ import { LogShipperConfigAccount } from '../../config/config.js';
 import { Env } from '../../env.js';
 import { handler, s3 } from '../../shipper/app.js';
 import { ElasticSearch } from '../../shipper/elastic.js';
+import { Transform } from '../../shipper/index.js';
 import { RequestEvents } from '../../shipper/log.handle.js';
 import { LogShipper } from '../../shipper/shipper.config.js';
 import { LogObject } from '../../shipper/type.js';
@@ -27,6 +28,7 @@ describe('HandlerIntegration', () => {
       prefix: '@account',
       index: 'weekly',
       logGroups: [{ filter: '**', tags: ['@logGroup'], prefix: '@logGroup', index: 'daily' }],
+      transform: [Transform.tag, Transform.extractJson],
     };
     LogShipper.INSTANCE = new LogShipper([fakeAccount]);
     sandbox.stub(ElasticSearch.prototype, 'save').resolves();

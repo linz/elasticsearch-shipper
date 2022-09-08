@@ -4,6 +4,18 @@ export { LogShipper } from './shipper.config.js';
 export { LogObject } from './type.js';
 import { lf } from '@linzjs/lambda';
 import { handler } from './app.js';
+import { onLogExtractJson } from './transform/extract.json.js';
+import { onLogTag } from './transform/tag.js';
+import { LogTransformDrop } from './type.js';
 
 export const logHandler = handler;
 export const Log = lf.Logger;
+
+export const Transform = {
+  /** Transform the log by dropping it */
+  Drop: LogTransformDrop,
+  /** Attempt to parse the log as JSON */
+  extractJson: onLogExtractJson,
+  /** Apply tags to the logs based off regexps */
+  tag: onLogTag,
+} as const;
