@@ -118,6 +118,4 @@ function transformLog(logContext: LogTransformRequest, transforms?: LogTransform
   for (const transform of transforms) {
     if (transform(logContext) === LogTransformDrop) return LogTransformDrop;
   }
-
-  return;
 }
