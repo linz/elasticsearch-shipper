@@ -7,6 +7,18 @@
 
 
 
+## [4.1.0](https://github.com/linz/elasticsearch-shipper/compare/v4.0.2...v4.1.0) (2022-09-08)
+
+
+### Features
+
+* more complex transform logic ([#667](https://github.com/linz/elasticsearch-shipper/issues/667)) ([29ed3c0](https://github.com/linz/elasticsearch-shipper/commit/29ed3c04e76e51de7c806e60890f90ea3bb8ef0a))
+
+
+### Bug Fixes
+
+* export transformation symbol and types ([c9457fb](https://github.com/linz/elasticsearch-shipper/commit/c9457fb9778922209aa4601a5e8d25fedf0fdd79))
+
 ## [4.0.2](https://github.com/linz/elasticsearch-shipper/compare/v4.0.1...v4.0.2) (2022-09-07)
 
 
