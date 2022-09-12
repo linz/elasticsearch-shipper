@@ -23,7 +23,22 @@ export interface FailedInsertDocument {
   '@index': string;
 }
 
+export interface ElasticSearchDeadLetterQueueConfig {
+  /** Name prefix of the DLQ @default "dlq" */
+  name: string;
+  /** Indexing pattern date @default daily  */
+  indexDate: LogShipperConfigIndexDate;
+}
+
 export class ElasticSearch {
+  /** Number of bytes to slice the message down to when failing to index  */
+  static DroppedMaxSize = 4096;
+  static DeadLetterQueue: ElasticSearchDeadLetterQueueConfig = {
+    name: 'dlq',
+    /** Index pattern  */
+    indexDate: 'daily',
+  };
+
   logs: LogObject[] = [];
   indexes: Map<string, string> = new Map();
   connectionId: string;
@@ -135,14 +150,18 @@ export class ElasticSearch {
       const dlqStats = await client.helpers.bulk({
         datasource: droppedLogs,
         onDocument: (lo: FailedInsertDocument) => {
+          const cfg = ElasticSearch.DeadLetterQueue;
           // Create a new index always prefixed with dlq and always suffixed with todays date
-          const indexName = `dlq-${getIndexDate(lo['@timestamp'], 'daily')}`;
+          const indexName = `${cfg.name}-${getIndexDate(lo['@timestamp'], cfg.indexDate)}`;
           return { index: { _index: indexName } };
         },
         onDrop(lo: OnDropDocument<FailedInsertDocument>) {
           const indexName = indexes.get(lo.document['@id']);
           const document = JSON.stringify(lo.document);
-          logger?.error({ indexName, logMessage: document.slice(0, 4096), error: lo.error }, 'FailedIndex');
+          logger?.error(
+            { indexName, logMessage: document.slice(0, ElasticSearch.DroppedMaxSize), error: lo.error },
+            'FailedIndex',
+          );
         },
         // Wait up to 1 second before flushing
         flushInterval: 1000,
