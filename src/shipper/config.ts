@@ -1,11 +1,22 @@
 import { fsa } from '@chunkd/fs';
 import { RefreshTimeoutSeconds } from '../env.js';
+import { ElasticSearchOptions } from './elastic.js';
 
 const RetryDelayMilliseconds = 50;
 const RetryCount = 3;
 
+export const DefaultOptions: ElasticSearchOptions = {
+  dlq: { name: 'dlq', indexDate: 'daily' },
+  maxSizeBytes: 4096,
+};
+
 export class ConfigCache {
   static cache: Map<string, { value: Promise<unknown>; time: number }> = new Map();
+  static options: Map<string, ElasticSearchOptions> = new Map();
+
+  static getOptions(configName: string): ElasticSearchOptions {
+    return ConfigCache.getOptions(configName) ?? DefaultOptions;
+  }
 
   static get(configName: string): Promise<unknown> {
     let existing = this.cache.get(configName);
