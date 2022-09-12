@@ -30,15 +30,13 @@ export interface ElasticSearchDeadLetterQueueConfig {
   indexDate: LogShipperConfigIndexDate;
 }
 
-export class ElasticSearch {
+export interface ElasticSearchOptions {
+  dlq: ElasticSearchDeadLetterQueueConfig;
   /** Number of bytes to slice the message down to when failing to index  */
-  static DroppedMaxSize = 4096;
-  static DeadLetterQueue: ElasticSearchDeadLetterQueueConfig = {
-    name: 'dlq',
-    /** Index pattern  */
-    indexDate: 'daily',
-  };
+  maxSizeBytes: number;
+}
 
+export class ElasticSearch {
   logs: LogObject[] = [];
   indexes: Map<string, string> = new Map();
   connectionId: string;
@@ -150,18 +148,17 @@ export class ElasticSearch {
       const dlqStats = await client.helpers.bulk({
         datasource: droppedLogs,
         onDocument: (lo: FailedInsertDocument) => {
-          const cfg = ElasticSearch.DeadLetterQueue;
+          const cfg = ConfigCache.getOptions(this.connectionId);
           // Create a new index always prefixed with dlq and always suffixed with todays date
-          const indexName = `${cfg.name}-${getIndexDate(lo['@timestamp'], cfg.indexDate)}`;
+          const indexName = `${cfg.dlq.name}-${getIndexDate(lo['@timestamp'], cfg.dlq.indexDate)}`;
           return { index: { _index: indexName } };
         },
-        onDrop(lo: OnDropDocument<FailedInsertDocument>) {
+        onDrop: (lo: OnDropDocument<FailedInsertDocument>) => {
+          const cfg = ConfigCache.getOptions(this.connectionId);
+
           const indexName = indexes.get(lo.document['@id']);
           const document = JSON.stringify(lo.document);
-          logger?.error(
-            { indexName, logMessage: document.slice(0, ElasticSearch.DroppedMaxSize), error: lo.error },
-            'FailedIndex',
-          );
+          logger?.error({ indexName, logMessage: document.slice(0, cfg.maxSizeBytes), error: lo.error }, 'FailedIndex');
         },
         // Wait up to 1 second before flushing
         flushInterval: 1000,
