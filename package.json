@@ -33,7 +33,7 @@
     "@types/sinon": "10.0.6",
     "chai": "^4.3.6",
     "mocha": "^10.0.0",
-    "sinon": "^14.0.0"
+    "sinon": "^15.0.1"
   },
   "publishConfig": {
     "access": "public"
