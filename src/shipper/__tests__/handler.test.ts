@@ -80,6 +80,26 @@ describe('processData', () => {
     const fakeConfigB = { ...fakeConfig, elastic: 'fake-elastic-2' };
     shipper.accounts.push(fakeConfigB);
     const es = shipper.getElastic(fakeConfig);
+
+    fakeRequest.id = 'fakeRequestId';
+
+    await processCloudWatchData(fakeRequest, logLine);
+    expect(es.logs.length).eq(1);
+
+    const [firstLog] = es.logs;
+
+    const currentTime = new Date();
+    const shippedTime = new Date(firstLog['@timestampShipped']);
+    const diffTime = Math.abs(currentTime.getTime() - shippedTime.getTime());
+    expect(diffTime).to.be.lessThan(60_000); // Should be processed in the last minute
+
+    expect(firstLog['@shipperId']).to.equal(fakeRequest.id);
+  });
+
+  it('should include the shippingId and timeStamp', async () => {
+    const fakeConfigB = { ...fakeConfig, elastic: 'fake-elastic-2' };
+    shipper.accounts.push(fakeConfigB);
+    const es = shipper.getElastic(fakeConfig);
     const esB = shipper.getElastic(fakeConfigB);
 
     await processCloudWatchData(fakeRequest, logLine);

@@ -69,16 +69,23 @@ export class LogShipper {
    * @param log
    * @param s3Key
    */
-  getLogObject(obj: CloudWatchLogsDecodedData, log: CloudWatchLogsLogEvent, s3Key?: string): null | LogObject {
+  getLogObject(
+    obj: CloudWatchLogsDecodedData,
+    log: CloudWatchLogsLogEvent,
+    s3Key?: string,
+    shipperId?: string,
+  ): null | LogObject {
     if (log === undefined) return null;
 
     const logObj: LogObject = {
       '@id': log.id,
       '@timestamp': new Date(log.timestamp).toISOString(),
+      '@timestampShipped': new Date().toISOString(),
       '@owner': obj.owner,
       '@logGroup': obj.logGroup,
       '@logStream': obj.logStream,
       '@source': s3Key,
+      '@shipperId': shipperId,
       '@tags': [],
       message: log.message,
     };
