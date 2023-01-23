@@ -9,6 +9,10 @@ export interface LogObject extends Record<string, string | number | string[] | b
   '@id': string;
   /** ISO 8601 time of the log event */
   '@timestamp': string;
+  /** Timestamp when this log was found by the log shipper */
+  '@timestampShipped': string;
+  /** ULID of the shipper request */
+  '@shipperId'?: string;
   /** Owner AWS account number */
   '@owner': string;
   /** Source cloudwatch log group */

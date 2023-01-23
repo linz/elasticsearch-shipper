@@ -7,10 +7,12 @@ describe('ElasticSearch', () => {
     return {
       '@id': '1',
       '@timestamp': time,
+      '@timestampShipped': time,
       '@owner': '1234',
       '@logGroup': 'bar',
       '@logStream': 'baz',
       '@source': 'foobar',
+      '@shipperId': '',
       '@tags': [],
     };
   }

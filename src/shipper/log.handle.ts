@@ -85,7 +85,7 @@ export async function processCloudWatchData(
     const index = streamConfig.index ?? account.index;
 
     for (const logLine of c.logEvents) {
-      const logObject = req.shipper.getLogObject(c, logLine, source);
+      const logObject = req.shipper.getLogObject(c, logLine, source, req.id);
       if (logObject == null) continue;
       if (streamTags.length > 0) logObject['@tags'] = streamTags.concat(logObject['@tags'] ?? []);
 
