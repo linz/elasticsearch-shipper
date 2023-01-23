@@ -7,6 +7,15 @@
 
 
 
+## [4.2.0](https://github.com/linz/elasticsearch-shipper/compare/v4.1.0...v4.2.0) (2023-01-23)
+
+
+### Features
+
+* add time a log was processed by the shipper to default fields ([#687](https://github.com/linz/elasticsearch-shipper/issues/687)) ([847fd49](https://github.com/linz/elasticsearch-shipper/commit/847fd49905c707bf27129deaf998debc838db4c2))
+* allow configuration of dead letter queue and drop max bytes ([b8f7785](https://github.com/linz/elasticsearch-shipper/commit/b8f77856b76781510fd7633863e07202c8db67f2))
+* allow configuration of dead letter queue per connection ([22497bb](https://github.com/linz/elasticsearch-shipper/commit/22497bbcf84cc3dadef29f34b8bfb848ea0ddc05))
+
 ## [4.1.0](https://github.com/linz/elasticsearch-shipper/compare/v4.0.2...v4.1.0) (2022-09-08)
 
 
