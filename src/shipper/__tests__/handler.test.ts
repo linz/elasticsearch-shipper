@@ -76,7 +76,7 @@ describe('processData', () => {
     expect(firstIndex).equal('foo-index-' + new Date().toISOString().substring(0, 10));
   });
 
-  it('should match multiple configurations', async () => {
+  it('should include the shippingId and timeStamp', async () => {
     const fakeConfigB = { ...fakeConfig, elastic: 'fake-elastic-2' };
     shipper.accounts.push(fakeConfigB);
     const es = shipper.getElastic(fakeConfig);
@@ -96,7 +96,7 @@ describe('processData', () => {
     expect(firstLog['@shipperId']).to.equal(fakeRequest.id);
   });
 
-  it('should include the shippingId and timeStamp', async () => {
+  it('should match multiple configurations', async () => {
     const fakeConfigB = { ...fakeConfig, elastic: 'fake-elastic-2' };
     shipper.accounts.push(fakeConfigB);
     const es = shipper.getElastic(fakeConfig);
@@ -185,7 +185,7 @@ describe('processData', () => {
     // Second call is the DLQ insert
     bulkStub
       .onSecondCall()
-      .resolves({ total: 1, failed: 0, retry: 0, successful: 0, time: 0, bytes: 0, aborted: false });
+      .resolves({ total: 1, failed: 0, retry: 0, successful: 0, time: 0, bytes: 0, noop: 0, aborted: false });
 
     await es.save();
 
