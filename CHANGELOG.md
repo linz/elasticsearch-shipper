@@ -7,6 +7,13 @@
 
 
 
+## [4.2.1](https://github.com/linz/elasticsearch-shipper/compare/v4.2.0...v4.2.1) (2023-01-24)
+
+
+### Bug Fixes
+
+* correct typings for bulk imports ([#688](https://github.com/linz/elasticsearch-shipper/issues/688)) ([0a3d24a](https://github.com/linz/elasticsearch-shipper/commit/0a3d24af41bbf340f40c78112278e65875796088))
+
 ## [4.2.0](https://github.com/linz/elasticsearch-shipper/compare/v4.1.0...v4.2.0) (2023-01-23)
 
 
