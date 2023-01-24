@@ -27,7 +27,7 @@
     "@types/aws-lambda": "^8.10.102",
     "@types/chai": "^4.3.3",
     "@types/minimatch": "^5.1.2",
-    "@types/mocha": "^9.0.0",
+    "@types/mocha": "^10.0.1",
     "@types/node": "^18.7.15",
     "@types/pino": "^7.0.5",
     "@types/sinon": "10.0.6",
