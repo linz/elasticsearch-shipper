@@ -206,9 +206,9 @@
   integrity sha512-sXXKG+uL9IrKqViTtao2Ws6dy0znu9sOaP1di/jKGW1M6VssO8vlpXCQcpZ+jisQ1tTFAC5Jo/EOzFbggBagFQ==
 
 "@types/aws-lambda@^8.10.102":
-  version "8.10.103"
-  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.103.tgz#9f0d748036a206ebe4a3eb19febc53b52ee36352"
-  integrity sha512-mYWsrM5YPmnyJru7kMDX8RYSc486sDqVOP1kUdotthD3YjJ57iTBN3N7MMtL1qdVoPW2YmCnNnWscyidmPe6Gw==
+  version "8.10.109"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.109.tgz#2f434cbfafe083529e365fe9c114787827a169a8"
+  integrity sha512-/ME92FneNyXQzrAfcnQQlW1XkCZGPDlpi2ao1MJwecN+6SbeonKeggU8eybv1DfKli90FAVT1MlIZVXfwVuCyg==
 
 "@types/chai@^4.3.3":
   version "4.3.4"
