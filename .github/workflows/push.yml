@@ -5,4 +5,4 @@ on:
 
 jobs:
   build:
-    uses: linz/action-typescript/.github/workflows/main.yml@v1
+    uses: linz/action-typescript/.github/workflows/main.yml@v2
