@@ -7,6 +7,13 @@
 
 
 
+## [4.2.2](https://github.com/linz/elasticsearch-shipper/compare/v4.2.1...v4.2.2) (2023-03-08)
+
+
+### Bug Fixes
+
+* infinite recursion when finding dead letter queues ([#720](https://github.com/linz/elasticsearch-shipper/issues/720)) ([1f33469](https://github.com/linz/elasticsearch-shipper/commit/1f3346900c7bc63c57fac53e3306eeae10b3ad9c))
+
 ## [4.2.1](https://github.com/linz/elasticsearch-shipper/compare/v4.2.0...v4.2.1) (2023-01-24)
 
 
