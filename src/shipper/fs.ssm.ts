@@ -38,6 +38,9 @@ export class FsSsm implements FileSystem {
   head(): Promise<FileInfo | null> {
     throw new Error('Not Implemented');
   }
+  delete(): Promise<void> {
+    throw new Error('Not Implemented');
+  }
   stream(): Readable {
     throw new Error('Method not implemented.');
   }
