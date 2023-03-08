@@ -15,7 +15,7 @@ export class ConfigCache {
   static options: Map<string, ElasticSearchOptions> = new Map();
 
   static getOptions(configName: string): ElasticSearchOptions {
-    return ConfigCache.getOptions(configName) ?? DefaultOptions;
+    return ConfigCache.options.get(configName) ?? DefaultOptions;
   }
 
   static get(configName: string): Promise<unknown> {

@@ -53,4 +53,8 @@ describe('ElasticSearchConfigValidator', () => {
     expect(ConnectionValidator.Basic.safeParse({}).success).equals(false);
     expect(ConnectionValidator.Basic.safeParse(null).success).equals(false);
   });
+
+  it('should give default dead letter queue parameters', () => {
+    expect(ConfigCache.getOptions('fake')).deep.eq({ dlq: { name: 'dlq', indexDate: 'daily' }, maxSizeBytes: 4096 });
+  });
 });
