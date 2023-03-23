@@ -14,7 +14,7 @@
     "@linzjs/lambda": "^4.0.0",
     "aws-sdk": "^2.1330.0",
     "jsondiffpatch": "^0.4.1",
-    "minimatch": "^5.1.0",
+    "minimatch": "^7.4.3",
     "zod": "^3.18.0"
   },
   "scripts": {
