@@ -22,7 +22,7 @@ jobs:
     if: ${{ needs.release-please.outputs.release_created }}
     steps:
       - name: Build and test
-        uses: linz/action-typescript@v2
+        uses: linz/action-typescript@v3
 
       - name: Publish to Github
         run: yarn publish
