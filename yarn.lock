@@ -55,9 +55,9 @@
     "@chunkd/core" "^10.3.0"
 
 "@elastic/elasticsearch@^7.9.0":
-  version "7.14.0"
-  resolved "https://registry.yarnpkg.com/@elastic/elasticsearch/-/elasticsearch-7.14.0.tgz#250d939c2dee41f92282ca8916b0eb11bca61094"
-  integrity sha512-BlxqykcNtdBxo0mF7UQ1OsUxoVOOnEaeF70u2N4jpePih9paCOOotTWfFSDrtEw0TWv1CZlzCGD3TD5+8ASx8A==
+  version "7.17.11"
+  resolved "https://registry.yarnpkg.com/@elastic/elasticsearch/-/elasticsearch-7.17.11.tgz#bcb16b2e348a826eec821155fcc018b40bc4dfbb"
+  integrity sha512-4PiIh+F+dT/3w7eBPieUeTqnXHkss8Uyf4/LfyUn1pToYKZp0GrQmQfyuXCumZI7GE4dKEu8E8w0ZE7/dP88hg==
   dependencies:
     debug "^4.3.1"
     hpagent "^0.1.1"
