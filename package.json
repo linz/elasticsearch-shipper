@@ -9,7 +9,7 @@
   "type": "module",
   "dependencies": {
     "@acuris/aws-es-connection": "^2.0.1",
-    "@chunkd/fs": "^10.0.4",
+    "@chunkd/fs": "^11.0.1",
     "@elastic/elasticsearch": "^7.9.0",
     "@linzjs/lambda": "^4.0.0",
     "aws-sdk": "^2.1330.0",
