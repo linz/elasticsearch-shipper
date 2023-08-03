@@ -28,7 +28,7 @@
     "@types/chai": "^4.3.3",
     "@types/minimatch": "^5.1.2",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^18.7.15",
+    "@types/node": "^20.4.6",
     "@types/pino": "^7.0.5",
     "@types/sinon": "10.0.6",
     "chai": "^4.3.6",
