@@ -1,5 +1,5 @@
-import { expect } from 'chai';
-import sinon from 'sinon';
+import assert from 'node:assert';
+import { describe, it } from 'node:test';
 import { ConnectionValidator } from '../../config/config.elastic.js';
 import { LogShipperConnectionAws, LogShipperConnectionBasic, LogShipperConnectionCloud } from '../../config/config.js';
 import { ConfigCache } from '../config.js';
@@ -10,51 +10,48 @@ function clone<T>(a: T): T {
 }
 
 describe('ElasticSearchConfigValidator', () => {
-  const sandbox = sinon.createSandbox();
-  afterEach(() => sandbox.restore());
-
   it('should validate cloud connections', () => {
     const cfg: Partial<LogShipperConnectionCloud> = { id: 'foo', username: 'bar', password: 'baz' };
-    expect(ConnectionValidator.Cloud.safeParse(cfg).success).equals(true);
+    assert.equal(ConnectionValidator.Cloud.safeParse(cfg).success, true);
 
     const cfg2 = clone(cfg);
     delete cfg2.id;
-    expect(ConnectionValidator.Cloud.safeParse(cfg2).success).equals(false);
-    expect(ConnectionValidator.Cloud.safeParse({}).success).equals(false);
-    expect(ConnectionValidator.Cloud.safeParse(null).success).equals(false);
+    assert.equal(ConnectionValidator.Cloud.safeParse(cfg2).success, false);
+    assert.equal(ConnectionValidator.Cloud.safeParse({}).success, false);
+    assert.equal(ConnectionValidator.Cloud.safeParse(null).success, false);
   });
 
   it('should validate aws connections', () => {
     const cfg: Partial<LogShipperConnectionAws> = { url: 'foo' };
-    expect(ConnectionValidator.Aws.safeParse(cfg).success).equals(true);
+    assert.equal(ConnectionValidator.Aws.safeParse(cfg).success, true);
 
     const cfg2 = clone(cfg);
     delete cfg2.url;
-    expect(ConnectionValidator.Aws.safeParse(cfg2).success).equals(false);
-    expect(ConnectionValidator.Aws.safeParse({}).success).equals(false);
-    expect(ConnectionValidator.Aws.safeParse(null).success).equals(false);
+    assert.equal(ConnectionValidator.Aws.safeParse(cfg2).success, false);
+    assert.equal(ConnectionValidator.Aws.safeParse({}).success, false);
+    assert.equal(ConnectionValidator.Aws.safeParse(null).success, false);
   });
 
-  it('should create a aws connection', async () => {
+  it('should create a aws connection', async (t) => {
     const es = new ElasticSearch('');
-    sandbox.stub(ConfigCache, 'get').resolves({ url: 'https://foo ' });
-    return es.save().then((result) => {
-      expect(result).to.not.equal(null);
-    }); // Create a elastic client to the connection
+    const config = { url: 'https://foo ' };
+    t.mock.method(ConfigCache, 'get', async () => config);
+    const result = await es.save();
+    assert.equal(result, undefined); // Create a elastic client to the connection
   });
 
   it('should validate basic connections', () => {
     const cfg: Partial<LogShipperConnectionBasic> = { url: 'foo', username: 'bar', password: 'baz' };
-    expect(ConnectionValidator.Basic.safeParse(cfg).success).equals(true);
+    assert.equal(ConnectionValidator.Basic.safeParse(cfg).success, true);
 
     const cfg2 = clone(cfg);
     delete cfg2.url;
-    expect(ConnectionValidator.Basic.safeParse(cfg2).success).equals(false);
-    expect(ConnectionValidator.Basic.safeParse({}).success).equals(false);
-    expect(ConnectionValidator.Basic.safeParse(null).success).equals(false);
+    assert.equal(ConnectionValidator.Basic.safeParse(cfg2).success, false);
+    assert.equal(ConnectionValidator.Basic.safeParse({}).success, false);
+    assert.equal(ConnectionValidator.Basic.safeParse(null).success, false);
   });
 
   it('should give default dead letter queue parameters', () => {
-    expect(ConfigCache.getOptions('fake')).deep.eq({ dlq: { name: 'dlq', indexDate: 'daily' }, maxSizeBytes: 4096 });
+    assert.deepEqual(ConfigCache.getOptions('fake'), { dlq: { name: 'dlq', indexDate: 'daily' }, maxSizeBytes: 4096 });
   });
 });

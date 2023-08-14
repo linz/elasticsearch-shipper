@@ -1,5 +1,5 @@
 import { ChunkSource, FileInfo, FileSystem } from '@chunkd/core';
-import type SSM from 'aws-sdk/clients/ssm';
+import type SSM from 'aws-sdk/clients/ssm.js';
 import { Readable } from 'stream';
 
 export class FsSsm implements FileSystem {

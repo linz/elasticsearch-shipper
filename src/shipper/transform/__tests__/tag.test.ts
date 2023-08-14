@@ -1,7 +1,8 @@
-import { expect } from 'chai';
 import { LogObject, LogTransformDrop } from '../../type.js';
 import { createRequest } from '../../__tests__/log.transform.js';
 import { onLogTag } from '../tag.js';
+import { beforeEach, describe, it } from 'node:test';
+import assert from 'node:assert';
 
 describe('onLogTag', () => {
   let msg = { message: '' } as LogObject;
@@ -19,8 +20,8 @@ describe('onLogTag', () => {
     it('should tag lambda logs :' + reqType, () => {
       msg.message = line;
       const ret = onLogTag(createRequest(msg));
-      expect(ret).to.eq(undefined);
-      expect(msg['@tags']).deep.eq(['Lambda log']);
+      assert.equal(ret, undefined);
+      assert.deepEqual(msg['@tags'], ['Lambda log']);
     });
   }
 
@@ -28,30 +29,30 @@ describe('onLogTag', () => {
     msg.message =
       '2 418528898914 eni-ababababb 255.255.255.222 255.255.255.159 443 36215 6 17 6419 1630295292 1630295304 ACCEPT OK';
     const ret = onLogTag(createRequest(msg, msg.message));
-    expect(ret).to.eq(LogTransformDrop);
+    assert.equal(ret, LogTransformDrop);
   });
 
   it('should skip large log lines', () => {
     msg.message = 'END RequestId: be0262fa-d7f9-47b8-985e-9bb41e77b624'.padEnd(2049, '-');
     const ret = onLogTag(createRequest(msg));
-    expect(ret).to.eq(undefined);
-    expect(msg['@tags']).deep.eq(['Oversized log']);
+    assert.equal(ret, undefined);
+    assert.deepEqual(msg['@tags'], ['Oversized log']);
   });
 
   it('should not die when getting a weird message', () => {
-    expect(onLogTag(createRequest({ '@tags': [], message: null } as any))).equal(undefined);
-    expect(onLogTag(createRequest({ '@tags': [], message: {} } as any))).equal(undefined);
-    expect(onLogTag(createRequest({ '@tags': [], message: [] } as any))).equal(undefined);
-    expect(onLogTag(createRequest({ '@tags': [], message: 1 } as any))).equal(undefined);
-    expect(onLogTag(createRequest({ '@tags': [], message: () => null } as any))).equal(undefined);
-    expect(onLogTag(createRequest({ '@tags': [], message: new Error() } as any))).equal(undefined);
+    assert.equal(onLogTag(createRequest({ '@tags': [], message: null } as any)), undefined);
+    assert.equal(onLogTag(createRequest({ '@tags': [], message: {} } as any)), undefined);
+    assert.equal(onLogTag(createRequest({ '@tags': [], message: [] } as any)), undefined);
+    assert.equal(onLogTag(createRequest({ '@tags': [], message: 1 } as any)), undefined);
+    assert.equal(onLogTag(createRequest({ '@tags': [], message: () => null } as any)), undefined);
+    assert.equal(onLogTag(createRequest({ '@tags': [], message: new Error() } as any)), undefined);
   });
 
   it('should not skip largeish log lines', () => {
     msg.message = 'END RequestId: be0262fa-d7f9-47b8-985e-9bb41e77b624'.padEnd(2048, '-');
     const ret = onLogTag(createRequest(msg, msg.message));
-    expect(ret).to.eq(undefined);
-    expect(msg['@tags']).deep.eq(['Lambda log']);
+    assert.equal(ret, undefined);
+    assert.deepEqual(msg['@tags'], ['Lambda log']);
   });
 
   it('should parse access log lines', () => {
@@ -80,6 +81,6 @@ describe('onLogTag', () => {
 
 function accessLogTest(msg: LogObject): void {
   const ret = onLogTag(createRequest(msg, msg.message));
-  expect(ret).to.eq(undefined);
-  expect(msg['@tags']).deep.eq(['Access log']);
+  assert.equal(ret, undefined);
+  assert.deepEqual(msg['@tags'], ['Access log']);
 }
