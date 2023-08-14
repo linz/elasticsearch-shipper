@@ -2,42 +2,46 @@
 
 [![Build Status](https://github.com/linz/elasticsearch-shipper/workflows/Build/badge.svg)](https://github.com/linz/elasticsearch-shipper/actions)
 
-
 Lambda function to ship logs from various AWS sources into a elastic search instance of your choosing.
 
 ## Usage
 
 This package exposes a Lambda Function that can be used in a CDK stack that can be used to configure logs to be automatically shipped into an elastic search of your choosing
 
-
 `./src/config.mjs`
+
 ```typescript
 export const Config = {
   name: 'default',
-  accounts: [{
-    id: '1234567890',
-    elastic: '/es-shipper-config/elastic-default',
-    name: 'linz',
-    tags: ['hello'],
-    prefix: 'account-prefix',
-    logGroups: [{
-      filter: '**',
-      prefix: 'lg-prefix',
-    }]
-  }],
-}
+  accounts: [
+    {
+      id: '1234567890',
+      elastic: '/es-shipper-config/elastic-default',
+      name: 'linz',
+      tags: ['hello'],
+      prefix: 'account-prefix',
+      logGroups: [
+        {
+          filter: '**',
+          prefix: 'lg-prefix',
+        },
+      ],
+    },
+  ],
+};
 ```
 
 `./src/index.mjs`
+
 ```typescript
-import {Config} from './config.js'
-import {logHandler, LogShipper} from '@linzjs/cdk-elastic-shipper';
-LogShipper.configure(Config)
+import { Config } from './config.js';
+import { logHandler, LogShipper } from '@linzjs/cdk-elastic-shipper';
+LogShipper.configure(Config);
 
 export const handler = logHandler;
 ```
 
-```javascript 
+```javascript
 import * as cdk from 'aws-cdk-lib';
 import { App, CfnOutput, Duration } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -86,11 +90,13 @@ export class YourStack extends cdk.Stack {
 The elastic connection strings need to be stored inside of SSM before running the deployment, there are three options for elasticsearch connections
 
 1. AWS
+
 ```
 { url: 'https://node-name.eu-west-1.es.amazonaws.com' }
 ```
 
 2. ElasticCloud
+
 ```
 {
   id: 'cloud:abc123',
@@ -100,6 +106,7 @@ The elastic connection strings need to be stored inside of SSM before running th
 ```
 
 3. Http
+
 ```
 {
   url: 'https://fake.com'
@@ -107,6 +114,7 @@ The elastic connection strings need to be stored inside of SSM before running th
   password: 'bar'
 }
 ```
+
 ## Building
 
 This repository requires [NodeJs](https://nodejs.org/en/) > 12 & [Yarn](https://yarnpkg.com/en/)
