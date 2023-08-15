@@ -1,8 +1,7 @@
-'use strict';
 import { Client } from '@elastic/elasticsearch';
 import { lf } from '@linzjs/lambda';
-import { expect } from 'chai';
-import sinon from 'sinon';
+import { beforeEach, describe, it } from 'node:test';
+import assert from 'node:assert';
 import { LogShipperConfigAccount } from '../../config/config.js';
 import { FailedInsertDocument } from '../elastic.js';
 import { LogRequest, processCloudWatchData, splitJsonString } from '../log.handle.js';
@@ -16,15 +15,13 @@ lf.Logger.level = 'silent';
 describe('splitJSONString', () => {
   it('works without a callback', () => {
     const result = splitJsonString('{a}{b}{c}');
-    expect(result).to.be.an('Array');
-    expect(result).to.have.lengthOf(3);
-    expect(result).to.deep.equal(['{a}', '{b}', '{c}']);
+    assert.equal(result.length, 3);
+    assert.deepEqual(result, ['{a}', '{b}', '{c}']);
   });
 });
 
 describe('processData', () => {
   let shipper: LogShipper;
-  const sandbox = sinon.createSandbox();
 
   const logLine = {
     owner: '123',
@@ -57,23 +54,19 @@ describe('processData', () => {
     fakeRequest = { shipper, log: lf.Logger, stats: new LogStats() } as LogRequest;
   });
 
-  afterEach(() => {
-    sandbox.restore();
-  });
-
-  it('should save a log line', async () => {
+  it('should save a log line', async (t) => {
     const es = shipper.getElastic(fakeConfig);
-    const saveStub = sandbox.stub(es, 'save');
+    const saveStub = t.mock.method(es, 'save');
     await processCloudWatchData(fakeRequest, logLine);
-    expect(saveStub.callCount).equal(0);
-    expect(es.logCount).eq(1);
+    assert.equal(saveStub.mock.callCount(), 0);
+    assert.equal(es.logCount, 1);
 
     const [firstLogLine] = es.logs;
-    expect(firstLogLine['key']).eq('value');
-    expect(firstLogLine['toDrop']).eq('something');
+    assert.equal(firstLogLine['key'], 'value');
+    assert.equal(firstLogLine['toDrop'], 'something');
 
     const firstIndex = es.indexes.get(firstLogLine['@id']);
-    expect(firstIndex).equal('foo-index-' + new Date().toISOString().substring(0, 10));
+    assert.equal(firstIndex, 'foo-index-' + new Date().toISOString().substring(0, 10));
   });
 
   it('should include the shippingId and timeStamp', async () => {
@@ -84,16 +77,16 @@ describe('processData', () => {
     fakeRequest.id = 'fakeRequestId';
 
     await processCloudWatchData(fakeRequest, logLine);
-    expect(es.logs.length).eq(1);
+    assert.equal(es.logs.length, 1);
 
     const [firstLog] = es.logs;
 
     const currentTime = new Date();
     const shippedTime = new Date(firstLog['@timestampShipped']);
     const diffTime = Math.abs(currentTime.getTime() - shippedTime.getTime());
-    expect(diffTime).to.be.lessThan(60_000); // Should be processed in the last minute
+    assert.ok(diffTime < 60_000); // Should be processed in the last minute
 
-    expect(firstLog['@shipperId']).to.equal(fakeRequest.id);
+    assert.equal(firstLog['@shipperId'], fakeRequest.id);
   });
 
   it('should match multiple configurations', async () => {
@@ -103,10 +96,10 @@ describe('processData', () => {
     const esB = shipper.getElastic(fakeConfigB);
 
     await processCloudWatchData(fakeRequest, logLine);
-    expect(es.logs.length).eq(1);
-    expect(esB.logs.length).eq(1);
+    assert.equal(es.logs.length, 1);
+    assert.equal(esB.logs.length, 1);
 
-    expect(esB.logs).deep.eq(es.logs);
+    assert.deepEqual(esB.logs, es.logs);
   });
 
   it('should work with multiple configurations and drops', async () => {
@@ -116,8 +109,8 @@ describe('processData', () => {
     const es = shipper.getElastic(fakeConfig);
     const esB = shipper.getElastic(fakeConfigB);
     await processCloudWatchData(fakeRequest, logLine);
-    expect(es.logs.length).eq(0);
-    expect(esB.logs.length).eq(1);
+    assert.equal(es.logs.length, 0);
+    assert.equal(esB.logs.length, 1);
   });
 
   it('should work with multiple configurations and account drops', async () => {
@@ -131,48 +124,51 @@ describe('processData', () => {
     const es = shipper.getElastic(fakeConfig);
     const esB = shipper.getElastic(fakeConfigB);
     await processCloudWatchData(fakeRequest, logLine);
-    expect(es.logs.length).eq(0);
-    expect(esB.logs.length).eq(1);
+    assert.equal(es.logs.length, 0);
+    assert.equal(esB.logs.length, 1);
   });
 
-  it('should drop keys', async () => {
+  it('should drop keys', async (t) => {
     const es = shipper.getElastic(fakeConfig);
 
-    const saveStub = sandbox.stub(es, 'save');
+    const saveStub = t.mock.method(es, 'save');
     fakeConfig.logGroups[0].dropKeys = ['toDrop'];
 
     await processCloudWatchData(fakeRequest, logLine);
-    expect(saveStub.callCount).equal(0);
-    expect(es.logs.length).eq(1);
+    assert.equal(saveStub.mock.callCount(), 0);
+    assert.equal(es.logs.length, 1);
 
     const [firstLogLine] = es.logs;
-    expect(firstLogLine['key']).eq('value');
-    expect(firstLogLine['toDrop']).eq(undefined);
+    assert.equal(firstLogLine['key'], 'value');
+    assert.equal(firstLogLine['toDrop'], undefined);
   });
 
-  it('should drop indexes', async () => {
+  it('should drop indexes', async (t) => {
     const es = shipper.getElastic(fakeConfig);
 
-    const saveStub = sandbox.stub(es, 'save');
+    const saveStub = t.mock.method(es, 'save');
     fakeConfig.logGroups[0].drop = true;
     await processCloudWatchData(fakeRequest, logLine);
-    expect(saveStub.callCount).equal(0);
-    expect(es.logs.length).eq(0);
+    assert.equal(saveStub.mock.callCount(), 0);
+    assert.equal(es.logs.length, 0);
   });
 
   const ElasticError = { type: 'error', reason: 'elastic', caused_by: { type: 'error', reason: 'elastic2' } };
 
-  it('should use the dead letter queue', async () => {
+  it('should use the dead letter queue', async (t) => {
     const es = shipper.getElastic(fakeConfig);
     await processCloudWatchData(fakeRequest, logLine);
 
     const client = new Client({ node: 'https://127.0.0.1', auth: { username: 'foo', password: 'bar' } });
-    sandbox.stub(es, 'createClient').resolves(client);
-
-    const bulkStub = sandbox.stub(client.helpers, 'bulk');
+    t.mock.method(es, 'createClient', async () => client);
 
     let dropCount = 0;
-    bulkStub.onFirstCall().callsFake((args) => {
+
+    const bulkStub = t.mock.method(client.helpers, 'bulk', async (args: any) => {
+      // Second call is the DLQ insert
+      if (bulkStub.mock.callCount() > 0) {
+        return { total: 1, failed: 0, retry: 0, successful: 0, time: 0, bytes: 0, noop: 0, aborted: false };
+      }
       if (!Array.isArray(args.datasource)) throw new Error('Datasource must be an array');
 
       for (const obj of args.datasource) {
@@ -182,19 +178,14 @@ describe('processData', () => {
       return Promise.resolve({}) as any;
     });
 
-    // Second call is the DLQ insert
-    bulkStub
-      .onSecondCall()
-      .resolves({ total: 1, failed: 0, retry: 0, successful: 0, time: 0, bytes: 0, noop: 0, aborted: false });
-
     await es.save();
 
-    expect(bulkStub.callCount).eq(2);
-    expect(dropCount).eq(1);
+    assert.equal(bulkStub.mock.callCount(), 2);
+    assert.equal(dropCount, 1);
 
-    const datasource = bulkStub.getCall(1).args[0].datasource as Array<FailedInsertDocument>;
-    expect(Array.isArray(datasource)).eq(true);
-    expect(datasource[0]['@id']).eq('1');
-    expect(datasource[0].reason).deep.eq(ElasticError);
+    const datasource = bulkStub.mock.calls[1].arguments[0].datasource as Array<FailedInsertDocument>;
+    assert.equal(Array.isArray(datasource), true);
+    assert.equal(datasource[0]['@id'], '1');
+    assert.deepEqual(datasource[0].reason, ElasticError);
   });
 });

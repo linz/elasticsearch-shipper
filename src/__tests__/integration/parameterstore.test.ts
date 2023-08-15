@@ -1,11 +1,10 @@
-import { expect } from 'chai';
-import sinon from 'sinon';
+import { beforeEach, describe, it } from 'node:test';
 import { Env } from '../../env.js';
 import { LogShipper } from '../../shipper/shipper.config.js';
 import { ExampleConfigMinimal } from '../config.test.js';
+import assert from 'node:assert';
 
 describe('AccountConfigFilter', () => {
-  const sandbox = sinon.createSandbox();
   let shipper: LogShipper;
   beforeEach(async () => {
     process.env[Env.ConfigUri] = 's3://foo/bar';
@@ -14,15 +13,11 @@ describe('AccountConfigFilter', () => {
     shipper = await LogShipper.get();
   });
 
-  afterEach(() => {
-    sandbox.restore();
-  });
-
   it('should correctly parse parameter store configs', async () => {
     const config = shipper.getAccounts('1234567890');
-    expect(config.length).eq(1);
-    expect(config[0].id).to.eq('1234567890');
-    expect(config[0].tags).to.contain('hello');
-    expect(config[0].logGroups).to.not.be.undefined;
+    assert.equal(config.length, 1);
+    assert.equal(config[0].id, '1234567890');
+    assert.ok(config[0].tags?.includes('hello'));
+    assert.ok(config[0].logGroups);
   });
 });

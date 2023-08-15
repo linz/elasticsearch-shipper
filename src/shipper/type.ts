@@ -1,5 +1,5 @@
 import { CloudWatchLogsLogEvent } from 'aws-lambda';
-import { LogShipperConfigIndexDate } from '../config/config';
+import { LogShipperConfigIndexDate } from '../config/config.js';
 
 export interface LogObject extends Record<string, string | number | string[] | boolean | undefined> {
   /** Log Id, generally very long number string

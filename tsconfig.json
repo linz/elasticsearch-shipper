@@ -4,7 +4,7 @@
     "lib": ["ES2020"],
     "outDir": "build",
     "module": "ES2020",
-    "moduleResolution": "Node"
+    "moduleResolution": "Node16"
   },
   "include": ["src"]
 }
