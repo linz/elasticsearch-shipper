@@ -5,7 +5,7 @@
 
 # To fully customize the contents of this image, use the following Dockerfile instead:
 # https://github.com/microsoft/vscode-dev-containers/tree/v0.106.0/containers/typescript-node-12/.devcontainer/Dockerfile
-FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:0-12
+FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:0-12@sha256:1299bc36c95b85e60bd4ced3df706d9fda1ab27cb12a9c0822924567caedacd5
 
 # ** [Optional] Uncomment this section to install additional packages. **
 #
@@ -18,4 +18,3 @@ FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:0-12
 #    && apt-get clean -y \
 #    && rm -rf /var/lib/apt/lists/*
 # ENV DEBIAN_FRONTEND=dialog
-
