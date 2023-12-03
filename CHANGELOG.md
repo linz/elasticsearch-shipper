@@ -7,6 +7,14 @@
 
 
 
+## [4.3.0](https://github.com/linz/elasticsearch-shipper/compare/v4.2.2...v4.3.0) (2023-12-03)
+
+
+### Features
+
+* Dependabot for Docker TDE-963 ([#843](https://github.com/linz/elasticsearch-shipper/issues/843)) ([0840e9b](https://github.com/linz/elasticsearch-shipper/commit/0840e9b3e7c697320909c7130f2420a6a731ac82))
+* Pin actions to hashes TDE-934 ([#844](https://github.com/linz/elasticsearch-shipper/issues/844)) ([b5ce861](https://github.com/linz/elasticsearch-shipper/commit/b5ce8618058513cb77c2a94b40739ba546296e0a))
+
 ## [4.2.2](https://github.com/linz/elasticsearch-shipper/compare/v4.2.1...v4.2.2) (2023-03-08)
 
 
