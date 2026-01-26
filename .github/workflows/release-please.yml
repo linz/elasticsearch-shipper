@@ -17,14 +17,18 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   publish-release:
+    permissions:
+      id-token: write # Required for OIDC
+      contents: read
     needs: release-please
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.release_created }}
     steps:
       - name: Build and test
         uses: linz/action-typescript@dee99184c4305aea6c380a52db9b2d7abaaa3e78 # v3
+        with:
+          node-version: 24.x
 
       - name: Publish to Github
         run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN_LINZJS }}
+        
